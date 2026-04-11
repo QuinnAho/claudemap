@@ -1,0 +1,3 @@
+[    1525ms] [INFO] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold @ http://localhost:5174/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:21550
+[    1864ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:5174/favicon.ico:0
+[  328585ms] Unexpected token '<', "<!DOCTYPE "... is not valid JSON

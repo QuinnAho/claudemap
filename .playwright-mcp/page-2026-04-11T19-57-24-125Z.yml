@@ -1,0 +1,69 @@
+- generic [ref=e3]:
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - img [ref=e7]
+        - generic [ref=e10]: ClaudeMap
+      - generic [ref=e11]:
+        - button "Graph View" [ref=e12] [cursor=pointer]
+        - button "Map View" [ref=e13] [cursor=pointer]
+    - generic [ref=e15]: expressjs/express
+  - generic [ref=e17]:
+    - application [ref=e18]:
+      - generic [ref=e20]:
+        - generic:
+          - generic:
+            - group [ref=e21] [cursor=pointer]:
+              - generic [ref=e24]:
+                - generic [ref=e25]:
+                  - img [ref=e26]
+                  - generic [ref=e29]: Core
+                - img [ref=e32]
+            - group [ref=e34] [cursor=pointer]:
+              - generic [ref=e37]:
+                - generic [ref=e38]:
+                  - img [ref=e39]
+                  - generic [ref=e43]: Routing
+                - img [ref=e46]
+            - group [ref=e48] [cursor=pointer]:
+              - generic [ref=e51]:
+                - generic [ref=e52]:
+                  - img [ref=e53]
+                  - generic [ref=e57]: Middleware
+                - img [ref=e61]
+            - group [ref=e63] [cursor=pointer]:
+              - generic [ref=e66]:
+                - generic [ref=e67]:
+                  - img [ref=e68]
+                  - generic [ref=e70]: Request
+                - img [ref=e73]
+            - group [ref=e75] [cursor=pointer]:
+              - generic [ref=e78]:
+                - generic [ref=e79]:
+                  - img [ref=e80]
+                  - generic [ref=e82]: Response
+                - img [ref=e86]
+            - group [ref=e88] [cursor=pointer]:
+              - generic [ref=e91]:
+                - generic [ref=e92]:
+                  - img [ref=e93]
+                  - generic [ref=e96]: View Engine
+                - img [ref=e99]
+      - img
+    - generic [ref=e102]:
+      - button "Toggle health overlay" [ref=e104] [cursor=pointer]:
+        - img [ref=e105]
+      - generic [ref=e107]:
+        - button "Zoom in" [ref=e108] [cursor=pointer]:
+          - img [ref=e109]
+        - button "Zoom out" [ref=e111] [cursor=pointer]:
+          - img [ref=e112]
+        - button "Fit view" [ref=e114] [cursor=pointer]:
+          - img [ref=e115]
+  - generic [ref=e117]:
+    - generic [ref=e118]:
+      - generic [ref=e121]: main
+      - generic [ref=e122]:
+        - img [ref=e123]
+        - generic [ref=e126]: Synced 19h ago
+    - generic [ref=e127]: A Project by Quinn Aho

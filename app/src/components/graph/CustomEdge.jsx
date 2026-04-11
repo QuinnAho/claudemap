@@ -18,15 +18,15 @@ export default function CustomEdge({
     sourcePosition,
     targetPosition,
   })
-  const strokeOpacity = data?.isHighlighted ? 0.92 : data?.isDimmed ? 0.18 : 0.54
-  const strokeWidth = data?.isHighlighted ? 2.1 : 1.7
+  const strokeOpacity = data?.isHighlighted ? 0.9 : data?.isDimmed ? 0.12 : 0.52
+  const strokeWidth = data?.isHighlighted ? 2.2 : 1.8
 
   return (
     <path
       id={id}
       d={edgePath}
       fill="none"
-      stroke="rgba(255, 255, 255, 0.14)"
+      stroke="rgba(255, 255, 255, 0.22)"
       strokeWidth={strokeWidth}
       strokeOpacity={strokeOpacity}
       strokeLinecap="round"

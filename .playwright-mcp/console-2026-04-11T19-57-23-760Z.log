@@ -1,0 +1,1606 @@
+[     221ms] [INFO] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold @ http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:21550
+[  316286ms] ReferenceError: onNodeDoubleClick is not defined
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775937759903:262:9)
+    at renderWithHooks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:11548:26)
+    at updateFunctionComponent (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14582:28)
+    at beginWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:15924:22)
+    at HTMLUnknownElement.callCallback2 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3674:22)
+    at Object.invokeGuardedCallbackDev (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3699:24)
+    at invokeGuardedCallback (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3733:39)
+    at beginWork$1 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19765:15)
+    at performUnitOfWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19198:20)
+    at workLoopSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19137:13)
+    at renderRootSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19116:15)
+    at performConcurrentWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18678:83)
+    at workLoop (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:197:42)
+    at flushWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:176:22)
+    at MessagePort.performWorkUntilDeadline (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:384:29)
+[  316288ms] ReferenceError: onNodeDoubleClick is not defined
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775937759903:262:9)
+    at renderWithHooks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:11548:26)
+    at updateFunctionComponent (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14582:28)
+    at beginWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:15924:22)
+    at HTMLUnknownElement.callCallback2 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3674:22)
+    at Object.invokeGuardedCallbackDev (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3699:24)
+    at invokeGuardedCallback (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3733:39)
+    at beginWork$1 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19765:15)
+    at performUnitOfWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19198:20)
+    at workLoopSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19137:13)
+    at renderRootSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19116:15)
+    at recoverFromConcurrentError (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18736:28)
+    at performConcurrentWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18684:30)
+    at workLoop (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:197:42)
+    at flushWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:176:22)
+    at MessagePort.performWorkUntilDeadline (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:384:29)
+[  316290ms] [ERROR] The above error occurred in the <GraphCanvas> component:
+
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775937759903:85:17)
+    at div
+    at div
+    at BatchProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:6957:36)
+    at ReactFlowProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:9080:44)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries. @ http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14031
+[  316290ms] ReferenceError: onNodeDoubleClick is not defined
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775937759903:262:9)
+    at renderWithHooks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:11548:26)
+    at updateFunctionComponent (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14582:28)
+    at beginWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:15924:22)
+    at beginWork$1 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19753:22)
+    at performUnitOfWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19198:20)
+    at workLoopSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19137:13)
+    at renderRootSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19116:15)
+    at recoverFromConcurrentError (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18736:28)
+    at performConcurrentWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18684:30)
+    at workLoop (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:197:42)
+    at flushWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:176:22)
+    at MessagePort.performWorkUntilDeadline (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:384:29)
+[  332533ms] ReferenceError: onNodeDoubleClick is not defined
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775937776166:263:9)
+    at renderWithHooks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:11548:26)
+    at updateFunctionComponent (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14582:28)
+    at beginWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:15924:22)
+    at HTMLUnknownElement.callCallback2 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3674:22)
+    at Object.invokeGuardedCallbackDev (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3699:24)
+    at invokeGuardedCallback (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3733:39)
+    at beginWork$1 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19765:15)
+    at performUnitOfWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19198:20)
+    at workLoopSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19137:13)
+    at renderRootSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19116:15)
+    at performConcurrentWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18678:83)
+    at workLoop (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:197:42)
+    at flushWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:176:22)
+    at MessagePort.performWorkUntilDeadline (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:384:29)
+[  332534ms] ReferenceError: onNodeDoubleClick is not defined
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775937776166:263:9)
+    at renderWithHooks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:11548:26)
+    at updateFunctionComponent (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14582:28)
+    at beginWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:15924:22)
+    at HTMLUnknownElement.callCallback2 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3674:22)
+    at Object.invokeGuardedCallbackDev (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3699:24)
+    at invokeGuardedCallback (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3733:39)
+    at beginWork$1 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19765:15)
+    at performUnitOfWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19198:20)
+    at workLoopSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19137:13)
+    at renderRootSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19116:15)
+    at recoverFromConcurrentError (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18736:28)
+    at performConcurrentWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18684:30)
+    at workLoop (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:197:42)
+    at flushWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:176:22)
+    at MessagePort.performWorkUntilDeadline (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:384:29)
+[  332534ms] [ERROR] The above error occurred in the <GraphCanvas> component:
+
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775937776166:85:17)
+    at div
+    at div
+    at BatchProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:6957:36)
+    at ReactFlowProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:9080:44)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries. @ http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14031
+[  332535ms] ReferenceError: onNodeDoubleClick is not defined
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775937776166:263:9)
+    at renderWithHooks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:11548:26)
+    at updateFunctionComponent (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14582:28)
+    at beginWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:15924:22)
+    at beginWork$1 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19753:22)
+    at performUnitOfWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19198:20)
+    at workLoopSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19137:13)
+    at renderRootSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19116:15)
+    at recoverFromConcurrentError (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18736:28)
+    at performConcurrentWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18684:30)
+    at workLoop (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:197:42)
+    at flushWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:176:22)
+    at MessagePort.performWorkUntilDeadline (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:384:29)
+[  345497ms] ReferenceError: onNodeDoubleClick is not defined
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775937788840:264:9)
+    at renderWithHooks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:11548:26)
+    at updateFunctionComponent (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14582:28)
+    at beginWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:15924:22)
+    at HTMLUnknownElement.callCallback2 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3674:22)
+    at Object.invokeGuardedCallbackDev (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3699:24)
+    at invokeGuardedCallback (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3733:39)
+    at beginWork$1 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19765:15)
+    at performUnitOfWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19198:20)
+    at workLoopSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19137:13)
+    at renderRootSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19116:15)
+    at performConcurrentWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18678:83)
+    at workLoop (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:197:42)
+    at flushWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:176:22)
+    at MessagePort.performWorkUntilDeadline (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:384:29)
+[  345498ms] ReferenceError: onNodeDoubleClick is not defined
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775937788840:264:9)
+    at renderWithHooks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:11548:26)
+    at updateFunctionComponent (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14582:28)
+    at beginWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:15924:22)
+    at HTMLUnknownElement.callCallback2 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3674:22)
+    at Object.invokeGuardedCallbackDev (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3699:24)
+    at invokeGuardedCallback (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3733:39)
+    at beginWork$1 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19765:15)
+    at performUnitOfWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19198:20)
+    at workLoopSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19137:13)
+    at renderRootSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19116:15)
+    at recoverFromConcurrentError (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18736:28)
+    at performConcurrentWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18684:30)
+    at workLoop (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:197:42)
+    at flushWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:176:22)
+    at MessagePort.performWorkUntilDeadline (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:384:29)
+[  345498ms] [ERROR] The above error occurred in the <GraphCanvas> component:
+
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775937788840:85:17)
+    at div
+    at div
+    at BatchProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:6957:36)
+    at ReactFlowProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:9080:44)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries. @ http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14031
+[  345500ms] ReferenceError: onNodeDoubleClick is not defined
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775937788840:264:9)
+    at renderWithHooks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:11548:26)
+    at updateFunctionComponent (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14582:28)
+    at beginWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:15924:22)
+    at beginWork$1 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19753:22)
+    at performUnitOfWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19198:20)
+    at workLoopSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19137:13)
+    at renderRootSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19116:15)
+    at recoverFromConcurrentError (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18736:28)
+    at performConcurrentWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18684:30)
+    at workLoop (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:197:42)
+    at flushWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:176:22)
+    at MessagePort.performWorkUntilDeadline (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:384:29)
+[  552599ms] ReferenceError: handleDoubleClick is not defined
+    at SystemNode (http://localhost:5173/@fs/D:/ahoqp1/Repositories/claudemap/app/src/components/graph/SystemNode.jsx?t=1775937995970:77:104)
+    at renderWithHooks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:11548:26)
+    at updateFunctionComponent (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14582:28)
+    at beginWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:15924:22)
+    at HTMLUnknownElement.callCallback2 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3674:22)
+    at Object.invokeGuardedCallbackDev (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3699:24)
+    at invokeGuardedCallback (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3733:39)
+    at beginWork$1 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19765:15)
+    at performUnitOfWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19198:20)
+    at workLoopSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19137:13)
+    at renderRootSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19116:15)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18874:28)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRefresh (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20004:13)
+    at http://localhost:5173/@react-refresh:228:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:217:26)
+    at http://localhost:5173/@react-refresh:608:3
+[  552603ms] ReferenceError: handleDoubleClick is not defined
+    at SystemNode (http://localhost:5173/@fs/D:/ahoqp1/Repositories/claudemap/app/src/components/graph/SystemNode.jsx?t=1775937995970:77:104)
+    at renderWithHooks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:11548:26)
+    at updateFunctionComponent (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14582:28)
+    at beginWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:15924:22)
+    at HTMLUnknownElement.callCallback2 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3674:22)
+    at Object.invokeGuardedCallbackDev (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3699:24)
+    at invokeGuardedCallback (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3733:39)
+    at beginWork$1 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19765:15)
+    at performUnitOfWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19198:20)
+    at workLoopSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19137:13)
+    at renderRootSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19116:15)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18874:28)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRefresh (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20004:13)
+    at http://localhost:5173/@react-refresh:228:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:217:26)
+    at http://localhost:5173/@react-refresh:608:3
+[  552604ms] ReferenceError: handleDoubleClick is not defined
+    at SystemNode (http://localhost:5173/@fs/D:/ahoqp1/Repositories/claudemap/app/src/components/graph/SystemNode.jsx?t=1775937995970:77:104)
+    at renderWithHooks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:11548:26)
+    at updateFunctionComponent (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14582:28)
+    at beginWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:15924:22)
+    at HTMLUnknownElement.callCallback2 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3674:22)
+    at Object.invokeGuardedCallbackDev (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3699:24)
+    at invokeGuardedCallback (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3733:39)
+    at beginWork$1 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19765:15)
+    at performUnitOfWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19198:20)
+    at workLoopSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19137:13)
+    at renderRootSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19116:15)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18874:28)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRefresh (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20004:13)
+    at http://localhost:5173/@react-refresh:228:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:217:26)
+    at http://localhost:5173/@react-refresh:608:3
+[  552604ms] ReferenceError: handleDoubleClick is not defined
+    at SystemNode (http://localhost:5173/@fs/D:/ahoqp1/Repositories/claudemap/app/src/components/graph/SystemNode.jsx?t=1775937995970:77:104)
+    at renderWithHooks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:11548:26)
+    at updateFunctionComponent (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14582:28)
+    at beginWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:15924:22)
+    at HTMLUnknownElement.callCallback2 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3674:22)
+    at Object.invokeGuardedCallbackDev (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3699:24)
+    at invokeGuardedCallback (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3733:39)
+    at beginWork$1 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19765:15)
+    at performUnitOfWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19198:20)
+    at workLoopSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19137:13)
+    at renderRootSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19116:15)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18874:28)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRefresh (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20004:13)
+    at http://localhost:5173/@react-refresh:228:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:217:26)
+    at http://localhost:5173/@react-refresh:608:3
+[  552605ms] ReferenceError: handleDoubleClick is not defined
+    at SystemNode (http://localhost:5173/@fs/D:/ahoqp1/Repositories/claudemap/app/src/components/graph/SystemNode.jsx?t=1775937995970:77:104)
+    at renderWithHooks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:11548:26)
+    at updateFunctionComponent (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14582:28)
+    at beginWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:15924:22)
+    at HTMLUnknownElement.callCallback2 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3674:22)
+    at Object.invokeGuardedCallbackDev (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3699:24)
+    at invokeGuardedCallback (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3733:39)
+    at beginWork$1 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19765:15)
+    at performUnitOfWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19198:20)
+    at workLoopSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19137:13)
+    at renderRootSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19116:15)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18874:28)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRefresh (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20004:13)
+    at http://localhost:5173/@react-refresh:228:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:217:26)
+    at http://localhost:5173/@react-refresh:608:3
+[  552605ms] ReferenceError: handleDoubleClick is not defined
+    at SystemNode (http://localhost:5173/@fs/D:/ahoqp1/Repositories/claudemap/app/src/components/graph/SystemNode.jsx?t=1775937995970:77:104)
+    at renderWithHooks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:11548:26)
+    at updateFunctionComponent (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14582:28)
+    at beginWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:15924:22)
+    at HTMLUnknownElement.callCallback2 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3674:22)
+    at Object.invokeGuardedCallbackDev (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3699:24)
+    at invokeGuardedCallback (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3733:39)
+    at beginWork$1 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19765:15)
+    at performUnitOfWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19198:20)
+    at workLoopSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19137:13)
+    at renderRootSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19116:15)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18874:28)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRefresh (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20004:13)
+    at http://localhost:5173/@react-refresh:228:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:217:26)
+    at http://localhost:5173/@react-refresh:608:3
+[  552605ms] ReferenceError: handleDoubleClick is not defined
+    at SystemNode (http://localhost:5173/@fs/D:/ahoqp1/Repositories/claudemap/app/src/components/graph/SystemNode.jsx?t=1775937995970:77:104)
+    at renderWithHooks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:11548:26)
+    at updateFunctionComponent (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14582:28)
+    at beginWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:15924:22)
+    at HTMLUnknownElement.callCallback2 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3674:22)
+    at Object.invokeGuardedCallbackDev (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3699:24)
+    at invokeGuardedCallback (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3733:39)
+    at beginWork$1 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19765:15)
+    at performUnitOfWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19198:20)
+    at workLoopSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19137:13)
+    at renderRootSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19116:15)
+    at recoverFromConcurrentError (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18736:28)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18879:28)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRefresh (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20004:13)
+    at http://localhost:5173/@react-refresh:228:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:217:26)
+    at http://localhost:5173/@react-refresh:608:3
+[  552606ms] ReferenceError: handleDoubleClick is not defined
+    at SystemNode (http://localhost:5173/@fs/D:/ahoqp1/Repositories/claudemap/app/src/components/graph/SystemNode.jsx?t=1775937995970:77:104)
+    at renderWithHooks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:11548:26)
+    at updateFunctionComponent (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14582:28)
+    at beginWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:15924:22)
+    at HTMLUnknownElement.callCallback2 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3674:22)
+    at Object.invokeGuardedCallbackDev (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3699:24)
+    at invokeGuardedCallback (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3733:39)
+    at beginWork$1 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19765:15)
+    at performUnitOfWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19198:20)
+    at workLoopSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19137:13)
+    at renderRootSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19116:15)
+    at recoverFromConcurrentError (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18736:28)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18879:28)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRefresh (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20004:13)
+    at http://localhost:5173/@react-refresh:228:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:217:26)
+    at http://localhost:5173/@react-refresh:608:3
+[  552606ms] ReferenceError: handleDoubleClick is not defined
+    at SystemNode (http://localhost:5173/@fs/D:/ahoqp1/Repositories/claudemap/app/src/components/graph/SystemNode.jsx?t=1775937995970:77:104)
+    at renderWithHooks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:11548:26)
+    at updateFunctionComponent (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14582:28)
+    at beginWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:15924:22)
+    at HTMLUnknownElement.callCallback2 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3674:22)
+    at Object.invokeGuardedCallbackDev (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3699:24)
+    at invokeGuardedCallback (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3733:39)
+    at beginWork$1 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19765:15)
+    at performUnitOfWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19198:20)
+    at workLoopSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19137:13)
+    at renderRootSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19116:15)
+    at recoverFromConcurrentError (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18736:28)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18879:28)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRefresh (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20004:13)
+    at http://localhost:5173/@react-refresh:228:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:217:26)
+    at http://localhost:5173/@react-refresh:608:3
+[  552607ms] ReferenceError: handleDoubleClick is not defined
+    at SystemNode (http://localhost:5173/@fs/D:/ahoqp1/Repositories/claudemap/app/src/components/graph/SystemNode.jsx?t=1775937995970:77:104)
+    at renderWithHooks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:11548:26)
+    at updateFunctionComponent (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14582:28)
+    at beginWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:15924:22)
+    at HTMLUnknownElement.callCallback2 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3674:22)
+    at Object.invokeGuardedCallbackDev (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3699:24)
+    at invokeGuardedCallback (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3733:39)
+    at beginWork$1 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19765:15)
+    at performUnitOfWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19198:20)
+    at workLoopSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19137:13)
+    at renderRootSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19116:15)
+    at recoverFromConcurrentError (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18736:28)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18879:28)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRefresh (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20004:13)
+    at http://localhost:5173/@react-refresh:228:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:217:26)
+    at http://localhost:5173/@react-refresh:608:3
+[  552607ms] ReferenceError: handleDoubleClick is not defined
+    at SystemNode (http://localhost:5173/@fs/D:/ahoqp1/Repositories/claudemap/app/src/components/graph/SystemNode.jsx?t=1775937995970:77:104)
+    at renderWithHooks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:11548:26)
+    at updateFunctionComponent (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14582:28)
+    at beginWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:15924:22)
+    at HTMLUnknownElement.callCallback2 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3674:22)
+    at Object.invokeGuardedCallbackDev (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3699:24)
+    at invokeGuardedCallback (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3733:39)
+    at beginWork$1 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19765:15)
+    at performUnitOfWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19198:20)
+    at workLoopSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19137:13)
+    at renderRootSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19116:15)
+    at recoverFromConcurrentError (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18736:28)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18879:28)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRefresh (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20004:13)
+    at http://localhost:5173/@react-refresh:228:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:217:26)
+    at http://localhost:5173/@react-refresh:608:3
+[  552608ms] ReferenceError: handleDoubleClick is not defined
+    at SystemNode (http://localhost:5173/@fs/D:/ahoqp1/Repositories/claudemap/app/src/components/graph/SystemNode.jsx?t=1775937995970:77:104)
+    at renderWithHooks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:11548:26)
+    at updateFunctionComponent (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14582:28)
+    at beginWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:15924:22)
+    at HTMLUnknownElement.callCallback2 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3674:22)
+    at Object.invokeGuardedCallbackDev (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3699:24)
+    at invokeGuardedCallback (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3733:39)
+    at beginWork$1 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19765:15)
+    at performUnitOfWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19198:20)
+    at workLoopSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19137:13)
+    at renderRootSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19116:15)
+    at recoverFromConcurrentError (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18736:28)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18879:28)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRefresh (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20004:13)
+    at http://localhost:5173/@react-refresh:228:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:217:26)
+    at http://localhost:5173/@react-refresh:608:3
+[  552609ms] [ERROR] The above error occurred in the <SystemNode> component:
+
+    at SystemNode (http://localhost:5173/@fs/D:/ahoqp1/Repositories/claudemap/app/src/components/graph/SystemNode.jsx?t=1775937995970:37:38)
+    at div
+    at NodeWrapper (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:7949:28)
+    at div
+    at NodeRendererComponent (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:8084:93)
+    at div
+    at Viewport (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:8568:31)
+    at div
+    at Pane (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:7376:17)
+    at div
+    at ZoomPane (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:7252:21)
+    at FlowRendererComponent (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:7862:44)
+    at GraphViewComponent (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:8702:31)
+    at Wrapper (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:9098:30)
+    at div
+    at ReactFlow (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:9112:22)
+    at div
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775937801164:85:17)
+    at div
+    at div
+    at BatchProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:6957:36)
+    at ReactFlowProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:9080:44)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries. @ http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14031
+[  552610ms] [ERROR] The above error occurred in the <SystemNode> component:
+
+    at SystemNode (http://localhost:5173/@fs/D:/ahoqp1/Repositories/claudemap/app/src/components/graph/SystemNode.jsx?t=1775937995970:37:38)
+    at div
+    at NodeWrapper (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:7949:28)
+    at div
+    at NodeRendererComponent (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:8084:93)
+    at div
+    at Viewport (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:8568:31)
+    at div
+    at Pane (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:7376:17)
+    at div
+    at ZoomPane (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:7252:21)
+    at FlowRendererComponent (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:7862:44)
+    at GraphViewComponent (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:8702:31)
+    at Wrapper (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:9098:30)
+    at div
+    at ReactFlow (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:9112:22)
+    at div
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775937801164:85:17)
+    at div
+    at div
+    at BatchProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:6957:36)
+    at ReactFlowProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:9080:44)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries. @ http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14031
+[  552610ms] [ERROR] The above error occurred in the <SystemNode> component:
+
+    at SystemNode (http://localhost:5173/@fs/D:/ahoqp1/Repositories/claudemap/app/src/components/graph/SystemNode.jsx?t=1775937995970:37:38)
+    at div
+    at NodeWrapper (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:7949:28)
+    at div
+    at NodeRendererComponent (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:8084:93)
+    at div
+    at Viewport (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:8568:31)
+    at div
+    at Pane (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:7376:17)
+    at div
+    at ZoomPane (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:7252:21)
+    at FlowRendererComponent (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:7862:44)
+    at GraphViewComponent (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:8702:31)
+    at Wrapper (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:9098:30)
+    at div
+    at ReactFlow (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:9112:22)
+    at div
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775937801164:85:17)
+    at div
+    at div
+    at BatchProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:6957:36)
+    at ReactFlowProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:9080:44)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries. @ http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14031
+[  552610ms] [ERROR] The above error occurred in the <SystemNode> component:
+
+    at SystemNode (http://localhost:5173/@fs/D:/ahoqp1/Repositories/claudemap/app/src/components/graph/SystemNode.jsx?t=1775937995970:37:38)
+    at div
+    at NodeWrapper (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:7949:28)
+    at div
+    at NodeRendererComponent (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:8084:93)
+    at div
+    at Viewport (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:8568:31)
+    at div
+    at Pane (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:7376:17)
+    at div
+    at ZoomPane (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:7252:21)
+    at FlowRendererComponent (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:7862:44)
+    at GraphViewComponent (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:8702:31)
+    at Wrapper (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:9098:30)
+    at div
+    at ReactFlow (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:9112:22)
+    at div
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775937801164:85:17)
+    at div
+    at div
+    at BatchProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:6957:36)
+    at ReactFlowProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:9080:44)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries. @ http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14031
+[  552610ms] [ERROR] The above error occurred in the <SystemNode> component:
+
+    at SystemNode (http://localhost:5173/@fs/D:/ahoqp1/Repositories/claudemap/app/src/components/graph/SystemNode.jsx?t=1775937995970:37:38)
+    at div
+    at NodeWrapper (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:7949:28)
+    at div
+    at NodeRendererComponent (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:8084:93)
+    at div
+    at Viewport (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:8568:31)
+    at div
+    at Pane (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:7376:17)
+    at div
+    at ZoomPane (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:7252:21)
+    at FlowRendererComponent (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:7862:44)
+    at GraphViewComponent (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:8702:31)
+    at Wrapper (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:9098:30)
+    at div
+    at ReactFlow (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:9112:22)
+    at div
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775937801164:85:17)
+    at div
+    at div
+    at BatchProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:6957:36)
+    at ReactFlowProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:9080:44)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries. @ http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14031
+[  552610ms] [ERROR] The above error occurred in the <SystemNode> component:
+
+    at SystemNode (http://localhost:5173/@fs/D:/ahoqp1/Repositories/claudemap/app/src/components/graph/SystemNode.jsx?t=1775937995970:37:38)
+    at div
+    at NodeWrapper (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:7949:28)
+    at div
+    at NodeRendererComponent (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:8084:93)
+    at div
+    at Viewport (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:8568:31)
+    at div
+    at Pane (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:7376:17)
+    at div
+    at ZoomPane (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:7252:21)
+    at FlowRendererComponent (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:7862:44)
+    at GraphViewComponent (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:8702:31)
+    at Wrapper (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:9098:30)
+    at div
+    at ReactFlow (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:9112:22)
+    at div
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775937801164:85:17)
+    at div
+    at div
+    at BatchProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:6957:36)
+    at ReactFlowProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:9080:44)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries. @ http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14031
+[  552613ms] ReferenceError: handleDoubleClick is not defined
+    at SystemNode (http://localhost:5173/@fs/D:/ahoqp1/Repositories/claudemap/app/src/components/graph/SystemNode.jsx?t=1775937995970:77:104)
+    at renderWithHooks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:11548:26)
+    at updateFunctionComponent (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14582:28)
+    at beginWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:15924:22)
+    at beginWork$1 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19753:22)
+    at performUnitOfWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19198:20)
+    at workLoopSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19137:13)
+    at renderRootSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19116:15)
+    at recoverFromConcurrentError (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18736:28)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18879:28)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRefresh (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20004:13)
+    at http://localhost:5173/@react-refresh:228:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:217:26)
+    at http://localhost:5173/@react-refresh:608:3
+[  662430ms] [WARNING] [React Flow]: It looks like you've created a new nodeTypes or edgeTypes object. If this wasn't on purpose please define the nodeTypes/edgeTypes outside of the component or memoize them. Help: https://reactflow.dev/error#002 @ http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:3914
+[  709943ms] [WARNING] [React Flow]: It looks like you've created a new nodeTypes or edgeTypes object. If this wasn't on purpose please define the nodeTypes/edgeTypes outside of the component or memoize them. Help: https://reactflow.dev/error#002 @ http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:3914
+[  924599ms] ReferenceError: expandedNodes is not defined
+    at http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775938367954:170:55
+    at Array.map (<anonymous>)
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775938367954:169:36)
+    at renderWithHooks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:11548:26)
+    at mountIndeterminateComponent (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14926:21)
+    at beginWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:15914:22)
+    at HTMLUnknownElement.callCallback2 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3674:22)
+    at Object.invokeGuardedCallbackDev (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3699:24)
+    at invokeGuardedCallback (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3733:39)
+    at beginWork$1 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19765:15)
+    at performUnitOfWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19198:20)
+    at workLoopSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19137:13)
+    at renderRootSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19116:15)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18874:28)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRefresh (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20004:13)
+    at http://localhost:5173/@react-refresh:228:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:217:26)
+    at http://localhost:5173/@react-refresh:608:3
+[  924600ms] ReferenceError: expandedNodes is not defined
+    at http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775938367954:170:55
+    at Array.map (<anonymous>)
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775938367954:169:36)
+    at renderWithHooks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:11548:26)
+    at mountIndeterminateComponent (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14926:21)
+    at beginWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:15914:22)
+    at HTMLUnknownElement.callCallback2 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3674:22)
+    at Object.invokeGuardedCallbackDev (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3699:24)
+    at invokeGuardedCallback (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3733:39)
+    at beginWork$1 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19765:15)
+    at performUnitOfWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19198:20)
+    at workLoopSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19137:13)
+    at renderRootSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19116:15)
+    at recoverFromConcurrentError (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18736:28)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18879:28)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRefresh (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20004:13)
+    at http://localhost:5173/@react-refresh:228:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:217:26)
+    at http://localhost:5173/@react-refresh:608:3
+[  924601ms] [ERROR] The above error occurred in the <GraphCanvas> component:
+
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775938367954:85:17)
+    at div
+    at div
+    at BatchProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:6957:36)
+    at ReactFlowProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:9080:44)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries. @ http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14031
+[  924602ms] ReferenceError: expandedNodes is not defined
+    at http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775938367954:170:55
+    at Array.map (<anonymous>)
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775938367954:169:36)
+    at renderWithHooks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:11548:26)
+    at mountIndeterminateComponent (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14926:21)
+    at beginWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:15914:22)
+    at beginWork$1 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19753:22)
+    at performUnitOfWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19198:20)
+    at workLoopSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19137:13)
+    at renderRootSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19116:15)
+    at recoverFromConcurrentError (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18736:28)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18879:28)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRefresh (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20004:13)
+    at http://localhost:5173/@react-refresh:228:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:217:26)
+    at http://localhost:5173/@react-refresh:608:3
+[  943525ms] ReferenceError: expandedNodes is not defined
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775938387092:253:44)
+    at renderWithHooks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:11548:26)
+    at mountIndeterminateComponent (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14926:21)
+    at beginWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:15914:22)
+    at HTMLUnknownElement.callCallback2 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3674:22)
+    at Object.invokeGuardedCallbackDev (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3699:24)
+    at invokeGuardedCallback (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3733:39)
+    at beginWork$1 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19765:15)
+    at performUnitOfWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19198:20)
+    at workLoopSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19137:13)
+    at renderRootSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19116:15)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18874:28)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20015:13)
+    at http://localhost:5173/@react-refresh:208:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:190:25)
+    at http://localhost:5173/@react-refresh:608:3
+[  943527ms] ReferenceError: expandedNodes is not defined
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775938387092:253:44)
+    at renderWithHooks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:11548:26)
+    at mountIndeterminateComponent (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14926:21)
+    at beginWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:15914:22)
+    at HTMLUnknownElement.callCallback2 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3674:22)
+    at Object.invokeGuardedCallbackDev (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3699:24)
+    at invokeGuardedCallback (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3733:39)
+    at beginWork$1 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19765:15)
+    at performUnitOfWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19198:20)
+    at workLoopSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19137:13)
+    at renderRootSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19116:15)
+    at recoverFromConcurrentError (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18736:28)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18879:28)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20015:13)
+    at http://localhost:5173/@react-refresh:208:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:190:25)
+    at http://localhost:5173/@react-refresh:608:3
+[  943526ms] [ERROR] The above error occurred in the <GraphCanvas> component:
+
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775938387092:85:17)
+    at div
+    at div
+    at BatchProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:6957:36)
+    at ReactFlowProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:9080:44)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries. @ http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14031
+[  943528ms] ReferenceError: expandedNodes is not defined
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775938387092:253:44)
+    at renderWithHooks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:11548:26)
+    at mountIndeterminateComponent (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14926:21)
+    at beginWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:15914:22)
+    at beginWork$1 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19753:22)
+    at performUnitOfWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19198:20)
+    at workLoopSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19137:13)
+    at renderRootSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19116:15)
+    at recoverFromConcurrentError (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18736:28)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18879:28)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20015:13)
+    at http://localhost:5173/@react-refresh:208:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:190:25)
+    at http://localhost:5173/@react-refresh:608:3
+[  957461ms] ReferenceError: expandedNodes is not defined
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775938401043:253:44)
+    at renderWithHooks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:11548:26)
+    at mountIndeterminateComponent (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14926:21)
+    at beginWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:15914:22)
+    at HTMLUnknownElement.callCallback2 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3674:22)
+    at Object.invokeGuardedCallbackDev (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3699:24)
+    at invokeGuardedCallback (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3733:39)
+    at beginWork$1 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19765:15)
+    at performUnitOfWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19198:20)
+    at workLoopSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19137:13)
+    at renderRootSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19116:15)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18874:28)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20015:13)
+    at http://localhost:5173/@react-refresh:208:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:190:25)
+    at http://localhost:5173/@react-refresh:608:3
+[  957463ms] ReferenceError: expandedNodes is not defined
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775938401043:253:44)
+    at renderWithHooks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:11548:26)
+    at mountIndeterminateComponent (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14926:21)
+    at beginWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:15914:22)
+    at HTMLUnknownElement.callCallback2 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3674:22)
+    at Object.invokeGuardedCallbackDev (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3699:24)
+    at invokeGuardedCallback (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3733:39)
+    at beginWork$1 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19765:15)
+    at performUnitOfWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19198:20)
+    at workLoopSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19137:13)
+    at renderRootSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19116:15)
+    at recoverFromConcurrentError (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18736:28)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18879:28)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20015:13)
+    at http://localhost:5173/@react-refresh:208:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:190:25)
+    at http://localhost:5173/@react-refresh:608:3
+[  957464ms] [ERROR] The above error occurred in the <GraphCanvas> component:
+
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775938401043:85:17)
+    at div
+    at div
+    at BatchProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:6957:36)
+    at ReactFlowProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:9080:44)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries. @ http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14031
+[  957465ms] ReferenceError: expandedNodes is not defined
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775938401043:253:44)
+    at renderWithHooks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:11548:26)
+    at mountIndeterminateComponent (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14926:21)
+    at beginWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:15914:22)
+    at beginWork$1 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19753:22)
+    at performUnitOfWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19198:20)
+    at workLoopSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19137:13)
+    at renderRootSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19116:15)
+    at recoverFromConcurrentError (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18736:28)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18879:28)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20015:13)
+    at http://localhost:5173/@react-refresh:208:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:190:25)
+    at http://localhost:5173/@react-refresh:608:3
+[  992123ms] ReferenceError: expandedNodes is not defined
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775938435479:245:44)
+    at renderWithHooks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:11548:26)
+    at mountIndeterminateComponent (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14926:21)
+    at beginWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:15914:22)
+    at HTMLUnknownElement.callCallback2 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3674:22)
+    at Object.invokeGuardedCallbackDev (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3699:24)
+    at invokeGuardedCallback (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3733:39)
+    at beginWork$1 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19765:15)
+    at performUnitOfWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19198:20)
+    at workLoopSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19137:13)
+    at renderRootSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19116:15)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18874:28)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20015:13)
+    at http://localhost:5173/@react-refresh:208:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:190:25)
+    at http://localhost:5173/@react-refresh:608:3
+[  992125ms] ReferenceError: expandedNodes is not defined
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775938435479:245:44)
+    at renderWithHooks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:11548:26)
+    at mountIndeterminateComponent (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14926:21)
+    at beginWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:15914:22)
+    at HTMLUnknownElement.callCallback2 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3674:22)
+    at Object.invokeGuardedCallbackDev (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3699:24)
+    at invokeGuardedCallback (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3733:39)
+    at beginWork$1 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19765:15)
+    at performUnitOfWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19198:20)
+    at workLoopSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19137:13)
+    at renderRootSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19116:15)
+    at recoverFromConcurrentError (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18736:28)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18879:28)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20015:13)
+    at http://localhost:5173/@react-refresh:208:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:190:25)
+    at http://localhost:5173/@react-refresh:608:3
+[  992125ms] [ERROR] The above error occurred in the <GraphCanvas> component:
+
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775938435479:85:17)
+    at div
+    at div
+    at BatchProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:6957:36)
+    at ReactFlowProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:9080:44)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries. @ http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14031
+[  992126ms] ReferenceError: expandedNodes is not defined
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775938435479:245:44)
+    at renderWithHooks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:11548:26)
+    at mountIndeterminateComponent (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14926:21)
+    at beginWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:15914:22)
+    at beginWork$1 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19753:22)
+    at performUnitOfWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19198:20)
+    at workLoopSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19137:13)
+    at renderRootSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19116:15)
+    at recoverFromConcurrentError (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18736:28)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18879:28)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20015:13)
+    at http://localhost:5173/@react-refresh:208:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:190:25)
+    at http://localhost:5173/@react-refresh:608:3
+[ 1012948ms] ReferenceError: expandedNodes is not defined
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775938456610:227:44)
+    at renderWithHooks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:11548:26)
+    at mountIndeterminateComponent (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14926:21)
+    at beginWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:15914:22)
+    at HTMLUnknownElement.callCallback2 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3674:22)
+    at Object.invokeGuardedCallbackDev (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3699:24)
+    at invokeGuardedCallback (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3733:39)
+    at beginWork$1 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19765:15)
+    at performUnitOfWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19198:20)
+    at workLoopSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19137:13)
+    at renderRootSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19116:15)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18874:28)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20015:13)
+    at http://localhost:5173/@react-refresh:208:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:190:25)
+    at http://localhost:5173/@react-refresh:608:3
+[ 1012949ms] ReferenceError: expandedNodes is not defined
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775938456610:227:44)
+    at renderWithHooks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:11548:26)
+    at mountIndeterminateComponent (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14926:21)
+    at beginWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:15914:22)
+    at HTMLUnknownElement.callCallback2 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3674:22)
+    at Object.invokeGuardedCallbackDev (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3699:24)
+    at invokeGuardedCallback (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:3733:39)
+    at beginWork$1 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19765:15)
+    at performUnitOfWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19198:20)
+    at workLoopSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19137:13)
+    at renderRootSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19116:15)
+    at recoverFromConcurrentError (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18736:28)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18879:28)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20015:13)
+    at http://localhost:5173/@react-refresh:208:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:190:25)
+    at http://localhost:5173/@react-refresh:608:3
+[ 1012949ms] [ERROR] The above error occurred in the <GraphCanvas> component:
+
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775938456610:85:17)
+    at div
+    at div
+    at BatchProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:6957:36)
+    at ReactFlowProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:9080:44)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries. @ http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14031
+[ 1012950ms] ReferenceError: expandedNodes is not defined
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775938456610:227:44)
+    at renderWithHooks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:11548:26)
+    at mountIndeterminateComponent (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14926:21)
+    at beginWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:15914:22)
+    at beginWork$1 (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19753:22)
+    at performUnitOfWork (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19198:20)
+    at workLoopSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19137:13)
+    at renderRootSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19116:15)
+    at recoverFromConcurrentError (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18736:28)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18879:28)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20015:13)
+    at http://localhost:5173/@react-refresh:208:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:190:25)
+    at http://localhost:5173/@react-refresh:608:3
+[ 1035794ms] TypeError: Cannot read properties of undefined (reading 'has')
+    at http://localhost:5173/src/hooks/useLayout.js?t=1775938401043:31:44
+    at Array.map (<anonymous>)
+    at http://localhost:5173/src/hooks/useLayout.js?t=1775938401043:29:42
+    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:16915:34)
+    at commitPassiveMountOnFiber (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18156:19)
+    at commitPassiveMountEffects_complete (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18129:17)
+    at commitPassiveMountEffects_begin (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18119:15)
+    at commitPassiveMountEffects (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18109:11)
+    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19490:11)
+    at flushPassiveEffects (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19447:22)
+    at commitRootImpl (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19416:13)
+    at commitRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19277:13)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18895:11)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20015:13)
+    at http://localhost:5173/@react-refresh:208:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:190:25)
+    at http://localhost:5173/@react-refresh:608:3
+[ 1035794ms] [ERROR] The above error occurred in the <GraphCanvas> component:
+
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775938479447:85:17)
+    at div
+    at div
+    at BatchProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:6957:36)
+    at ReactFlowProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:9080:44)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries. @ http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14031
+[ 1035795ms] TypeError: Cannot read properties of undefined (reading 'has')
+    at http://localhost:5173/src/hooks/useLayout.js?t=1775938401043:31:44
+    at Array.map (<anonymous>)
+    at http://localhost:5173/src/hooks/useLayout.js?t=1775938401043:29:42
+    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:16915:34)
+    at commitPassiveMountOnFiber (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18156:19)
+    at commitPassiveMountEffects_complete (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18129:17)
+    at commitPassiveMountEffects_begin (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18119:15)
+    at commitPassiveMountEffects (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18109:11)
+    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19490:11)
+    at flushPassiveEffects (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19447:22)
+    at commitRootImpl (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19416:13)
+    at commitRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19277:13)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18895:11)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20015:13)
+    at http://localhost:5173/@react-refresh:208:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:190:25)
+    at http://localhost:5173/@react-refresh:608:3
+[ 1051512ms] TypeError: Cannot read properties of undefined (reading 'has')
+    at http://localhost:5173/src/hooks/useLayout.js?t=1775938401043:31:44
+    at Array.map (<anonymous>)
+    at http://localhost:5173/src/hooks/useLayout.js?t=1775938401043:29:42
+    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:16915:34)
+    at commitPassiveMountOnFiber (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18156:19)
+    at commitPassiveMountEffects_complete (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18129:17)
+    at commitPassiveMountEffects_begin (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18119:15)
+    at commitPassiveMountEffects (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18109:11)
+    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19490:11)
+    at flushPassiveEffects (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19447:22)
+    at commitRootImpl (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19416:13)
+    at commitRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19277:13)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18895:11)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20015:13)
+    at http://localhost:5173/@react-refresh:208:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:190:25)
+    at http://localhost:5173/@react-refresh:608:3
+[ 1051513ms] TypeError: Cannot read properties of undefined (reading 'has')
+    at http://localhost:5173/src/hooks/useLayout.js?t=1775938401043:31:44
+    at Array.map (<anonymous>)
+    at http://localhost:5173/src/hooks/useLayout.js?t=1775938401043:29:42
+    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:16915:34)
+    at invokePassiveEffectMountInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18324:19)
+    at invokeEffectsInDev (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19701:19)
+    at commitDoubleInvokeEffectsInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19686:15)
+    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19503:13)
+    at flushPassiveEffects (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19447:22)
+    at commitRootImpl (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19416:13)
+    at commitRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19277:13)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18895:11)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20015:13)
+    at http://localhost:5173/@react-refresh:208:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:190:25)
+    at http://localhost:5173/@react-refresh:608:3
+[ 1051513ms] [ERROR] The above error occurred in the <GraphCanvas> component:
+
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775938495168:85:17)
+    at div
+    at div
+    at BatchProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:6957:36)
+    at ReactFlowProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:9080:44)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries. @ http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14031
+[ 1051513ms] [ERROR] The above error occurred in the <GraphCanvas> component:
+
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775938495168:85:17)
+    at div
+    at div
+    at BatchProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:6957:36)
+    at ReactFlowProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:9080:44)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries. @ http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14031
+[ 1051514ms] TypeError: Cannot read properties of undefined (reading 'has')
+    at http://localhost:5173/src/hooks/useLayout.js?t=1775938401043:31:44
+    at Array.map (<anonymous>)
+    at http://localhost:5173/src/hooks/useLayout.js?t=1775938401043:29:42
+    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:16915:34)
+    at commitPassiveMountOnFiber (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18156:19)
+    at commitPassiveMountEffects_complete (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18129:17)
+    at commitPassiveMountEffects_begin (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18119:15)
+    at commitPassiveMountEffects (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18109:11)
+    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19490:11)
+    at flushPassiveEffects (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19447:22)
+    at commitRootImpl (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19416:13)
+    at commitRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19277:13)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18895:11)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20015:13)
+    at http://localhost:5173/@react-refresh:208:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:190:25)
+    at http://localhost:5173/@react-refresh:608:3
+[ 1080194ms] TypeError: Cannot read properties of undefined (reading 'has')
+    at http://localhost:5173/src/hooks/useLayout.js?t=1775938401043:31:44
+    at Array.map (<anonymous>)
+    at http://localhost:5173/src/hooks/useLayout.js?t=1775938401043:29:42
+    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:16915:34)
+    at commitPassiveMountOnFiber (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18156:19)
+    at commitPassiveMountEffects_complete (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18129:17)
+    at commitPassiveMountEffects_begin (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18119:15)
+    at commitPassiveMountEffects (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18109:11)
+    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19490:11)
+    at flushPassiveEffects (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19447:22)
+    at commitRootImpl (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19416:13)
+    at commitRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19277:13)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18895:11)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20015:13)
+    at http://localhost:5173/@react-refresh:208:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:190:25)
+    at http://localhost:5173/@react-refresh:608:3
+[ 1080194ms] TypeError: Cannot read properties of undefined (reading 'has')
+    at http://localhost:5173/src/hooks/useLayout.js?t=1775938401043:31:44
+    at Array.map (<anonymous>)
+    at http://localhost:5173/src/hooks/useLayout.js?t=1775938401043:29:42
+    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:16915:34)
+    at invokePassiveEffectMountInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18324:19)
+    at invokeEffectsInDev (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19701:19)
+    at commitDoubleInvokeEffectsInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19686:15)
+    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19503:13)
+    at flushPassiveEffects (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19447:22)
+    at commitRootImpl (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19416:13)
+    at commitRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19277:13)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18895:11)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20015:13)
+    at http://localhost:5173/@react-refresh:208:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:190:25)
+    at http://localhost:5173/@react-refresh:608:3
+[ 1080197ms] [ERROR] The above error occurred in the <GraphCanvas> component:
+
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775938495168:85:17)
+    at div
+    at div
+    at BatchProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:6957:36)
+    at ReactFlowProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:9080:44)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries. @ http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14031
+[ 1080197ms] [ERROR] The above error occurred in the <GraphCanvas> component:
+
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775938495168:85:17)
+    at div
+    at div
+    at BatchProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:6957:36)
+    at ReactFlowProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:9080:44)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries. @ http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14031
+[ 1080195ms] TypeError: Cannot read properties of undefined (reading 'has')
+    at http://localhost:5173/src/hooks/useLayout.js?t=1775938401043:31:44
+    at Array.map (<anonymous>)
+    at http://localhost:5173/src/hooks/useLayout.js?t=1775938401043:29:42
+    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:16915:34)
+    at commitPassiveMountOnFiber (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18156:19)
+    at commitPassiveMountEffects_complete (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18129:17)
+    at commitPassiveMountEffects_begin (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18119:15)
+    at commitPassiveMountEffects (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18109:11)
+    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19490:11)
+    at flushPassiveEffects (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19447:22)
+    at commitRootImpl (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19416:13)
+    at commitRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19277:13)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18895:11)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20015:13)
+    at http://localhost:5173/@react-refresh:208:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:190:25)
+    at http://localhost:5173/@react-refresh:608:3
+[ 1096849ms] TypeError: Cannot read properties of undefined (reading 'has')
+    at http://localhost:5173/src/hooks/useLayout.js?t=1775938401043:31:44
+    at Array.map (<anonymous>)
+    at http://localhost:5173/src/hooks/useLayout.js?t=1775938401043:29:42
+    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:16915:34)
+    at commitPassiveMountOnFiber (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18156:19)
+    at commitPassiveMountEffects_complete (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18129:17)
+    at commitPassiveMountEffects_begin (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18119:15)
+    at commitPassiveMountEffects (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18109:11)
+    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19490:11)
+    at flushPassiveEffects (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19447:22)
+    at commitRootImpl (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19416:13)
+    at commitRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19277:13)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18895:11)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20015:13)
+    at http://localhost:5173/@react-refresh:208:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:190:25)
+    at http://localhost:5173/@react-refresh:608:3
+[ 1096849ms] TypeError: Cannot read properties of undefined (reading 'has')
+    at http://localhost:5173/src/hooks/useLayout.js?t=1775938401043:31:44
+    at Array.map (<anonymous>)
+    at http://localhost:5173/src/hooks/useLayout.js?t=1775938401043:29:42
+    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:16915:34)
+    at invokePassiveEffectMountInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18324:19)
+    at invokeEffectsInDev (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19701:19)
+    at commitDoubleInvokeEffectsInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19686:15)
+    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19503:13)
+    at flushPassiveEffects (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19447:22)
+    at commitRootImpl (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19416:13)
+    at commitRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19277:13)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18895:11)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20015:13)
+    at http://localhost:5173/@react-refresh:208:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:190:25)
+    at http://localhost:5173/@react-refresh:608:3
+[ 1096853ms] [ERROR] The above error occurred in the <GraphCanvas> component:
+
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775938495168:85:17)
+    at div
+    at div
+    at BatchProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:6957:36)
+    at ReactFlowProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:9080:44)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries. @ http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14031
+[ 1096853ms] [ERROR] The above error occurred in the <GraphCanvas> component:
+
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775938495168:85:17)
+    at div
+    at div
+    at BatchProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:6957:36)
+    at ReactFlowProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:9080:44)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries. @ http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14031
+[ 1096850ms] TypeError: Cannot read properties of undefined (reading 'has')
+    at http://localhost:5173/src/hooks/useLayout.js?t=1775938401043:31:44
+    at Array.map (<anonymous>)
+    at http://localhost:5173/src/hooks/useLayout.js?t=1775938401043:29:42
+    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:16915:34)
+    at commitPassiveMountOnFiber (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18156:19)
+    at commitPassiveMountEffects_complete (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18129:17)
+    at commitPassiveMountEffects_begin (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18119:15)
+    at commitPassiveMountEffects (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18109:11)
+    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19490:11)
+    at flushPassiveEffects (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19447:22)
+    at commitRootImpl (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19416:13)
+    at commitRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19277:13)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18895:11)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20015:13)
+    at http://localhost:5173/@react-refresh:208:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:190:25)
+    at http://localhost:5173/@react-refresh:608:3
+[ 1110617ms] TypeError: Cannot read properties of undefined (reading 'has')
+    at http://localhost:5173/src/hooks/useLayout.js?t=1775938401043:31:44
+    at Array.map (<anonymous>)
+    at http://localhost:5173/src/hooks/useLayout.js?t=1775938401043:29:42
+    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:16915:34)
+    at commitPassiveMountOnFiber (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18156:19)
+    at commitPassiveMountEffects_complete (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18129:17)
+    at commitPassiveMountEffects_begin (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18119:15)
+    at commitPassiveMountEffects (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18109:11)
+    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19490:11)
+    at flushPassiveEffects (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19447:22)
+    at commitRootImpl (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19416:13)
+    at commitRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19277:13)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18895:11)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20015:13)
+    at http://localhost:5173/@react-refresh:208:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:190:25)
+    at http://localhost:5173/@react-refresh:608:3
+[ 1110618ms] TypeError: Cannot read properties of undefined (reading 'has')
+    at http://localhost:5173/src/hooks/useLayout.js?t=1775938401043:31:44
+    at Array.map (<anonymous>)
+    at http://localhost:5173/src/hooks/useLayout.js?t=1775938401043:29:42
+    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:16915:34)
+    at invokePassiveEffectMountInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18324:19)
+    at invokeEffectsInDev (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19701:19)
+    at commitDoubleInvokeEffectsInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19686:15)
+    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19503:13)
+    at flushPassiveEffects (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19447:22)
+    at commitRootImpl (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19416:13)
+    at commitRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19277:13)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18895:11)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20015:13)
+    at http://localhost:5173/@react-refresh:208:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:190:25)
+    at http://localhost:5173/@react-refresh:608:3
+[ 1110621ms] [ERROR] The above error occurred in the <GraphCanvas> component:
+
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775938495168:85:17)
+    at div
+    at div
+    at BatchProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:6957:36)
+    at ReactFlowProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:9080:44)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries. @ http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14031
+[ 1110621ms] [ERROR] The above error occurred in the <GraphCanvas> component:
+
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775938495168:85:17)
+    at div
+    at div
+    at BatchProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:6957:36)
+    at ReactFlowProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:9080:44)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries. @ http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14031
+[ 1110619ms] TypeError: Cannot read properties of undefined (reading 'has')
+    at http://localhost:5173/src/hooks/useLayout.js?t=1775938401043:31:44
+    at Array.map (<anonymous>)
+    at http://localhost:5173/src/hooks/useLayout.js?t=1775938401043:29:42
+    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:16915:34)
+    at commitPassiveMountOnFiber (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18156:19)
+    at commitPassiveMountEffects_complete (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18129:17)
+    at commitPassiveMountEffects_begin (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18119:15)
+    at commitPassiveMountEffects (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18109:11)
+    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19490:11)
+    at flushPassiveEffects (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19447:22)
+    at commitRootImpl (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19416:13)
+    at commitRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19277:13)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18895:11)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20015:13)
+    at http://localhost:5173/@react-refresh:208:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:190:25)
+    at http://localhost:5173/@react-refresh:608:3
+[ 1125850ms] TypeError: Cannot read properties of undefined (reading 'has')
+    at http://localhost:5173/src/hooks/useLayout.js?t=1775938401043:31:44
+    at Array.map (<anonymous>)
+    at http://localhost:5173/src/hooks/useLayout.js?t=1775938401043:29:42
+    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:16915:34)
+    at commitPassiveMountOnFiber (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18156:19)
+    at commitPassiveMountEffects_complete (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18129:17)
+    at commitPassiveMountEffects_begin (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18119:15)
+    at commitPassiveMountEffects (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18109:11)
+    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19490:11)
+    at flushPassiveEffects (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19447:22)
+    at commitRootImpl (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19416:13)
+    at commitRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19277:13)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18895:11)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20015:13)
+    at http://localhost:5173/@react-refresh:208:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:190:25)
+    at http://localhost:5173/@react-refresh:608:3
+[ 1125851ms] TypeError: Cannot read properties of undefined (reading 'has')
+    at http://localhost:5173/src/hooks/useLayout.js?t=1775938401043:31:44
+    at Array.map (<anonymous>)
+    at http://localhost:5173/src/hooks/useLayout.js?t=1775938401043:29:42
+    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:16915:34)
+    at invokePassiveEffectMountInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18324:19)
+    at invokeEffectsInDev (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19701:19)
+    at commitDoubleInvokeEffectsInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19686:15)
+    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19503:13)
+    at flushPassiveEffects (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19447:22)
+    at commitRootImpl (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19416:13)
+    at commitRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19277:13)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18895:11)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20015:13)
+    at http://localhost:5173/@react-refresh:208:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:190:25)
+    at http://localhost:5173/@react-refresh:608:3
+[ 1125854ms] [ERROR] The above error occurred in the <GraphCanvas> component:
+
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775938495168:85:17)
+    at div
+    at div
+    at BatchProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:6957:36)
+    at ReactFlowProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:9080:44)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries. @ http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14031
+[ 1125854ms] [ERROR] The above error occurred in the <GraphCanvas> component:
+
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775938495168:85:17)
+    at div
+    at div
+    at BatchProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:6957:36)
+    at ReactFlowProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:9080:44)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries. @ http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14031
+[ 1125852ms] TypeError: Cannot read properties of undefined (reading 'has')
+    at http://localhost:5173/src/hooks/useLayout.js?t=1775938401043:31:44
+    at Array.map (<anonymous>)
+    at http://localhost:5173/src/hooks/useLayout.js?t=1775938401043:29:42
+    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:16915:34)
+    at commitPassiveMountOnFiber (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18156:19)
+    at commitPassiveMountEffects_complete (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18129:17)
+    at commitPassiveMountEffects_begin (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18119:15)
+    at commitPassiveMountEffects (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18109:11)
+    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19490:11)
+    at flushPassiveEffects (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19447:22)
+    at commitRootImpl (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19416:13)
+    at commitRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19277:13)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18895:11)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20015:13)
+    at http://localhost:5173/@react-refresh:208:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:190:25)
+    at http://localhost:5173/@react-refresh:608:3
+[ 1139296ms] TypeError: Cannot read properties of undefined (reading 'has')
+    at http://localhost:5173/src/hooks/useLayout.js?t=1775938401043:31:44
+    at Array.map (<anonymous>)
+    at http://localhost:5173/src/hooks/useLayout.js?t=1775938401043:29:42
+    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:16915:34)
+    at commitPassiveMountOnFiber (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18156:19)
+    at commitPassiveMountEffects_complete (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18129:17)
+    at commitPassiveMountEffects_begin (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18119:15)
+    at commitPassiveMountEffects (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18109:11)
+    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19490:11)
+    at flushPassiveEffects (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19447:22)
+    at commitRootImpl (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19416:13)
+    at commitRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19277:13)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18895:11)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20015:13)
+    at http://localhost:5173/@react-refresh:208:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:190:25)
+    at http://localhost:5173/@react-refresh:608:3
+[ 1139297ms] TypeError: Cannot read properties of undefined (reading 'has')
+    at http://localhost:5173/src/hooks/useLayout.js?t=1775938401043:31:44
+    at Array.map (<anonymous>)
+    at http://localhost:5173/src/hooks/useLayout.js?t=1775938401043:29:42
+    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:16915:34)
+    at invokePassiveEffectMountInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18324:19)
+    at invokeEffectsInDev (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19701:19)
+    at commitDoubleInvokeEffectsInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19686:15)
+    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19503:13)
+    at flushPassiveEffects (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19447:22)
+    at commitRootImpl (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19416:13)
+    at commitRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19277:13)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18895:11)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20015:13)
+    at http://localhost:5173/@react-refresh:208:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:190:25)
+    at http://localhost:5173/@react-refresh:608:3
+[ 1139301ms] [ERROR] The above error occurred in the <GraphCanvas> component:
+
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775938495168:85:17)
+    at div
+    at div
+    at BatchProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:6957:36)
+    at ReactFlowProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:9080:44)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries. @ http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14031
+[ 1139301ms] [ERROR] The above error occurred in the <GraphCanvas> component:
+
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775938495168:85:17)
+    at div
+    at div
+    at BatchProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:6957:36)
+    at ReactFlowProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:9080:44)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries. @ http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14031
+[ 1139298ms] TypeError: Cannot read properties of undefined (reading 'has')
+    at http://localhost:5173/src/hooks/useLayout.js?t=1775938401043:31:44
+    at Array.map (<anonymous>)
+    at http://localhost:5173/src/hooks/useLayout.js?t=1775938401043:29:42
+    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:16915:34)
+    at commitPassiveMountOnFiber (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18156:19)
+    at commitPassiveMountEffects_complete (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18129:17)
+    at commitPassiveMountEffects_begin (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18119:15)
+    at commitPassiveMountEffects (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18109:11)
+    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19490:11)
+    at flushPassiveEffects (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19447:22)
+    at commitRootImpl (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19416:13)
+    at commitRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19277:13)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18895:11)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20015:13)
+    at http://localhost:5173/@react-refresh:208:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:190:25)
+    at http://localhost:5173/@react-refresh:608:3
+[ 1153199ms] TypeError: Cannot read properties of undefined (reading 'has')
+    at http://localhost:5173/src/hooks/useLayout.js?t=1775938401043:31:44
+    at Array.map (<anonymous>)
+    at http://localhost:5173/src/hooks/useLayout.js?t=1775938401043:29:42
+    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:16915:34)
+    at commitPassiveMountOnFiber (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18156:19)
+    at commitPassiveMountEffects_complete (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18129:17)
+    at commitPassiveMountEffects_begin (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18119:15)
+    at commitPassiveMountEffects (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18109:11)
+    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19490:11)
+    at flushPassiveEffects (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19447:22)
+    at commitRootImpl (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19416:13)
+    at commitRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19277:13)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18895:11)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20015:13)
+    at http://localhost:5173/@react-refresh:208:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:190:25)
+    at http://localhost:5173/@react-refresh:608:3
+[ 1153199ms] TypeError: Cannot read properties of undefined (reading 'has')
+    at http://localhost:5173/src/hooks/useLayout.js?t=1775938401043:31:44
+    at Array.map (<anonymous>)
+    at http://localhost:5173/src/hooks/useLayout.js?t=1775938401043:29:42
+    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:16915:34)
+    at invokePassiveEffectMountInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18324:19)
+    at invokeEffectsInDev (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19701:19)
+    at commitDoubleInvokeEffectsInDEV (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19686:15)
+    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19503:13)
+    at flushPassiveEffects (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19447:22)
+    at commitRootImpl (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19416:13)
+    at commitRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19277:13)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18895:11)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20015:13)
+    at http://localhost:5173/@react-refresh:208:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:190:25)
+    at http://localhost:5173/@react-refresh:608:3
+[ 1153202ms] [ERROR] The above error occurred in the <GraphCanvas> component:
+
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775938495168:85:17)
+    at div
+    at div
+    at BatchProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:6957:36)
+    at ReactFlowProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:9080:44)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries. @ http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14031
+[ 1153202ms] [ERROR] The above error occurred in the <GraphCanvas> component:
+
+    at GraphCanvas (http://localhost:5173/src/components/graph/GraphCanvas.jsx?t=1775938495168:85:17)
+    at div
+    at div
+    at BatchProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:6957:36)
+    at ReactFlowProvider (http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:9080:44)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries. @ http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:14031
+[ 1153200ms] TypeError: Cannot read properties of undefined (reading 'has')
+    at http://localhost:5173/src/hooks/useLayout.js?t=1775938401043:31:44
+    at Array.map (<anonymous>)
+    at http://localhost:5173/src/hooks/useLayout.js?t=1775938401043:29:42
+    at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:16915:34)
+    at commitPassiveMountOnFiber (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18156:19)
+    at commitPassiveMountEffects_complete (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18129:17)
+    at commitPassiveMountEffects_begin (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18119:15)
+    at commitPassiveMountEffects (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18109:11)
+    at flushPassiveEffectsImpl (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19490:11)
+    at flushPassiveEffects (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19447:22)
+    at commitRootImpl (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19416:13)
+    at commitRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:19277:13)
+    at performSyncWorkOnRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18895:11)
+    at flushSyncCallbacks (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:9119:30)
+    at flushSync (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:18959:15)
+    at Object.scheduleRoot (http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:20015:13)
+    at http://localhost:5173/@react-refresh:208:17
+    at Set.forEach (<anonymous>)
+    at performReactRefresh (http://localhost:5173/@react-refresh:190:25)
+    at http://localhost:5173/@react-refresh:608:3

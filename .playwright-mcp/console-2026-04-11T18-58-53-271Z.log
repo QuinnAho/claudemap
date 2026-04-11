@@ -1,0 +1,4 @@
+[     514ms] [INFO] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold @ http://localhost:5173/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:21550
+[  142835ms] [ERROR] SyntaxError: The requested module '/src/components/graph/systemNodeSizing.js?t=1775934075700' does not provide an export named 'getFileNodePosition' @ http://localhost:5173/@vite/client:173
+[  142835ms] [ERROR] [hmr] Failed to reload /src/components/graph/GraphCanvas.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://localhost:5173/@vite/client:175
+[  167403ms] [WARNING] [React Flow]: It looks like you've created a new nodeTypes or edgeTypes object. If this wasn't on purpose please define the nodeTypes/edgeTypes outside of the component or memoize them. Help: https://reactflow.dev/error#002 @ http://localhost:5173/node_modules/.vite/deps/@xyflow_react.js?v=2b82b0ce:3914

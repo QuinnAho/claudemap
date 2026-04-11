@@ -1,0 +1,86 @@
+- generic [ref=e3]:
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - img [ref=e7]
+        - generic [ref=e10]: ClaudeMap
+      - generic [ref=e11]:
+        - button "Graph View" [ref=e12] [cursor=pointer]
+        - button "Map View" [ref=e13] [cursor=pointer]
+    - generic [ref=e15]: expressjs/express
+  - generic [ref=e17]:
+    - application [ref=e18]:
+      - generic [ref=e20]:
+        - generic:
+          - generic:
+            - img:
+              - group "Edge from core to routing" [ref=e142] [cursor=pointer]
+            - img:
+              - group "Edge from core to middleware" [ref=e144] [cursor=pointer]
+            - img:
+              - group "Edge from routing to middleware" [ref=e146] [cursor=pointer]
+            - img:
+              - group "Edge from routing to request" [ref=e148] [cursor=pointer]
+            - img:
+              - group "Edge from routing to response" [ref=e150] [cursor=pointer]
+            - img:
+              - group "Edge from middleware to request" [ref=e152] [cursor=pointer]
+            - img:
+              - group "Edge from middleware to response" [ref=e154] [cursor=pointer]
+            - img:
+              - group "Edge from response to view"
+          - generic:
+            - group [ref=e35] [cursor=pointer]:
+              - generic [ref=e38]:
+                - generic [ref=e39]:
+                  - img [ref=e40]
+                  - generic [ref=e43]: Core
+                - img [ref=e46]
+            - group [active] [ref=e48] [cursor=pointer]:
+              - generic [ref=e51]:
+                - generic [ref=e52]:
+                  - img [ref=e53]
+                  - generic [ref=e57]: Routing
+                - img [ref=e60]
+            - group [ref=e62] [cursor=pointer]:
+              - generic [ref=e65]:
+                - generic [ref=e66]:
+                  - img [ref=e67]
+                  - generic [ref=e71]: Middleware
+                - img [ref=e75]
+            - group [ref=e77] [cursor=pointer]:
+              - generic [ref=e80]:
+                - generic [ref=e81]:
+                  - img [ref=e82]
+                  - generic [ref=e84]: Request
+                - img [ref=e87]
+            - group [ref=e89] [cursor=pointer]:
+              - generic [ref=e92]:
+                - generic [ref=e93]:
+                  - img [ref=e94]
+                  - generic [ref=e96]: Response
+                - img [ref=e100]
+            - group [ref=e102] [cursor=pointer]:
+              - generic [ref=e105]:
+                - generic [ref=e106]:
+                  - img [ref=e107]
+                  - generic [ref=e110]: View Engine
+                - img [ref=e113]
+      - img
+    - generic [ref=e116]:
+      - button "Toggle health overlay" [ref=e118] [cursor=pointer]:
+        - img [ref=e119]
+      - generic [ref=e121]:
+        - button "Zoom in" [ref=e122] [cursor=pointer]:
+          - img [ref=e123]
+        - button "Zoom out" [ref=e125] [cursor=pointer]:
+          - img [ref=e126]
+        - button "Fit view" [ref=e128] [cursor=pointer]:
+          - img [ref=e129]
+  - generic [ref=e131]:
+    - generic [ref=e132]:
+      - generic [ref=e135]: main
+      - generic [ref=e136]:
+        - img [ref=e137]
+        - generic [ref=e140]: Synced 19h ago
+    - generic [ref=e141]: A Project by Quinn Aho

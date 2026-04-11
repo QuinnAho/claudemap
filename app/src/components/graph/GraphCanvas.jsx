@@ -1,5 +1,5 @@
 import { Background, ReactFlow } from '@xyflow/react'
-import { useCallback } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import '@xyflow/react/dist/style.css'
 import ZoomControls from '../ui/ZoomControls'
 import { useGraphStore } from '../../store/graphStore'
@@ -10,7 +10,13 @@ import CustomEdge from './CustomEdge'
 import FileNode from './FileNode'
 import FunctionNode from './FunctionNode'
 import { useZoomLevel, ZOOM_LEVELS } from '../../hooks/useZoomLevel'
-import { copyNodeToClipboard } from '../../hooks/useClipboard'
+import {
+  buildNodeByIdMap,
+  getSystemPath,
+  getTopLevelSystemId,
+  isNodeInSelectedBranch,
+  isNodeVisible,
+} from '../../lib/graphNodeUtils'
 
 const nodeTypes = {
   system: SystemNode,
@@ -22,82 +28,135 @@ const edgeTypes = {
   custom: CustomEdge,
 }
 
+const OVERVIEW_FIT_VIEW_OPTIONS = {
+  padding: 0.2,
+  maxZoom: 0.65,
+}
+
 export default function GraphCanvas() {
   const nodes = useGraphStore((state) => state.nodes)
   const edges = useGraphStore((state) => state.edges)
   const healthOverlay = useGraphStore((state) => state.healthOverlay)
   const selectedNode = useGraphStore((state) => state.selectedNode)
   const setSelectedNode = useGraphStore((state) => state.setSelectedNode)
+  const hoveredPathIds = useGraphStore((state) => state.hoveredPathIds)
+  const setHoveredPathIds = useGraphStore((state) => state.setHoveredPathIds)
+  const clearHoveredPath = useGraphStore((state) => state.clearHoveredPath)
   const graphLoaded = useGraphData()
-  const layoutReady = useLayout()
   const { zoomLevel, onViewportChange } = useZoomLevel()
+  const layoutReady = useLayout(zoomLevel)
   const graphReady = graphLoaded && layoutReady
-  const visibleNodes = nodes.filter((node) => {
-    if (node.type === 'system') {
-      return true
-    }
+  const leaveTimeoutRef = useRef(null)
+  const nodeById = buildNodeByIdMap(nodes)
+  const expandedSystemIds = new Set(
+    zoomLevel === ZOOM_LEVELS.OVERVIEW ? [] : hoveredPathIds,
+  )
+  const childCountByParentId = new Map()
 
-    if (node.type === 'file') {
-      return zoomLevel !== ZOOM_LEVELS.OVERVIEW
+  nodes.forEach((node) => {
+    if (node.parentId) {
+      childCountByParentId.set(node.parentId, (childCountByParentId.get(node.parentId) || 0) + 1)
     }
-
-    if (node.type === 'function') {
-      return zoomLevel === ZOOM_LEVELS.DEEP
-    }
-
-    return true
   })
+
+  const cancelHoverClear = useCallback(() => {
+    if (leaveTimeoutRef.current !== null) {
+      window.clearTimeout(leaveTimeoutRef.current)
+      leaveTimeoutRef.current = null
+    }
+  }, [])
+
+  useEffect(() => () => cancelHoverClear(), [cancelHoverClear])
+
+  useEffect(() => {
+    if (zoomLevel === ZOOM_LEVELS.OVERVIEW && hoveredPathIds.length) {
+      cancelHoverClear()
+      clearHoveredPath()
+    }
+  }, [cancelHoverClear, clearHoveredPath, hoveredPathIds.length, zoomLevel])
+
+  const scheduleHoverPath = useCallback(
+    (nextPathIds) => {
+      cancelHoverClear()
+      leaveTimeoutRef.current = window.setTimeout(() => {
+        if (nextPathIds.length) {
+          setHoveredPathIds(nextPathIds)
+        } else {
+          clearHoveredPath()
+        }
+
+        leaveTimeoutRef.current = null
+      }, 70)
+    },
+    [cancelHoverClear, clearHoveredPath, setHoveredPathIds],
+  )
+
+  const visibleNodes = nodes.filter((node) =>
+    isNodeVisible(
+      node,
+      expandedSystemIds,
+      zoomLevel === ZOOM_LEVELS.OVERVIEW,
+      nodeById,
+    ),
+  )
   const visibleNodeIds = new Set(visibleNodes.map((node) => node.id))
   const activeSelectedNode =
     selectedNode && visibleNodeIds.has(selectedNode.id) ? selectedNode : null
+  const selectedSystemId = getTopLevelSystemId(activeSelectedNode, nodeById)
   const visibleEdges = edges.filter(
     (edge) => visibleNodeIds.has(edge.source) && visibleNodeIds.has(edge.target),
   )
-  const connectedNodeIds = new Set()
+  const connectedSystemIds = new Set()
 
-  if (activeSelectedNode) {
+  if (selectedSystemId) {
     visibleEdges.forEach((edge) => {
-      if (edge.source === activeSelectedNode.id) {
-        connectedNodeIds.add(edge.target)
+      const sourceNode = nodeById.get(edge.source)
+      const targetNode = nodeById.get(edge.target)
+      const sourceSystemId = getTopLevelSystemId(sourceNode, nodeById)
+      const targetSystemId = getTopLevelSystemId(targetNode, nodeById)
+
+      if (sourceSystemId === selectedSystemId && targetSystemId) {
+        connectedSystemIds.add(targetSystemId)
       }
 
-      if (edge.target === activeSelectedNode.id) {
-        connectedNodeIds.add(edge.source)
+      if (targetSystemId === selectedSystemId && sourceSystemId) {
+        connectedSystemIds.add(sourceSystemId)
       }
     })
   }
 
   const styledNodes = visibleNodes.map((node) => {
-    if (!activeSelectedNode) {
-      return {
-        ...node,
-        data: {
-          ...node.data,
-          isSelected: false,
-          isDimmed: false,
-          isHighlighted: false,
-          healthOverlay: node.type === 'system' ? healthOverlay : false,
-        },
-      }
-    }
-
-    const isSelected = node.id === activeSelectedNode.id
-    const isConnected = connectedNodeIds.has(node.id)
+    const isSelected = activeSelectedNode?.id === node.id
+    const isInSelectedBranch =
+      activeSelectedNode && isNodeInSelectedBranch(node, activeSelectedNode, nodeById)
+    const topLevelSystemId = getTopLevelSystemId(node, nodeById)
+    const isHighlighted =
+      !!activeSelectedNode &&
+      !isSelected &&
+      !isInSelectedBranch &&
+      !!topLevelSystemId &&
+      connectedSystemIds.has(topLevelSystemId)
 
     return {
       ...node,
       data: {
         ...node.data,
-        isSelected,
-        isDimmed: !isSelected && !isConnected,
-        isHighlighted: isConnected,
+        isSelected: !!isSelected,
+        isDimmed:
+          !!activeSelectedNode &&
+          !isSelected &&
+          !isInSelectedBranch &&
+          !isHighlighted,
+        isHighlighted,
         healthOverlay: node.type === 'system' ? healthOverlay : false,
+        isExpanded: node.type === 'system' && expandedSystemIds.has(node.id),
+        hasChildren: childCountByParentId.has(node.id),
       },
     }
   })
 
   const styledEdges = visibleEdges.map((edge) => {
-    if (!activeSelectedNode) {
+    if (!selectedSystemId) {
       return {
         ...edge,
         data: {
@@ -109,7 +168,8 @@ export default function GraphCanvas() {
     }
 
     const isHighlighted =
-      edge.source === activeSelectedNode.id || edge.target === activeSelectedNode.id
+      getTopLevelSystemId(nodeById.get(edge.source), nodeById) === selectedSystemId ||
+      getTopLevelSystemId(nodeById.get(edge.target), nodeById) === selectedSystemId
 
     return {
       ...edge,
@@ -123,21 +183,72 @@ export default function GraphCanvas() {
 
   const onNodeClick = useCallback(
     (_event, node) => {
-      const nodeData = {
-        id: node.id,
-        type: node.type,
-        ...node.data,
+      if (selectedNode?.id === node.id) {
+        setSelectedNode(null)
+        return
       }
 
-      setSelectedNode(nodeData)
-      copyNodeToClipboard(nodeData)
+      setSelectedNode({
+        id: node.id,
+        type: node.type,
+        parentId: node.parentId || null,
+        ...node.data,
+      })
     },
-    [setSelectedNode],
+    [selectedNode, setSelectedNode],
+  )
+
+  const onNodeMouseEnter = useCallback(
+    (_event, node) => {
+      cancelHoverClear()
+
+      if (zoomLevel === ZOOM_LEVELS.OVERVIEW) {
+        return
+      }
+
+      if (node.type !== 'system' || !childCountByParentId.has(node.id)) {
+        return
+      }
+
+      setHoveredPathIds(getSystemPath(node.id, nodeById))
+    },
+    [cancelHoverClear, childCountByParentId, nodeById, setHoveredPathIds, zoomLevel],
+  )
+
+  const onNodeMouseLeave = useCallback(
+    (_event, node) => {
+      if (zoomLevel === ZOOM_LEVELS.OVERVIEW) {
+        return
+      }
+
+      scheduleHoverPath(getSystemPath(node, nodeById, false))
+    },
+    [nodeById, scheduleHoverPath, zoomLevel],
+  )
+
+  const onPaneMouseMove = useCallback(
+    (event) => {
+      cancelHoverClear()
+
+      if (!hoveredPathIds.length) {
+        return
+      }
+
+      const isOverNode =
+        event.target instanceof Element && !!event.target.closest('.react-flow__node')
+
+      if (!isOverNode) {
+        clearHoveredPath()
+      }
+    },
+    [cancelHoverClear, clearHoveredPath, hoveredPathIds.length],
   )
 
   const onPaneClick = useCallback(() => {
+    cancelHoverClear()
+    clearHoveredPath()
     setSelectedNode(null)
-  }, [setSelectedNode])
+  }, [cancelHoverClear, clearHoveredPath, setSelectedNode])
 
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
@@ -149,9 +260,14 @@ export default function GraphCanvas() {
             nodeTypes={nodeTypes}
             edgeTypes={edgeTypes}
             fitView
-            fitViewOptions={{ padding: 0.24, maxZoom: 0.65 }}
+            fitViewOptions={OVERVIEW_FIT_VIEW_OPTIONS}
+            nodesDraggable={false}
+            nodesConnectable={false}
             onViewportChange={onViewportChange}
             onNodeClick={onNodeClick}
+            onNodeMouseEnter={onNodeMouseEnter}
+            onNodeMouseLeave={onNodeMouseLeave}
+            onPaneMouseMove={onPaneMouseMove}
             onPaneClick={onPaneClick}
             proOptions={{ hideAttribution: true }}
             style={{ backgroundColor: 'var(--bg-canvas)' }}

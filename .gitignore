@@ -2,11 +2,12 @@ node_modules/
 dist/
 .DS_Store
 claudemap-cache.json
-claudemap-spec.md
 
+CALUDE-MAP-SPEC.md
 AGENTS.md
 CLAUDE.md
 TO-DO.md
 UI-IMPLEMENTATION.md
 NODE-IMPLEMENTATION.md
 CHANGELOG.md
+TO-DO.md

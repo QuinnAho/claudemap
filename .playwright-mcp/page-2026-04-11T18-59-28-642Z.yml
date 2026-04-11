@@ -1,0 +1,130 @@
+- generic [ref=e3]:
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - img [ref=e7]
+        - generic [ref=e10]: ClaudeMap
+      - generic [ref=e11]:
+        - button "Graph View" [ref=e12] [cursor=pointer]
+        - button "Map View" [ref=e13] [cursor=pointer]
+    - generic [ref=e15]: expressjs/express
+  - generic [ref=e17]:
+    - application [ref=e18]:
+      - generic [ref=e20]:
+        - generic:
+          - generic:
+            - img:
+              - group "Edge from core to routing" [ref=e126] [cursor=pointer]
+            - img:
+              - group "Edge from core to middleware"
+            - img:
+              - group "Edge from routing to middleware" [ref=e128] [cursor=pointer]
+            - img:
+              - group "Edge from routing to request" [ref=e130] [cursor=pointer]
+            - img:
+              - group "Edge from routing to response" [ref=e132] [cursor=pointer]
+            - img:
+              - group "Edge from middleware to request" [ref=e134] [cursor=pointer]
+            - img:
+              - group "Edge from middleware to response" [ref=e136] [cursor=pointer]
+            - img:
+              - group "Edge from response to view" [ref=e202] [cursor=pointer]
+          - generic:
+            - group [ref=e21] [cursor=pointer]:
+              - generic [ref=e23]:
+                - generic [ref=e25]:
+                  - img [ref=e26]
+                  - generic [ref=e29]: Core
+                - generic "Express application factory and main entry point" [ref=e30]
+            - group [ref=e31] [cursor=pointer]:
+              - generic [ref=e33]:
+                - generic [ref=e35]:
+                  - img [ref=e36]
+                  - generic [ref=e40]: Routing
+                - generic "URL pattern matching and route handling" [ref=e41]
+            - group [ref=e42] [cursor=pointer]:
+              - generic [ref=e44]:
+                - generic [ref=e46]:
+                  - img [ref=e47]
+                  - generic [ref=e51]: Middleware
+                - generic "Request/response processing pipeline" [ref=e53]
+            - group [ref=e54] [cursor=pointer]:
+              - generic [ref=e56]:
+                - generic [ref=e58]:
+                  - img [ref=e59]
+                  - generic [ref=e61]: Request
+                - generic "HTTP request object extensions and helpers" [ref=e62]
+            - group [ref=e63] [cursor=pointer]:
+              - generic [ref=e65]:
+                - generic [ref=e67]:
+                  - img [ref=e68]
+                  - generic [ref=e70]: Response
+                - generic "HTTP response methods and template rendering" [ref=e72]
+            - group [ref=e73] [cursor=pointer]:
+              - generic [ref=e75]:
+                - generic [ref=e77]:
+                  - img [ref=e78]
+                  - generic [ref=e81]: View Engine
+                - generic "Template engine integration and rendering" [ref=e82]
+            - group [ref=e144] [cursor=pointer]:
+              - generic [ref=e145]:
+                - generic "express.js" [ref=e146]
+                - generic [ref=e148]: 120L
+            - group [ref=e149] [cursor=pointer]:
+              - generic [ref=e150]:
+                - generic "application.js" [ref=e151]
+                - generic [ref=e153]: 200L
+            - group [ref=e154] [cursor=pointer]:
+              - generic [ref=e155]:
+                - generic "router/index.js" [ref=e156]
+                - generic [ref=e158]: 310L
+            - group [ref=e159] [cursor=pointer]:
+              - generic [ref=e160]:
+                - generic "router/layer.js" [ref=e161]
+                - generic [ref=e163]: 180L
+            - group [ref=e164] [cursor=pointer]:
+              - generic [ref=e165]:
+                - generic "router/route.js" [ref=e166]
+                - generic [ref=e168]: 150L
+            - group [ref=e169] [cursor=pointer]:
+              - generic [ref=e170]:
+                - generic "middleware/init.js" [ref=e171]
+                - generic [ref=e173]: 130L
+            - group [ref=e174] [cursor=pointer]:
+              - generic [ref=e175]:
+                - generic "middleware/query.js" [ref=e176]
+                - generic [ref=e178]: 90L
+            - group [ref=e180] [cursor=pointer]:
+              - generic [ref=e181]:
+                - generic "request.js" [ref=e182]
+                - generic [ref=e184]: 280L
+            - group [ref=e185] [cursor=pointer]:
+              - generic [ref=e186]:
+                - generic "response.js" [ref=e187]
+                - generic [ref=e189]: 350L
+            - group [ref=e191] [cursor=pointer]:
+              - generic [ref=e192]:
+                - generic "response/render.js" [ref=e193]
+                - generic [ref=e195]: 180L
+            - group [ref=e197] [cursor=pointer]:
+              - generic [ref=e198]:
+                - generic "view.js" [ref=e199]
+                - generic [ref=e201]: 180L
+      - img
+    - generic [ref=e84]:
+      - button "Toggle health overlay" [ref=e86] [cursor=pointer]:
+        - img [ref=e87]
+      - generic [ref=e89]:
+        - button "Zoom in" [active] [ref=e90] [cursor=pointer]:
+          - img [ref=e91]
+        - button "Zoom out" [ref=e93] [cursor=pointer]:
+          - img [ref=e94]
+        - button "Fit view" [ref=e96] [cursor=pointer]:
+          - img [ref=e97]
+  - generic [ref=e99]:
+    - generic [ref=e100]:
+      - generic [ref=e103]: main
+      - generic [ref=e104]:
+        - img [ref=e105]
+        - generic [ref=e108]: Synced 18h ago
+    - generic [ref=e109]: A Project by Quinn Aho

@@ -1,9 +1,10 @@
 import { Handle, Position } from '@xyflow/react'
+import { ChevronDown } from 'lucide-react'
 import { getNodeIcon } from './nodeIcons'
-import { getSystemNodeWidth, SYSTEM_NODE_MIN_HEIGHT } from './systemNodeSizing'
+import { SYSTEM_NODE_HEADER_HEIGHT, SYSTEM_NODE_MIN_HEIGHT } from './systemNodeSizing'
+import FloatingDescription from './FloatingDescription'
 
 const healthColors = {
-  green: 'rgba(34, 197, 94, 0.85)',
   yellow: 'var(--health-yellow)',
   red: 'var(--health-red)',
 }
@@ -19,106 +20,137 @@ const hiddenHandleStyle = {
   pointerEvents: 'none',
 }
 
-function truncateSummary(summary = '') {
-  if (summary.length <= 60) {
-    return summary
-  }
-
-  return `${summary.slice(0, 57)}...`
-}
-
 export default function SystemNode({ data }) {
   const Icon = getNodeIcon(data.icon)
-  const width = getSystemNodeWidth(data.lineCount)
-  const summary = truncateSummary(data.summary)
-  const selectionRing = data.isSelected ? ', 0 0 0 1px rgba(232, 97, 60, 0.55)' : ''
-  const backgroundColor = data.healthOverlay
+  const isExpanded = data.isExpanded
+  const hasChildren = data.hasChildren
+  const showDescription = data.isSelected && data.summary
+
+  const selectionRing = data.isSelected ? ', 0 0 0 1px rgba(232, 97, 60, 0.7)' : ''
+  const surfaceColor = data.healthOverlay
     ? healthBackgrounds[data.health] || healthBackgrounds.green
     : 'var(--bg-card)'
+  const borderColor = data.isSelected
+    ? 'rgba(232, 97, 60, 0.7)'
+    : isExpanded
+      ? 'var(--border-light)'
+      : 'transparent'
   const baseStyle = {
-    backgroundColor,
-    border: '1px solid transparent',
+    width: '100%',
+    height: '100%',
+    backgroundColor: isExpanded ? 'rgba(255, 255, 255, 0.01)' : surfaceColor,
+    border: `1px solid ${borderColor}`,
     borderRadius: '12px',
-    padding: '16px',
-    width: `${width}px`,
     minHeight: `${SYSTEM_NODE_MIN_HEIGHT}px`,
     boxShadow: `0 2px 8px rgba(0, 0, 0, 0.3)${selectionRing}`,
     cursor: 'pointer',
     display: 'flex',
     flexDirection: 'column',
-    gap: '10px',
-    opacity: data.isDimmed ? 0.4 : 1,
+    overflow: 'hidden',
+    opacity: data.isDimmed ? 0.32 : 1,
     transition:
-      'opacity 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease',
+      'opacity 0.25s ease, box-shadow 0.25s ease, background-color 0.3s ease, border-color 0.25s ease',
   }
 
   if (data.health === 'red') {
     baseStyle.boxShadow =
-      `0 2px 8px rgba(0, 0, 0, 0.3), 0 0 12px rgba(239, 68, 68, 0.15)${selectionRing}`
+      `0 2px 8px rgba(0, 0, 0, 0.3), 0 0 16px rgba(239, 68, 68, 0.18)${selectionRing}`
   }
 
   return (
-    <div style={baseStyle}>
+    <div style={{ ...baseStyle, position: 'relative' }}>
       <Handle type="target" position={Position.Top} style={hiddenHandleStyle} />
       <Handle type="source" position={Position.Bottom} style={hiddenHandleStyle} />
 
+      <FloatingDescription text={data.summary} visible={showDescription} position="above" />
+
       <div
         style={{
+          minHeight: isExpanded ? `${SYSTEM_NODE_HEADER_HEIGHT}px` : '100%',
+          padding: '16px',
           display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '12px',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          gap: '10px',
+          backgroundColor: surfaceColor,
+          borderBottom: isExpanded ? '1px solid var(--border)' : 'none',
+          transition: 'min-height 0.3s ease, border-bottom 0.3s ease',
         }}
       >
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '8px',
-            minWidth: 0,
+            justifyContent: 'space-between',
+            gap: '12px',
           }}
         >
-          <Icon size={20} color="var(--text-secondary)" />
-          <span
-            style={{
-              fontSize: '14px',
-              fontWeight: 600,
-              color: 'var(--text-primary)',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            {data.label}
-          </span>
-        </div>
-
-        {data.health && (
           <div
             style={{
-              width: '8px',
-              height: '8px',
-              borderRadius: '50%',
-              backgroundColor: healthColors[data.health],
-              flexShrink: 0,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              minWidth: 0,
             }}
-          />
-        )}
+          >
+            <Icon size={20} color="var(--text-secondary)" />
+            <span
+              style={{
+                fontSize: '14px',
+                fontWeight: 600,
+                color: 'var(--text-primary)',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {data.label}
+            </span>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+            {data.health && data.health !== 'green' && (
+              <div
+                style={{
+                  width: '10px',
+                  height: '10px',
+                  borderRadius: '50%',
+                  backgroundColor: healthColors[data.health],
+                  boxShadow:
+                    data.health === 'red' ? '0 0 0 4px rgba(239, 68, 68, 0.12)' : 'none',
+                  animation: data.health === 'red' ? 'healthPulse 2s ease-in-out infinite' : 'none',
+                }}
+              />
+            )}
+
+            {hasChildren && (
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'transform 0.25s ease',
+                  transform: isExpanded ? 'rotate(0deg)' : 'rotate(-90deg)',
+                }}
+              >
+                <ChevronDown size={16} color="var(--text-muted)" />
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       <div
         style={{
-          fontSize: '12px',
-          color: 'var(--text-secondary)',
-          lineHeight: 1.4,
+          flex: isExpanded ? 1 : 0,
+          background:
+            'linear-gradient(180deg, rgba(255, 255, 255, 0.025) 0%, rgba(255, 255, 255, 0.01) 100%)',
+          borderTop: isExpanded ? '1px dashed rgba(255, 255, 255, 0.04)' : 'none',
+          opacity: isExpanded ? 1 : 0,
+          transition: 'flex 0.3s ease, opacity 0.3s ease, border-top 0.3s ease',
           overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
         }}
-        title={data.summary}
-      >
-        {summary}
-      </div>
+      />
     </div>
   )
 }

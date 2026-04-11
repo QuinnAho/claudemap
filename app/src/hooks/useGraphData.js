@@ -1,34 +1,117 @@
 import { useEffect, useState } from 'react'
 import sampleData from '../../../contracts/claudemap.sample.json'
 import { useGraphStore } from '../store/graphStore'
-import { getSystemNodeWidth, SYSTEM_NODE_LAYOUT_HEIGHT } from '../components/graph/systemNodeSizing'
+import {
+  FILE_NODE_HEIGHT,
+  FILE_NODE_WIDTH,
+  getContainerChildPosition,
+  getFunctionNodePosition,
+  getSystemNodeSize,
+} from '../components/graph/systemNodeSizing'
 
-function getFileNodePosition(index) {
-  return {
-    x: 12 + (index % 2) * 136,
-    y: 102 + Math.floor(index / 2) * 54,
+function buildGraphIndexes(graphData) {
+  const fileCountBySystem = new Map()
+  const functionCountByFile = new Map()
+  const systemIdByFile = new Map()
+  const childCountByParent = new Map()
+  const childTypeByParent = new Map()
+  const nodeById = new Map(graphData.nodes.map((node) => [node.id, node]))
+
+  const getNodeDepth = (node) => {
+    let depth = 0
+    let currentParentId = node.parentId
+
+    while (currentParentId) {
+      const parentNode = nodeById.get(currentParentId)
+
+      if (!parentNode) {
+        break
+      }
+
+      depth += 1
+      currentParentId = parentNode.parentId
+    }
+
+    return depth
   }
-}
 
-function getFunctionNodePosition(index) {
+  graphData.nodes.forEach((node) => {
+    if (node.parentId) {
+      childCountByParent.set(node.parentId, (childCountByParent.get(node.parentId) || 0) + 1)
+
+      if (!childTypeByParent.has(node.parentId)) {
+        childTypeByParent.set(node.parentId, node.type)
+      }
+    }
+
+    if (node.type !== 'file') {
+      return
+    }
+
+    fileCountBySystem.set(node.parentId, (fileCountBySystem.get(node.parentId) || 0) + 1)
+    systemIdByFile.set(node.id, node.parentId)
+  })
+
+  graphData.nodes.forEach((node) => {
+    if (node.type !== 'function') {
+      return
+    }
+
+    functionCountByFile.set(node.parentId, (functionCountByFile.get(node.parentId) || 0) + 1)
+  })
+
   return {
-    x: 8 + (index % 2) * 86,
-    y: 44 + Math.floor(index / 2) * 28,
+    fileCountBySystem,
+    functionCountByFile,
+    systemIdByFile,
+    childCountByParent,
+    childTypeByParent,
+    getNodeDepth,
   }
 }
 
 export function transformToReactFlow(graphData) {
   const childIndexByParent = new Map()
+  const {
+    fileCountBySystem,
+    functionCountByFile,
+    systemIdByFile,
+    childCountByParent,
+    childTypeByParent,
+    getNodeDepth,
+  } = buildGraphIndexes(graphData)
 
   const nodes = graphData.nodes
     .map((node) => {
       if (node.type === 'system') {
+        const childCount = childCountByParent.get(node.id) || 0
+        const childType = childTypeByParent.get(node.id) || 'file'
+        const overviewSize = getSystemNodeSize({
+          lineCount: node.lineCount,
+          childCount,
+          childType,
+          expanded: false,
+        })
+        const systemPositionIndex = childIndexByParent.get(node.parentId) || 0
+
+        if (node.parentId) {
+          childIndexByParent.set(node.parentId, systemPositionIndex + 1)
+        }
+
         return {
           id: node.id,
           type: 'system',
-          position: { x: 0, y: 0 },
-          width: getSystemNodeWidth(node.lineCount),
-          height: SYSTEM_NODE_LAYOUT_HEIGHT,
+          parentId: node.parentId || undefined,
+          extent: node.parentId ? 'parent' : undefined,
+          position: node.parentId
+            ? getContainerChildPosition(
+                systemPositionIndex,
+                childCountByParent.get(node.parentId) || 0,
+                'system',
+              )
+            : { x: 0, y: 0 },
+          width: overviewSize.width,
+          height: overviewSize.height,
           data: {
             label: node.label,
             icon: node.icon,
@@ -37,19 +120,26 @@ export function transformToReactFlow(graphData) {
             summary: node.summary,
             lineCount: node.lineCount,
             filePath: node.filePath,
+            childCount,
+            childType,
+            depth: getNodeDepth(node),
           },
         }
       }
 
       if (node.type === 'file') {
         const currentIndex = childIndexByParent.get(node.parentId) || 0
+        const siblingCount = childCountByParent.get(node.parentId) || 0
         childIndexByParent.set(node.parentId, currentIndex + 1)
 
         return {
           id: node.id,
           type: 'file',
           parentId: node.parentId,
-          position: getFileNodePosition(currentIndex),
+          extent: 'parent',
+          position: getContainerChildPosition(currentIndex, siblingCount, 'file'),
+          width: FILE_NODE_WIDTH,
+          height: FILE_NODE_HEIGHT,
           data: {
             label: node.label,
             health: node.health,
@@ -57,6 +147,9 @@ export function transformToReactFlow(graphData) {
             summary: node.summary,
             lineCount: node.lineCount,
             filePath: node.filePath,
+            parentSystemId: node.parentId,
+            functionCount: functionCountByFile.get(node.id) || 0,
+            depth: getNodeDepth(node),
           },
         }
       }
@@ -77,6 +170,9 @@ export function transformToReactFlow(graphData) {
             summary: node.summary,
             lineCount: node.lineCount,
             filePath: node.filePath,
+            parentFileId: node.parentId,
+            parentSystemId: systemIdByFile.get(node.parentId) || null,
+            depth: getNodeDepth(node),
           },
         }
       }

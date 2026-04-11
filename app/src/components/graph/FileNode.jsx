@@ -1,8 +1,8 @@
 import { Handle, Position } from '@xyflow/react'
 import { useEffect, useState } from 'react'
+import FloatingDescription from './FloatingDescription'
 
 const healthColors = {
-  green: 'rgba(34, 197, 94, 0.4)',
   yellow: 'var(--health-yellow)',
   red: 'var(--health-red)',
 }
@@ -15,9 +15,15 @@ const hiddenHandleStyle = {
 export default function FileNode({ data }) {
   const [isVisible, setIsVisible] = useState(false)
   const finalOpacity = isVisible ? (data.isDimmed ? 0.4 : 1) : 0
+  const borderColor = data.isSelected
+    ? 'rgba(232, 97, 60, 0.7)'
+    : data.isHighlighted
+      ? 'rgba(255, 255, 255, 0.16)'
+      : 'rgba(255, 255, 255, 0.05)'
   const boxShadow = data.isSelected
-    ? '0 1px 4px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(232, 97, 60, 0.55)'
-    : '0 1px 4px rgba(0, 0, 0, 0.2)'
+    ? '0 2px 8px rgba(0, 0, 0, 0.28), 0 0 0 1px rgba(232, 97, 60, 0.55)'
+    : '0 2px 8px rgba(0, 0, 0, 0.22)'
+  const showDescription = data.isSelected && data.summary
 
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
@@ -30,24 +36,27 @@ export default function FileNode({ data }) {
   return (
     <div
       style={{
-        backgroundColor: 'var(--bg-card)',
-        border: '1px solid transparent',
-        borderRadius: '8px',
-        padding: '10px 14px',
-        minWidth: '120px',
-        maxWidth: '180px',
+        width: '100%',
+        height: '100%',
+        backgroundColor: 'rgba(18, 18, 18, 0.96)',
+        border: `1px solid ${borderColor}`,
+        borderRadius: '10px',
+        padding: '10px 12px',
         boxShadow,
         cursor: 'pointer',
         display: 'flex',
-        alignItems: 'center',
         justifyContent: 'space-between',
+        alignItems: 'center',
         gap: '8px',
         opacity: finalOpacity,
-        transition: 'opacity 0.18s ease, box-shadow 0.2s ease',
+        transition: 'opacity 0.18s ease, box-shadow 0.2s ease, border-color 0.2s ease',
+        position: 'relative',
       }}
     >
       <Handle type="target" position={Position.Top} style={hiddenHandleStyle} />
       <Handle type="source" position={Position.Bottom} style={hiddenHandleStyle} />
+
+      <FloatingDescription text={data.summary} visible={showDescription} position="above" />
 
       <span
         style={{
@@ -57,6 +66,7 @@ export default function FileNode({ data }) {
           overflow: 'hidden',
           textOverflow: 'ellipsis',
           whiteSpace: 'nowrap',
+          minWidth: 0,
         }}
         title={data.label}
       >
@@ -76,8 +86,8 @@ export default function FileNode({ data }) {
         {data.health && data.health !== 'green' && (
           <div
             style={{
-              width: '6px',
-              height: '6px',
+              width: '7px',
+              height: '7px',
               borderRadius: '50%',
               backgroundColor: healthColors[data.health],
             }}

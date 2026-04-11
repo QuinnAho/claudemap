@@ -84,7 +84,7 @@ export default function ZoomControls() {
         <div style={dividerStyle} />
         <button
           style={getButtonStyle()}
-          onClick={() => fitView({ duration: 500, padding: 0.24, maxZoom: 0.65 })}
+          onClick={() => fitView({ duration: 500, padding: 0.2, maxZoom: 0.65 })}
           onMouseEnter={(event) => setHoverColor(event, { hover: true })}
           onMouseLeave={(event) => setHoverColor(event, { hover: false })}
           aria-label="Fit view"

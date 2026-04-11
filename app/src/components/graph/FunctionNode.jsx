@@ -6,12 +6,17 @@ const hiddenHandleStyle = {
 }
 
 export default function FunctionNode({ data }) {
-  const backgroundColor = data.isSelected ? 'rgba(232, 97, 60, 0.18)' : 'rgba(26, 26, 26, 0.8)'
+  const backgroundColor = data.isSelected
+    ? 'rgba(232, 97, 60, 0.18)'
+    : data.isHighlighted
+      ? 'rgba(255, 255, 255, 0.08)'
+      : 'rgba(26, 26, 26, 0.82)'
 
   return (
     <div
       style={{
         backgroundColor,
+        border: `1px solid ${data.isSelected ? 'rgba(232, 97, 60, 0.55)' : 'rgba(255, 255, 255, 0.05)'}`,
         borderRadius: '4px',
         padding: '4px 10px',
         cursor: 'pointer',

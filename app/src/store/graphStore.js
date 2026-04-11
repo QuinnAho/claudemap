@@ -1,5 +1,13 @@
 import { create } from 'zustand'
 
+function arePathsEqual(left = [], right = []) {
+  if (left.length !== right.length) {
+    return false
+  }
+
+  return left.every((value, index) => value === right[index])
+}
+
 export const useGraphStore = create((set) => ({
   nodes: [],
   edges: [],
@@ -12,6 +20,7 @@ export const useGraphStore = create((set) => ({
   selectedNode: null,
   highlightedNodes: [],
   healthOverlay: false,
+  hoveredPathIds: [],
 
   setGraph: (nodes, edges) => set({ nodes, edges }),
 
@@ -60,4 +69,14 @@ export const useGraphStore = create((set) => ({
   clearHighlight: () => set({ highlightedNodes: [] }),
 
   setHealthOverlay: (enabled) => set({ healthOverlay: enabled }),
+
+  setHoveredPathIds: (nodeIds) =>
+    set((state) =>
+      arePathsEqual(state.hoveredPathIds, nodeIds)
+        ? state
+        : { hoveredPathIds: [...nodeIds] },
+    ),
+
+  clearHoveredPath: () =>
+    set((state) => (state.hoveredPathIds.length ? { hoveredPathIds: [] } : state)),
 }))
