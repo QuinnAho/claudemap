@@ -1,10 +1,13 @@
-import { Locate, Minus, Plus } from 'lucide-react'
+import { Activity, Locate, Minus, Plus } from 'lucide-react'
 import { useReactFlow } from '@xyflow/react'
+import { useGraphStore } from '../../store/graphStore'
 
 export default function ZoomControls() {
   const { zoomIn, zoomOut, fitView } = useReactFlow()
+  const healthOverlay = useGraphStore((state) => state.healthOverlay)
+  const setHealthOverlay = useGraphStore((state) => state.setHealthOverlay)
 
-  const buttonStyle = {
+  const getButtonStyle = (isActive = false) => ({
     width: '32px',
     height: '32px',
     display: 'flex',
@@ -13,8 +16,9 @@ export default function ZoomControls() {
     background: 'none',
     border: 'none',
     cursor: 'pointer',
-    color: 'var(--text-secondary)',
-  }
+    color: isActive ? 'var(--accent)' : 'var(--text-secondary)',
+    transition: 'color 0.18s ease',
+  })
 
   const dividerStyle = {
     width: '100%',
@@ -22,8 +26,8 @@ export default function ZoomControls() {
     backgroundColor: 'var(--border)',
   }
 
-  const setHoverColor = (event, color) => {
-    event.currentTarget.style.color = color
+  const setHoverColor = (event, { hover, active = false }) => {
+    event.currentTarget.style.color = hover ? 'var(--text-primary)' : active ? 'var(--accent)' : 'var(--text-secondary)'
   }
 
   return (
@@ -42,30 +46,43 @@ export default function ZoomControls() {
       }}
     >
       <button
-        style={buttonStyle}
+        style={getButtonStyle()}
         onClick={() => zoomIn({ duration: 300 })}
-        onMouseEnter={(event) => setHoverColor(event, 'var(--text-primary)')}
-        onMouseLeave={(event) => setHoverColor(event, 'var(--text-secondary)')}
+        onMouseEnter={(event) => setHoverColor(event, { hover: true })}
+        onMouseLeave={(event) => setHoverColor(event, { hover: false })}
+        aria-label="Zoom in"
       >
         <Plus size={16} />
       </button>
       <div style={dividerStyle} />
       <button
-        style={buttonStyle}
+        style={getButtonStyle()}
         onClick={() => zoomOut({ duration: 300 })}
-        onMouseEnter={(event) => setHoverColor(event, 'var(--text-primary)')}
-        onMouseLeave={(event) => setHoverColor(event, 'var(--text-secondary)')}
+        onMouseEnter={(event) => setHoverColor(event, { hover: true })}
+        onMouseLeave={(event) => setHoverColor(event, { hover: false })}
+        aria-label="Zoom out"
       >
         <Minus size={16} />
       </button>
       <div style={dividerStyle} />
       <button
-        style={buttonStyle}
-        onClick={() => fitView({ duration: 500, padding: 0.2 })}
-        onMouseEnter={(event) => setHoverColor(event, 'var(--text-primary)')}
-        onMouseLeave={(event) => setHoverColor(event, 'var(--text-secondary)')}
+        style={getButtonStyle()}
+        onClick={() => fitView({ duration: 500, padding: 0.24, maxZoom: 0.65 })}
+        onMouseEnter={(event) => setHoverColor(event, { hover: true })}
+        onMouseLeave={(event) => setHoverColor(event, { hover: false })}
+        aria-label="Fit view"
       >
         <Locate size={16} />
+      </button>
+      <div style={dividerStyle} />
+      <button
+        style={getButtonStyle(healthOverlay)}
+        onClick={() => setHealthOverlay(!healthOverlay)}
+        onMouseEnter={(event) => setHoverColor(event, { hover: true, active: healthOverlay })}
+        onMouseLeave={(event) => setHoverColor(event, { hover: false, active: healthOverlay })}
+        aria-label="Toggle health overlay"
+      >
+        <Activity size={16} />
       </button>
     </div>
   )
