@@ -21,7 +21,7 @@ export default function FileNode({ data }) {
       ? 'rgba(255, 255, 255, 0.16)'
       : 'rgba(255, 255, 255, 0.05)'
   const boxShadow = data.isSelected
-    ? '0 2px 8px rgba(0, 0, 0, 0.28), 0 0 0 1px rgba(232, 97, 60, 0.55)'
+    ? '0 2px 10px rgba(0, 0, 0, 0.3)'
     : '0 2px 8px rgba(0, 0, 0, 0.22)'
   const showDescription = data.isSelected && data.summary
 

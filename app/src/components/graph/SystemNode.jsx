@@ -26,7 +26,6 @@ export default function SystemNode({ data }) {
   const hasChildren = data.hasChildren
   const showDescription = data.isSelected && data.summary
 
-  const selectionRing = data.isSelected ? ', 0 0 0 1px rgba(232, 97, 60, 0.7)' : ''
   const surfaceColor = data.healthOverlay
     ? healthBackgrounds[data.health] || healthBackgrounds.green
     : 'var(--bg-card)'
@@ -42,7 +41,7 @@ export default function SystemNode({ data }) {
     border: `1px solid ${borderColor}`,
     borderRadius: '12px',
     minHeight: `${SYSTEM_NODE_MIN_HEIGHT}px`,
-    boxShadow: `0 2px 8px rgba(0, 0, 0, 0.3)${selectionRing}`,
+    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
     cursor: 'pointer',
     display: 'flex',
     flexDirection: 'column',
@@ -50,11 +49,6 @@ export default function SystemNode({ data }) {
     opacity: data.isDimmed ? 0.32 : 1,
     transition:
       'opacity 0.25s ease, box-shadow 0.25s ease, background-color 0.3s ease, border-color 0.25s ease',
-  }
-
-  if (data.health === 'red') {
-    baseStyle.boxShadow =
-      `0 2px 8px rgba(0, 0, 0, 0.3), 0 0 16px rgba(239, 68, 68, 0.18)${selectionRing}`
   }
 
   return (
@@ -116,9 +110,6 @@ export default function SystemNode({ data }) {
                   height: '10px',
                   borderRadius: '50%',
                   backgroundColor: healthColors[data.health],
-                  boxShadow:
-                    data.health === 'red' ? '0 0 0 4px rgba(239, 68, 68, 0.12)' : 'none',
-                  animation: data.health === 'red' ? 'healthPulse 2s ease-in-out infinite' : 'none',
                 }}
               />
             )}
