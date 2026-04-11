@@ -16,7 +16,7 @@ export default function FileNode({ data }) {
   const [isVisible, setIsVisible] = useState(false)
   const finalOpacity = isVisible ? (data.isDimmed ? 0.4 : 1) : 0
   const boxShadow = data.isSelected
-    ? '0 1px 4px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(232, 97, 60, 0.18)'
+    ? '0 1px 4px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(232, 97, 60, 0.55)'
     : '0 1px 4px rgba(0, 0, 0, 0.2)'
 
   useEffect(() => {
@@ -31,7 +31,7 @@ export default function FileNode({ data }) {
     <div
       style={{
         backgroundColor: 'var(--bg-card)',
-        border: '1px solid var(--border)',
+        border: '1px solid transparent',
         borderRadius: '8px',
         padding: '10px 14px',
         minWidth: '120px',
@@ -43,8 +43,7 @@ export default function FileNode({ data }) {
         justifyContent: 'space-between',
         gap: '8px',
         opacity: finalOpacity,
-        transition: 'opacity 0.18s ease, box-shadow 0.2s ease, border-color 0.2s ease',
-        borderColor: data.isSelected ? 'rgba(232, 97, 60, 0.65)' : 'var(--border)',
+        transition: 'opacity 0.18s ease, box-shadow 0.2s ease',
       }}
     >
       <Handle type="target" position={Position.Top} style={hiddenHandleStyle} />

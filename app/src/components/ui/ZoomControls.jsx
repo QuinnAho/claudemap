@@ -6,6 +6,13 @@ export default function ZoomControls() {
   const { zoomIn, zoomOut, fitView } = useReactFlow()
   const healthOverlay = useGraphStore((state) => state.healthOverlay)
   const setHealthOverlay = useGraphStore((state) => state.setHealthOverlay)
+  const islandStyle = {
+    backgroundColor: 'var(--bg-card)',
+    border: '1px solid var(--border)',
+    borderRadius: '8px',
+    overflow: 'hidden',
+    boxShadow: '0 6px 16px rgba(0, 0, 0, 0.18)',
+  }
 
   const getButtonStyle = (isActive = false) => ({
     width: '32px',
@@ -36,54 +43,55 @@ export default function ZoomControls() {
         position: 'absolute',
         bottom: '16px',
         left: '16px',
-        backgroundColor: 'var(--bg-card)',
-        border: '1px solid var(--border)',
-        borderRadius: '8px',
         display: 'flex',
         flexDirection: 'column',
-        overflow: 'hidden',
+        gap: '10px',
         zIndex: 10,
       }}
     >
-      <button
-        style={getButtonStyle()}
-        onClick={() => zoomIn({ duration: 300 })}
-        onMouseEnter={(event) => setHoverColor(event, { hover: true })}
-        onMouseLeave={(event) => setHoverColor(event, { hover: false })}
-        aria-label="Zoom in"
-      >
-        <Plus size={16} />
-      </button>
-      <div style={dividerStyle} />
-      <button
-        style={getButtonStyle()}
-        onClick={() => zoomOut({ duration: 300 })}
-        onMouseEnter={(event) => setHoverColor(event, { hover: true })}
-        onMouseLeave={(event) => setHoverColor(event, { hover: false })}
-        aria-label="Zoom out"
-      >
-        <Minus size={16} />
-      </button>
-      <div style={dividerStyle} />
-      <button
-        style={getButtonStyle()}
-        onClick={() => fitView({ duration: 500, padding: 0.24, maxZoom: 0.65 })}
-        onMouseEnter={(event) => setHoverColor(event, { hover: true })}
-        onMouseLeave={(event) => setHoverColor(event, { hover: false })}
-        aria-label="Fit view"
-      >
-        <Locate size={16} />
-      </button>
-      <div style={dividerStyle} />
-      <button
-        style={getButtonStyle(healthOverlay)}
-        onClick={() => setHealthOverlay(!healthOverlay)}
-        onMouseEnter={(event) => setHoverColor(event, { hover: true, active: healthOverlay })}
-        onMouseLeave={(event) => setHoverColor(event, { hover: false, active: healthOverlay })}
-        aria-label="Toggle health overlay"
-      >
-        <Activity size={16} />
-      </button>
+      <div style={islandStyle}>
+        <button
+          style={getButtonStyle(healthOverlay)}
+          onClick={() => setHealthOverlay(!healthOverlay)}
+          onMouseEnter={(event) => setHoverColor(event, { hover: true, active: healthOverlay })}
+          onMouseLeave={(event) => setHoverColor(event, { hover: false, active: healthOverlay })}
+          aria-label="Toggle health overlay"
+        >
+          <Activity size={16} />
+        </button>
+      </div>
+
+      <div style={islandStyle}>
+        <button
+          style={getButtonStyle()}
+          onClick={() => zoomIn({ duration: 300 })}
+          onMouseEnter={(event) => setHoverColor(event, { hover: true })}
+          onMouseLeave={(event) => setHoverColor(event, { hover: false })}
+          aria-label="Zoom in"
+        >
+          <Plus size={16} />
+        </button>
+        <div style={dividerStyle} />
+        <button
+          style={getButtonStyle()}
+          onClick={() => zoomOut({ duration: 300 })}
+          onMouseEnter={(event) => setHoverColor(event, { hover: true })}
+          onMouseLeave={(event) => setHoverColor(event, { hover: false })}
+          aria-label="Zoom out"
+        >
+          <Minus size={16} />
+        </button>
+        <div style={dividerStyle} />
+        <button
+          style={getButtonStyle()}
+          onClick={() => fitView({ duration: 500, padding: 0.24, maxZoom: 0.65 })}
+          onMouseEnter={(event) => setHoverColor(event, { hover: true })}
+          onMouseLeave={(event) => setHoverColor(event, { hover: false })}
+          aria-label="Fit view"
+        >
+          <Locate size={16} />
+        </button>
+      </div>
     </div>
   )
 }

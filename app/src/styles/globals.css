@@ -5,8 +5,8 @@
   --bg-panel: #111111;
   --bg-card: #1a1a1a;
   --bg-topbar: #0f0f0f;
-  --border: #1e1e1e;
-  --border-light: #2a2a2a;
+  --border: rgba(255, 255, 255, 0.07);
+  --border-light: rgba(255, 255, 255, 0.1);
   --text-primary: #e5e5e5;
   --text-secondary: #737373;
   --text-muted: #525252;

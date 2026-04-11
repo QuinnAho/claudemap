@@ -3,7 +3,7 @@ import { getNodeIcon } from './nodeIcons'
 import { getSystemNodeWidth, SYSTEM_NODE_MIN_HEIGHT } from './systemNodeSizing'
 
 const healthColors = {
-  green: 'rgba(34, 197, 94, 0.4)',
+  green: 'rgba(34, 197, 94, 0.85)',
   yellow: 'var(--health-yellow)',
   red: 'var(--health-red)',
 }
@@ -31,35 +31,30 @@ export default function SystemNode({ data }) {
   const Icon = getNodeIcon(data.icon)
   const width = getSystemNodeWidth(data.lineCount)
   const summary = truncateSummary(data.summary)
+  const selectionRing = data.isSelected ? ', 0 0 0 1px rgba(232, 97, 60, 0.55)' : ''
   const backgroundColor = data.healthOverlay
     ? healthBackgrounds[data.health] || healthBackgrounds.green
     : 'var(--bg-card)'
   const baseStyle = {
     backgroundColor,
-    border: '1px solid var(--border)',
-    borderLeft: `3px solid ${healthColors[data.health] || healthColors.green}`,
+    border: '1px solid transparent',
     borderRadius: '12px',
     padding: '16px',
     width: `${width}px`,
     minHeight: `${SYSTEM_NODE_MIN_HEIGHT}px`,
-    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+    boxShadow: `0 2px 8px rgba(0, 0, 0, 0.3)${selectionRing}`,
     cursor: 'pointer',
     display: 'flex',
     flexDirection: 'column',
     gap: '10px',
     opacity: data.isDimmed ? 0.4 : 1,
     transition:
-      'opacity 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease',
+      'opacity 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease',
   }
 
   if (data.health === 'red') {
     baseStyle.boxShadow =
-      '0 2px 8px rgba(0, 0, 0, 0.3), 0 0 12px rgba(239, 68, 68, 0.15)'
-  }
-
-  if (data.isSelected) {
-    baseStyle.borderColor = 'rgba(232, 97, 60, 0.65)'
-    baseStyle.boxShadow = `${baseStyle.boxShadow}, 0 0 0 1px rgba(232, 97, 60, 0.18)`
+      `0 2px 8px rgba(0, 0, 0, 0.3), 0 0 12px rgba(239, 68, 68, 0.15)${selectionRing}`
   }
 
   return (
@@ -98,7 +93,7 @@ export default function SystemNode({ data }) {
           </span>
         </div>
 
-        {data.health && data.health !== 'green' && (
+        {data.health && (
           <div
             style={{
               width: '8px',
