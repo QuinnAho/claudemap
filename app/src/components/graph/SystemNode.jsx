@@ -52,96 +52,98 @@ export default function SystemNode({ data }) {
   }
 
   return (
-    <div style={{ ...baseStyle, position: 'relative' }}>
+    <div style={{ width: '100%', height: '100%', position: 'relative', overflow: 'visible' }}>
       <Handle type="target" position={Position.Top} style={hiddenHandleStyle} />
       <Handle type="source" position={Position.Bottom} style={hiddenHandleStyle} />
 
       <FloatingDescription text={data.summary} visible={showDescription} position="above" />
 
-      <div
-        style={{
-          minHeight: isExpanded ? `${SYSTEM_NODE_HEADER_HEIGHT}px` : '100%',
-          padding: '16px',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          gap: '10px',
-          backgroundColor: surfaceColor,
-          borderBottom: isExpanded ? '1px solid var(--border)' : 'none',
-          transition: 'min-height 0.3s ease, border-bottom 0.3s ease',
-        }}
-      >
+      <div style={baseStyle}>
         <div
           style={{
+            minHeight: isExpanded ? `${SYSTEM_NODE_HEADER_HEIGHT}px` : '100%',
+            padding: '16px',
             display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: '12px',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            gap: '10px',
+            backgroundColor: surfaceColor,
+            borderBottom: isExpanded ? '1px solid var(--border)' : 'none',
+            transition: 'min-height 0.3s ease, border-bottom 0.3s ease',
           }}
         >
           <div
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '8px',
-              minWidth: 0,
+              justifyContent: 'space-between',
+              gap: '12px',
             }}
           >
-            <Icon size={20} color="var(--text-secondary)" />
-            <span
+            <div
               style={{
-                fontSize: '14px',
-                fontWeight: 600,
-                color: 'var(--text-primary)',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                minWidth: 0,
               }}
             >
-              {data.label}
-            </span>
-          </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-            {data.health && data.health !== 'green' && (
-              <div
+              <Icon size={20} color="var(--text-secondary)" />
+              <span
                 style={{
-                  width: '10px',
-                  height: '10px',
-                  borderRadius: '50%',
-                  backgroundColor: healthColors[data.health],
-                }}
-              />
-            )}
-
-            {hasChildren && (
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  transition: 'transform 0.25s ease',
-                  transform: isExpanded ? 'rotate(0deg)' : 'rotate(-90deg)',
+                  fontSize: '14px',
+                  fontWeight: 600,
+                  color: 'var(--text-primary)',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
                 }}
               >
-                <ChevronDown size={16} color="var(--text-muted)" />
-              </div>
-            )}
+                {data.label}
+              </span>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+              {data.health && data.health !== 'green' && (
+                <div
+                  style={{
+                    width: '10px',
+                    height: '10px',
+                    borderRadius: '50%',
+                    backgroundColor: healthColors[data.health],
+                  }}
+                />
+              )}
+
+              {hasChildren && (
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'transform 0.25s ease',
+                    transform: isExpanded ? 'rotate(0deg)' : 'rotate(-90deg)',
+                  }}
+                >
+                  <ChevronDown size={16} color="var(--text-muted)" />
+                </div>
+              )}
+            </div>
           </div>
         </div>
-      </div>
 
-      <div
-        style={{
-          flex: isExpanded ? 1 : 0,
-          background:
-            'linear-gradient(180deg, rgba(255, 255, 255, 0.025) 0%, rgba(255, 255, 255, 0.01) 100%)',
-          borderTop: isExpanded ? '1px dashed rgba(255, 255, 255, 0.04)' : 'none',
-          opacity: isExpanded ? 1 : 0,
-          transition: 'flex 0.3s ease, opacity 0.3s ease, border-top 0.3s ease',
-          overflow: 'hidden',
-        }}
-      />
+        <div
+          style={{
+            flex: isExpanded ? 1 : 0,
+            background:
+              'linear-gradient(180deg, rgba(255, 255, 255, 0.025) 0%, rgba(255, 255, 255, 0.01) 100%)',
+            borderTop: isExpanded ? '1px dashed rgba(255, 255, 255, 0.04)' : 'none',
+            opacity: isExpanded ? 1 : 0,
+            transition: 'flex 0.3s ease, opacity 0.3s ease, border-top 0.3s ease',
+            overflow: 'hidden',
+          }}
+        />
+      </div>
     </div>
   )
 }

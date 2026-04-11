@@ -1,5 +1,6 @@
 node_modules/
 dist/
+.playwright-mcp/
 .DS_Store
 claudemap-cache.json
 
