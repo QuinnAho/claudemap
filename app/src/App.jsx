@@ -1,20 +1,26 @@
+import { ReactFlowProvider } from '@xyflow/react'
+import TopBar from './components/layout/TopBar'
+import StatusBar from './components/layout/StatusBar'
+import GraphCanvas from './components/graph/GraphCanvas'
+
 export default function App() {
   return (
-    <main className="shell">
-      <section className="panel">
-        <p className="eyebrow">ClaudeMap</p>
-        <h1>Repo scaffold only</h1>
-        <p className="copy">
-          The app package is installed and wired into the workspace, but no UI or graph behavior is
-          implemented yet.
-        </p>
-
-        <div className="list">
-          <div>React app entrypoint</div>
-          <div>MCP file placeholders</div>
-          <div>Dependencies installed per spec</div>
+    <ReactFlowProvider>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100vh',
+          width: '100vw',
+          backgroundColor: 'var(--bg-canvas)',
+        }}
+      >
+        <TopBar />
+        <div style={{ flex: 1, position: 'relative' }}>
+          <GraphCanvas />
         </div>
-      </section>
-    </main>
-  );
+        <StatusBar />
+      </div>
+    </ReactFlowProvider>
+  )
 }
