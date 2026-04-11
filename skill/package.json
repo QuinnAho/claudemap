@@ -1,0 +1,11 @@
+{
+  "name": "@claudemap/skill",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "claudemap": "node ./commands/claudemap.js",
+    "update": "node ./commands/update.js"
+  }
+}
+

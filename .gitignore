@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.DS_Store
+claudemap-cache.json
+claudemap-spec.md
+
+AGENTS.md
+CLAUDE.md
+TO-DO.md
+UI-IMPLEMENTATION.md

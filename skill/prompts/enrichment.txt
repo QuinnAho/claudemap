@@ -1,0 +1,4 @@
+ClaudeMap enrichment prompt placeholder.
+
+This file exists to reserve the enrichment prompt location.
+The prompt content has not been written yet.

@@ -1,0 +1,17 @@
+{
+  "name": "claudemap",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "app",
+    "skill"
+  ],
+  "scripts": {
+    "dev": "npm --workspace app run dev",
+    "build": "npm --workspace app run build",
+    "mcp": "npm --workspace app run mcp",
+    "claudemap": "npm --workspace skill run claudemap",
+    "update": "npm --workspace skill run update"
+  }
+}
+
