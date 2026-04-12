@@ -161,7 +161,17 @@ export function useLayout(zoomLevel) {
             ],
     )
     const currentTreeLayout = buildSystemTreeLayout(nodes, expandedSystemIds, fileSizeById)
-    const topLevelLayoutSignature = getGraphLayoutSignature(nodes, edges)
+    const topLevelLayoutSignature = [
+      getGraphLayoutSignature(nodes, edges),
+      zoomLevel,
+      ...topLevelSystemNodes
+        .map((node) => {
+          const topLevelSize = currentTreeLayout.sizeById.get(node.id)
+
+          return `${node.id}:${topLevelSize?.width || node.width || 0}:${topLevelSize?.height || node.height || 0}`
+        })
+        .sort(),
+    ].join('|')
     const cachedTopLevelLayout = cachedTopLevelLayoutRef.current
 
     const applyGeometry = (positionsById) => {
@@ -223,12 +233,10 @@ export function useLayout(zoomLevel) {
 
     setLayoutReady(false)
 
-    const fullyExpandedSystemIds = new Set(systemNodes.map((node) => node.id))
-    const maxTreeLayout = buildSystemTreeLayout(nodes, fullyExpandedSystemIds, maxFileSizeById)
     const sizedTopLevelNodes = topLevelSystemNodes.map((node) => ({
       ...node,
-      width: maxTreeLayout.sizeById.get(node.id)?.width || node.width,
-      height: maxTreeLayout.sizeById.get(node.id)?.height || node.height,
+      width: currentTreeLayout.sizeById.get(node.id)?.width || node.width,
+      height: currentTreeLayout.sizeById.get(node.id)?.height || node.height,
     }))
     const systemNodeIds = new Set(sizedTopLevelNodes.map((node) => node.id))
     const systemEdges = edges.filter(

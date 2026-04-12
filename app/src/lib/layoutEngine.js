@@ -6,9 +6,9 @@ const elk = new ELK()
 const defaultOptions = {
   'elk.algorithm': 'layered',
   'elk.direction': 'DOWN',
-  'elk.spacing.nodeNode': '80',
-  'elk.layered.spacing.nodeNodeBetweenLayers': '100',
-  'elk.padding': '[top=50,left=50,bottom=50,right=50]',
+  'elk.spacing.nodeNode': '64',
+  'elk.layered.spacing.nodeNodeBetweenLayers': '84',
+  'elk.padding': '[top=30,left=30,bottom=30,right=30]',
 }
 
 export async function computeLayout(nodes, edges) {

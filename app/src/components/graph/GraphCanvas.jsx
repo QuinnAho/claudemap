@@ -61,6 +61,7 @@ export default function GraphCanvas() {
   const { zoomLevel, onViewportChange } = useZoomLevel()
   const layoutReady = useLayout(zoomLevel)
   const graphReady = graphLoaded && layoutReady
+  const hasMountedGraphRef = useRef(false)
   const sceneInteractionLocked = presentationMode !== 'free'
   const highlightMode = presentationMode === 'free' ? 'subtle' : 'presentation'
   const leaveTimeoutRef = useRef(null)
@@ -133,6 +134,12 @@ export default function GraphCanvas() {
         return []
       }),
   )
+
+  if (graphReady) {
+    hasMountedGraphRef.current = true
+  }
+
+  const showGraph = graphReady || hasMountedGraphRef.current
 
   nodes.forEach((node) => {
     if (node.parentId) {
@@ -536,7 +543,7 @@ export default function GraphCanvas() {
 
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-      {graphReady ? (
+      {showGraph ? (
         <>
           <ReactFlow
             nodes={styledNodes}
