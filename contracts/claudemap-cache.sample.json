@@ -1,0 +1,828 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-04-11T00:00:00.000Z",
+  "fileCount": 11,
+  "files": [
+    {
+      "path": "lib/express.js",
+      "relativePath": "lib/express.js",
+      "name": "express.js",
+      "directory": "lib",
+      "lineCount": 120,
+      "imports": [
+        "./application",
+        "./router",
+        "./request",
+        "./response"
+      ],
+      "exports": [
+        "createApplication"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1711843200000
+    },
+    {
+      "path": "lib/application.js",
+      "relativePath": "lib/application.js",
+      "name": "application.js",
+      "directory": "lib",
+      "lineCount": 200,
+      "imports": [
+        "./router",
+        "./middleware/init",
+        "./middleware/query",
+        "./request",
+        "./response",
+        "./view"
+      ],
+      "exports": [
+        "defaultConfiguration",
+        "lazyrouter"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1711843201000
+    },
+    {
+      "path": "lib/router/index.js",
+      "relativePath": "lib/router/index.js",
+      "name": "index.js",
+      "directory": "lib/router",
+      "lineCount": 310,
+      "imports": [
+        "./route",
+        "./layer",
+        "../request",
+        "../response"
+      ],
+      "exports": [
+        "handle",
+        "processParams"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1711843202000
+    },
+    {
+      "path": "lib/router/layer.js",
+      "relativePath": "lib/router/layer.js",
+      "name": "layer.js",
+      "directory": "lib/router",
+      "lineCount": 180,
+      "imports": [
+        "path-to-regexp"
+      ],
+      "exports": [
+        "Layer"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1711843203000
+    },
+    {
+      "path": "lib/router/route.js",
+      "relativePath": "lib/router/route.js",
+      "name": "route.js",
+      "directory": "lib/router",
+      "lineCount": 150,
+      "imports": [
+        "methods",
+        "../middleware/init"
+      ],
+      "exports": [
+        "dispatch"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1711843204000
+    },
+    {
+      "path": "lib/middleware/init.js",
+      "relativePath": "lib/middleware/init.js",
+      "name": "init.js",
+      "directory": "lib/middleware",
+      "lineCount": 130,
+      "imports": [
+        "../request",
+        "../response"
+      ],
+      "exports": [
+        "init"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1711843205000
+    },
+    {
+      "path": "lib/middleware/query.js",
+      "relativePath": "lib/middleware/query.js",
+      "name": "query.js",
+      "directory": "lib/middleware",
+      "lineCount": 90,
+      "imports": [
+        "qs",
+        "../request"
+      ],
+      "exports": [
+        "query"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1711843206000
+    },
+    {
+      "path": "lib/request.js",
+      "relativePath": "lib/request.js",
+      "name": "request.js",
+      "directory": "lib",
+      "lineCount": 280,
+      "imports": [
+        "accepts",
+        "type-is"
+      ],
+      "exports": [
+        "get"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1711843207000
+    },
+    {
+      "path": "lib/response.js",
+      "relativePath": "lib/response.js",
+      "name": "response.js",
+      "directory": "lib",
+      "lineCount": 350,
+      "imports": [
+        "./view",
+        "send",
+        "vary"
+      ],
+      "exports": [
+        "send",
+        "json"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1711843208000
+    },
+    {
+      "path": "lib/response/render.js",
+      "relativePath": "lib/response/render.js",
+      "name": "render.js",
+      "directory": "lib/response",
+      "lineCount": 180,
+      "imports": [
+        "../view",
+        "../response"
+      ],
+      "exports": [
+        "render"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1711843209000
+    },
+    {
+      "path": "lib/view.js",
+      "relativePath": "lib/view.js",
+      "name": "view.js",
+      "directory": "lib",
+      "lineCount": 180,
+      "imports": [
+        "fs",
+        "path"
+      ],
+      "exports": [
+        "lookup"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1711843210000
+    }
+  ],
+  "graph": {
+    "meta": {
+      "repoName": "expressjs/express",
+      "branch": "main",
+      "creditLabel": "ClaudeMap graph sample",
+      "generatedAt": "2026-04-11T00:00:00.000Z",
+      "source": "sample"
+    },
+    "nodes": [
+      {
+        "id": "core",
+        "label": "Core",
+        "type": "system",
+        "icon": "server",
+        "parentId": null,
+        "health": "green",
+        "healthReason": null,
+        "summary": "Express application factory and main entry point",
+        "lineCount": 320,
+        "filePath": "lib/express.js"
+      },
+      {
+        "id": "routing",
+        "label": "Routing",
+        "type": "system",
+        "icon": "route",
+        "parentId": null,
+        "health": "green",
+        "healthReason": null,
+        "summary": "URL pattern matching and route handling",
+        "lineCount": 640,
+        "filePath": "lib/router/"
+      },
+      {
+        "id": "routing-core",
+        "label": "Router Core",
+        "type": "system",
+        "icon": "layers",
+        "parentId": "routing",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Core routing logic and dispatch",
+        "lineCount": 310,
+        "filePath": "lib/router/core/"
+      },
+      {
+        "id": "routing-params",
+        "label": "Param Handling",
+        "type": "system",
+        "icon": "gear",
+        "parentId": "routing",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Route parameter extraction and validation",
+        "lineCount": 180,
+        "filePath": "lib/router/params/"
+      },
+      {
+        "id": "middleware",
+        "label": "Middleware",
+        "type": "system",
+        "icon": "layers",
+        "parentId": null,
+        "health": "yellow",
+        "healthReason": "High coupling - 8 cross-system imports",
+        "summary": "Request/response processing pipeline",
+        "lineCount": 450,
+        "filePath": "lib/middleware/"
+      },
+      {
+        "id": "request",
+        "label": "Request",
+        "type": "system",
+        "icon": "zap",
+        "parentId": null,
+        "health": "green",
+        "healthReason": null,
+        "summary": "HTTP request object extensions and helpers",
+        "lineCount": 280,
+        "filePath": "lib/request.js"
+      },
+      {
+        "id": "response",
+        "label": "Response",
+        "type": "system",
+        "icon": "zap",
+        "parentId": null,
+        "health": "red",
+        "healthReason": "God module - 580 lines, 14 exports, handles too many concerns",
+        "summary": "HTTP response methods and template rendering",
+        "lineCount": 580,
+        "filePath": "lib/response.js"
+      },
+      {
+        "id": "view",
+        "label": "View Engine",
+        "type": "system",
+        "icon": "code",
+        "parentId": null,
+        "health": "green",
+        "healthReason": null,
+        "summary": "Template engine integration and rendering",
+        "lineCount": 180,
+        "filePath": "lib/view.js"
+      },
+      {
+        "id": "core-express",
+        "label": "express.js",
+        "type": "file",
+        "icon": "file",
+        "parentId": "core",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Factory export and public module entry",
+        "lineCount": 120,
+        "filePath": "lib/express.js"
+      },
+      {
+        "id": "core-application",
+        "label": "application.js",
+        "type": "file",
+        "icon": "file",
+        "parentId": "core",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Application prototype methods and initialization",
+        "lineCount": 200,
+        "filePath": "lib/application.js"
+      },
+      {
+        "id": "routing-index",
+        "label": "router/index.js",
+        "type": "file",
+        "icon": "file",
+        "parentId": "routing-core",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Router setup, traversal, and dispatch",
+        "lineCount": 310,
+        "filePath": "lib/router/index.js"
+      },
+      {
+        "id": "routing-layer",
+        "label": "router/layer.js",
+        "type": "file",
+        "icon": "file",
+        "parentId": "routing-core",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Route layer matching and handler metadata",
+        "lineCount": 180,
+        "filePath": "lib/router/layer.js"
+      },
+      {
+        "id": "routing-route",
+        "label": "router/route.js",
+        "type": "file",
+        "icon": "file",
+        "parentId": "routing-params",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Per-route middleware stacks and method dispatch",
+        "lineCount": 150,
+        "filePath": "lib/router/route.js"
+      },
+      {
+        "id": "middleware-init",
+        "label": "middleware/init.js",
+        "type": "file",
+        "icon": "file",
+        "parentId": "middleware",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Default request state and middleware bootstrapping",
+        "lineCount": 130,
+        "filePath": "lib/middleware/init.js"
+      },
+      {
+        "id": "middleware-query",
+        "label": "middleware/query.js",
+        "type": "file",
+        "icon": "file",
+        "parentId": "middleware",
+        "health": "yellow",
+        "healthReason": "Touches several request parsing paths",
+        "summary": "Query parsing and request shaping helpers",
+        "lineCount": 90,
+        "filePath": "lib/middleware/query.js"
+      },
+      {
+        "id": "request-main",
+        "label": "request.js",
+        "type": "file",
+        "icon": "file",
+        "parentId": "request",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Request prototype helpers and header parsing",
+        "lineCount": 280,
+        "filePath": "lib/request.js"
+      },
+      {
+        "id": "response-main",
+        "label": "response.js",
+        "type": "file",
+        "icon": "file",
+        "parentId": "response",
+        "health": "red",
+        "healthReason": "Too many response concerns in one file",
+        "summary": "Response helpers, status handling, and send variants",
+        "lineCount": 350,
+        "filePath": "lib/response.js"
+      },
+      {
+        "id": "response-render",
+        "label": "response/render.js",
+        "type": "file",
+        "icon": "file",
+        "parentId": "response",
+        "health": "yellow",
+        "healthReason": "Rendering concerns are coupled to response state",
+        "summary": "Template rendering and view-response glue",
+        "lineCount": 180,
+        "filePath": "lib/response/render.js"
+      },
+      {
+        "id": "view-main",
+        "label": "view.js",
+        "type": "file",
+        "icon": "file",
+        "parentId": "view",
+        "health": "green",
+        "healthReason": null,
+        "summary": "View lookup, engine loading, and caching",
+        "lineCount": 180,
+        "filePath": "lib/view.js"
+      },
+      {
+        "id": "core-express-createApplication",
+        "label": "createApplication",
+        "type": "function",
+        "icon": "code",
+        "parentId": "core-express",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Creates the express app instance",
+        "lineCount": 28,
+        "filePath": "lib/express.js"
+      },
+      {
+        "id": "core-application-defaultConfiguration",
+        "label": "defaultConfiguration",
+        "type": "function",
+        "icon": "code",
+        "parentId": "core-application",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Bootstraps default app settings",
+        "lineCount": 44,
+        "filePath": "lib/application.js"
+      },
+      {
+        "id": "core-application-lazyrouter",
+        "label": "lazyrouter",
+        "type": "function",
+        "icon": "code",
+        "parentId": "core-application",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Defers router creation until needed",
+        "lineCount": 18,
+        "filePath": "lib/application.js"
+      },
+      {
+        "id": "routing-index-handle",
+        "label": "handle",
+        "type": "function",
+        "icon": "code",
+        "parentId": "routing-index",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Dispatches through the router stack",
+        "lineCount": 52,
+        "filePath": "lib/router/index.js"
+      },
+      {
+        "id": "routing-index-processParams",
+        "label": "processParams",
+        "type": "function",
+        "icon": "code",
+        "parentId": "routing-index",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Resolves route params and callbacks",
+        "lineCount": 34,
+        "filePath": "lib/router/index.js"
+      },
+      {
+        "id": "routing-route-dispatch",
+        "label": "dispatch",
+        "type": "function",
+        "icon": "code",
+        "parentId": "routing-route",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Runs route handlers in order",
+        "lineCount": 41,
+        "filePath": "lib/router/route.js"
+      },
+      {
+        "id": "middleware-init-init",
+        "label": "init",
+        "type": "function",
+        "icon": "code",
+        "parentId": "middleware-init",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Initializes request and response state",
+        "lineCount": 22,
+        "filePath": "lib/middleware/init.js"
+      },
+      {
+        "id": "middleware-query-query",
+        "label": "query",
+        "type": "function",
+        "icon": "code",
+        "parentId": "middleware-query",
+        "health": "yellow",
+        "healthReason": "Touches several parsing branches",
+        "summary": "Builds query middleware wrapper",
+        "lineCount": 19,
+        "filePath": "lib/middleware/query.js"
+      },
+      {
+        "id": "request-main-get",
+        "label": "get",
+        "type": "function",
+        "icon": "code",
+        "parentId": "request-main",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Returns normalized request headers",
+        "lineCount": 25,
+        "filePath": "lib/request.js"
+      },
+      {
+        "id": "response-main-send",
+        "label": "send",
+        "type": "function",
+        "icon": "code",
+        "parentId": "response-main",
+        "health": "red",
+        "healthReason": "Central response branching hotspot",
+        "summary": "Handles body normalization and response output",
+        "lineCount": 66,
+        "filePath": "lib/response.js"
+      },
+      {
+        "id": "response-main-json",
+        "label": "json",
+        "type": "function",
+        "icon": "code",
+        "parentId": "response-main",
+        "health": "yellow",
+        "healthReason": "Closely coupled to send",
+        "summary": "Serializes JSON responses",
+        "lineCount": 21,
+        "filePath": "lib/response.js"
+      },
+      {
+        "id": "response-render-render",
+        "label": "render",
+        "type": "function",
+        "icon": "code",
+        "parentId": "response-render",
+        "health": "yellow",
+        "healthReason": "Mixes view resolution and response flow",
+        "summary": "Resolves and renders the final view",
+        "lineCount": 37,
+        "filePath": "lib/response/render.js"
+      },
+      {
+        "id": "view-main-lookup",
+        "label": "lookup",
+        "type": "function",
+        "icon": "code",
+        "parentId": "view-main",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Finds the best matching view template",
+        "lineCount": 29,
+        "filePath": "lib/view.js"
+      }
+    ],
+    "edges": [
+      {
+        "id": "e-core-routing",
+        "source": "core",
+        "target": "routing",
+        "type": "uses"
+      },
+      {
+        "id": "e-core-middleware",
+        "source": "core",
+        "target": "middleware",
+        "type": "uses"
+      },
+      {
+        "id": "e-routing-middleware",
+        "source": "routing",
+        "target": "middleware",
+        "type": "imports"
+      },
+      {
+        "id": "e-routing-request",
+        "source": "routing",
+        "target": "request",
+        "type": "uses"
+      },
+      {
+        "id": "e-routing-response",
+        "source": "routing",
+        "target": "response",
+        "type": "uses"
+      },
+      {
+        "id": "e-middleware-request",
+        "source": "middleware",
+        "target": "request",
+        "type": "imports"
+      },
+      {
+        "id": "e-middleware-response",
+        "source": "middleware",
+        "target": "response",
+        "type": "imports"
+      },
+      {
+        "id": "e-response-view",
+        "source": "response",
+        "target": "view",
+        "type": "calls"
+      }
+    ],
+    "files": [
+      {
+        "path": "lib/express.js",
+        "relativePath": "lib/express.js",
+        "name": "express.js",
+        "directory": "lib",
+        "lineCount": 120,
+        "imports": [
+          "./application",
+          "./router",
+          "./request",
+          "./response"
+        ],
+        "exports": [
+          "createApplication"
+        ],
+        "language": "javascript",
+        "mtimeMs": 1711843200000
+      },
+      {
+        "path": "lib/application.js",
+        "relativePath": "lib/application.js",
+        "name": "application.js",
+        "directory": "lib",
+        "lineCount": 200,
+        "imports": [
+          "./router",
+          "./middleware/init",
+          "./middleware/query",
+          "./request",
+          "./response",
+          "./view"
+        ],
+        "exports": [
+          "defaultConfiguration",
+          "lazyrouter"
+        ],
+        "language": "javascript",
+        "mtimeMs": 1711843201000
+      },
+      {
+        "path": "lib/router/index.js",
+        "relativePath": "lib/router/index.js",
+        "name": "index.js",
+        "directory": "lib/router",
+        "lineCount": 310,
+        "imports": [
+          "./route",
+          "./layer",
+          "../request",
+          "../response"
+        ],
+        "exports": [
+          "handle",
+          "processParams"
+        ],
+        "language": "javascript",
+        "mtimeMs": 1711843202000
+      },
+      {
+        "path": "lib/router/layer.js",
+        "relativePath": "lib/router/layer.js",
+        "name": "layer.js",
+        "directory": "lib/router",
+        "lineCount": 180,
+        "imports": [
+          "path-to-regexp"
+        ],
+        "exports": [
+          "Layer"
+        ],
+        "language": "javascript",
+        "mtimeMs": 1711843203000
+      },
+      {
+        "path": "lib/router/route.js",
+        "relativePath": "lib/router/route.js",
+        "name": "route.js",
+        "directory": "lib/router",
+        "lineCount": 150,
+        "imports": [
+          "methods",
+          "../middleware/init"
+        ],
+        "exports": [
+          "dispatch"
+        ],
+        "language": "javascript",
+        "mtimeMs": 1711843204000
+      },
+      {
+        "path": "lib/middleware/init.js",
+        "relativePath": "lib/middleware/init.js",
+        "name": "init.js",
+        "directory": "lib/middleware",
+        "lineCount": 130,
+        "imports": [
+          "../request",
+          "../response"
+        ],
+        "exports": [
+          "init"
+        ],
+        "language": "javascript",
+        "mtimeMs": 1711843205000
+      },
+      {
+        "path": "lib/middleware/query.js",
+        "relativePath": "lib/middleware/query.js",
+        "name": "query.js",
+        "directory": "lib/middleware",
+        "lineCount": 90,
+        "imports": [
+          "qs",
+          "../request"
+        ],
+        "exports": [
+          "query"
+        ],
+        "language": "javascript",
+        "mtimeMs": 1711843206000
+      },
+      {
+        "path": "lib/request.js",
+        "relativePath": "lib/request.js",
+        "name": "request.js",
+        "directory": "lib",
+        "lineCount": 280,
+        "imports": [
+          "accepts",
+          "type-is"
+        ],
+        "exports": [
+          "get"
+        ],
+        "language": "javascript",
+        "mtimeMs": 1711843207000
+      },
+      {
+        "path": "lib/response.js",
+        "relativePath": "lib/response.js",
+        "name": "response.js",
+        "directory": "lib",
+        "lineCount": 350,
+        "imports": [
+          "./view",
+          "send",
+          "vary"
+        ],
+        "exports": [
+          "send",
+          "json"
+        ],
+        "language": "javascript",
+        "mtimeMs": 1711843208000
+      },
+      {
+        "path": "lib/response/render.js",
+        "relativePath": "lib/response/render.js",
+        "name": "render.js",
+        "directory": "lib/response",
+        "lineCount": 180,
+        "imports": [
+          "../view",
+          "../response"
+        ],
+        "exports": [
+          "render"
+        ],
+        "language": "javascript",
+        "mtimeMs": 1711843209000
+      },
+      {
+        "path": "lib/view.js",
+        "relativePath": "lib/view.js",
+        "name": "view.js",
+        "directory": "lib",
+        "lineCount": 180,
+        "imports": [
+          "fs",
+          "path"
+        ],
+        "exports": [
+          "lookup"
+        ],
+        "language": "javascript",
+        "mtimeMs": 1711843210000
+      }
+    ]
+  }
+}

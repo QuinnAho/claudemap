@@ -8,6 +8,13 @@ export const FILE_NODE_WIDTH = 144
 export const FILE_NODE_HEIGHT = 62
 export const FILE_NODE_GAP_X = 12
 export const FILE_NODE_GAP_Y = 14
+export const FUNCTION_NODE_WIDTH = 58
+export const FUNCTION_NODE_HEIGHT = 30
+export const FUNCTION_NODE_STACK_X = 10
+export const FUNCTION_NODE_STACK_Y = 50
+export const FUNCTION_NODE_GAP_X = 10
+export const FUNCTION_NODE_GAP_Y = 8
+export const FILE_NODE_FUNCTION_PADDING_BOTTOM = 12
 export const SYSTEM_CHILD_CARD_WIDTH = 220
 export const SYSTEM_CHILD_CARD_HEIGHT = SYSTEM_NODE_LAYOUT_HEIGHT
 
@@ -78,9 +85,27 @@ export function getContainerChildPosition(index, childCount = 0, childType = 'fi
   }
 }
 
+export function getExpandedFileNodeHeight(functionCount = 0) {
+  if (!functionCount) {
+    return FILE_NODE_HEIGHT
+  }
+
+  const rowCount = Math.max(1, Math.ceil(functionCount / 2))
+
+  return Math.max(
+    FILE_NODE_HEIGHT,
+    FUNCTION_NODE_STACK_Y +
+      rowCount * FUNCTION_NODE_HEIGHT +
+      Math.max(0, rowCount - 1) * FUNCTION_NODE_GAP_Y +
+      FILE_NODE_FUNCTION_PADDING_BOTTOM,
+  )
+}
+
 export function getFunctionNodePosition(index) {
   return {
-    x: 8 + (index % 2) * 86,
-    y: FILE_NODE_HEIGHT + 10 + Math.floor(index / 2) * 28,
+    x: FUNCTION_NODE_STACK_X + (index % 2) * (FUNCTION_NODE_WIDTH + FUNCTION_NODE_GAP_X),
+    y:
+      FUNCTION_NODE_STACK_Y +
+      Math.floor(index / 2) * (FUNCTION_NODE_HEIGHT + FUNCTION_NODE_GAP_Y),
   }
 }

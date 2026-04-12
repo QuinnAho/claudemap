@@ -15,12 +15,19 @@ export const useGraphStore = create((set) => ({
     repoName: 'expressjs/express',
     branch: 'main',
     creditLabel: 'A Project by Quinn Aho',
+    source: 'sample',
     lastSyncedAt: Date.now(),
   },
   selectedNode: null,
   highlightedNodes: [],
+  highlightColor: 'accent',
   healthOverlay: false,
   hoveredPathIds: [],
+  focusRequest: null,
+  guidedFlowRequest: null,
+  presentationMode: 'free',
+  presentationLockInput: false,
+  presentationCaption: null,
 
   setGraph: (nodes, edges) => set({ nodes, edges }),
 
@@ -69,6 +76,58 @@ export const useGraphStore = create((set) => ({
   clearHighlight: () => set({ highlightedNodes: [] }),
 
   setHealthOverlay: (enabled) => set({ healthOverlay: enabled }),
+
+  setRuntimeControls: (controls) =>
+    set((state) => {
+      const highlightedNodes = Array.isArray(controls?.highlightedNodeIds)
+        ? controls.highlightedNodeIds
+        : []
+      const focusRequest = controls?.focus || null
+      const guidedFlowRequest = controls?.guidedFlow || null
+      const presentationMode = controls?.presentation?.mode || 'free'
+      const shouldClearSelection =
+        presentationMode !== 'free' &&
+        !focusRequest &&
+        !guidedFlowRequest &&
+        highlightedNodes.length === 0
+
+      return {
+        highlightedNodes,
+        highlightColor: controls?.highlightColor || 'accent',
+        healthOverlay:
+          typeof controls?.healthOverlay === 'boolean' ? controls.healthOverlay : false,
+        focusRequest,
+        guidedFlowRequest,
+        presentationMode,
+        presentationLockInput:
+          typeof controls?.presentation?.lockInput === 'boolean'
+            ? controls.presentation.lockInput
+            : false,
+        presentationCaption:
+          controls?.presentation?.title ||
+          controls?.presentation?.explanation ||
+          controls?.presentation?.body ||
+          controls?.presentation?.stepLabel
+            ? {
+                title: controls.presentation.title || null,
+                explanation:
+                  controls.presentation.explanation || controls.presentation.body || null,
+                body: controls.presentation.body || null,
+                stepLabel: controls.presentation.stepLabel || null,
+                updatedAt: controls.presentation.updatedAt || null,
+              }
+            : null,
+        selectedNode: shouldClearSelection ? null : state.selectedNode,
+        hoveredPathIds: shouldClearSelection ? [] : state.hoveredPathIds,
+      }
+    }),
+
+  clearRuntimeEmphasis: () =>
+    set((state) => ({
+      highlightedNodes: state.highlightedNodes.length ? [] : state.highlightedNodes,
+      focusRequest: state.focusRequest ? null : state.focusRequest,
+      guidedFlowRequest: state.guidedFlowRequest ? null : state.guidedFlowRequest,
+    })),
 
   setHoveredPathIds: (nodeIds) =>
     set((state) =>

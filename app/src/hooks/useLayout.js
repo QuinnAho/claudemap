@@ -1,6 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { computeLayout } from '../lib/layoutEngine'
 import { buildSystemTreeLayout, getGraphLayoutSignature } from '../lib/systemTreeLayout'
+import {
+  FILE_NODE_HEIGHT,
+  FILE_NODE_WIDTH,
+  getExpandedFileNodeHeight,
+  getFunctionNodePosition,
+} from '../components/graph/systemNodeSizing'
+import { getSystemPath } from '../lib/graphNodeUtils'
 import { useGraphStore } from '../store/graphStore'
 import { ZOOM_LEVELS } from './useZoomLevel'
 
@@ -21,11 +28,82 @@ function hasGeometryChanged(currentNodes, nextNodes) {
   })
 }
 
+function buildFunctionIndexes(nodes) {
+  const functionCountByFileId = new Map()
+  const functionIndexById = new Map()
+  const nextIndexByParentId = new Map()
+
+  nodes.forEach((node) => {
+    if (node.type !== 'function') {
+      return
+    }
+
+    functionCountByFileId.set(
+      node.parentId,
+      (functionCountByFileId.get(node.parentId) || 0) + 1,
+    )
+
+    const functionIndex = nextIndexByParentId.get(node.parentId) || 0
+    functionIndexById.set(node.id, functionIndex)
+    nextIndexByParentId.set(node.parentId, functionIndex + 1)
+  })
+
+  return {
+    functionCountByFileId,
+    functionIndexById,
+  }
+}
+
+function buildExpandedFileSizes(functionCountByFileId) {
+  const fileSizeById = new Map()
+
+  functionCountByFileId.forEach((functionCount, fileId) => {
+    if (!functionCount) {
+      return
+    }
+
+    fileSizeById.set(fileId, {
+      width: FILE_NODE_WIDTH,
+      height: getExpandedFileNodeHeight(functionCount),
+    })
+  })
+
+  return fileSizeById
+}
+
+function getRevealedFileIds(nodes, selectedNode, focusRequest, highlightedNodes) {
+  const nodeById = new Map(nodes.map((node) => [node.id, node]))
+
+  return new Set(
+    [selectedNode?.id, focusRequest?.nodeId, ...highlightedNodes]
+      .map((nodeId) => nodeById.get(nodeId))
+      .flatMap((node) => {
+        if (!node) {
+          return []
+        }
+
+        if (node.type === 'file') {
+          return [node.id]
+        }
+
+        if (node.type === 'function' && node.parentId) {
+          return [node.parentId]
+        }
+
+        return []
+      }),
+  )
+}
+
 export function useLayout(zoomLevel) {
   const nodes = useGraphStore((state) => state.nodes)
   const edges = useGraphStore((state) => state.edges)
   const setGraph = useGraphStore((state) => state.setGraph)
   const hoveredPathIds = useGraphStore((state) => state.hoveredPathIds)
+  const selectedNode = useGraphStore((state) => state.selectedNode)
+  const highlightedNodes = useGraphStore((state) => state.highlightedNodes)
+  const focusRequest = useGraphStore((state) => state.focusRequest)
+  const presentationMode = useGraphStore((state) => state.presentationMode)
   const [layoutReady, setLayoutReady] = useState(false)
   const cachedTopLevelLayoutRef = useRef({
     signature: null,
@@ -40,19 +118,50 @@ export function useLayout(zoomLevel) {
       return undefined
     }
 
+    const nodeById = new Map(nodes.map((node) => [node.id, node]))
     const systemNodes = nodes.filter((node) => node.type === 'system')
     const topLevelSystemNodes = systemNodes.filter((node) => !node.parentId)
+    const { functionCountByFileId, functionIndexById } = buildFunctionIndexes(nodes)
+    const maxFileSizeById = buildExpandedFileSizes(functionCountByFileId)
+    const revealedFileIds = getRevealedFileIds(
+      nodes,
+      selectedNode,
+      focusRequest,
+      highlightedNodes,
+    )
+    const fileSizeById = new Map()
 
     if (systemNodes.length === 0) {
       setLayoutReady(true)
       return undefined
     }
 
+    revealedFileIds.forEach((fileId) => {
+      const expandedSize = maxFileSizeById.get(fileId)
+
+      if (expandedSize) {
+        fileSizeById.set(fileId, expandedSize)
+      }
+    })
+
     const expandedSystemIds = new Set(
-      zoomLevel === ZOOM_LEVELS.OVERVIEW ? [] : hoveredPathIds,
+      zoomLevel === ZOOM_LEVELS.OVERVIEW
+        ? []
+        : presentationMode === 'free'
+          ? [
+              ...hoveredPathIds,
+              ...highlightedNodes.flatMap((nodeId) => getSystemPath(nodeId, nodeById)),
+              ...(focusRequest?.nodeId ? getSystemPath(focusRequest.nodeId, nodeById) : []),
+              ...(selectedNode?.id ? getSystemPath(selectedNode.id, nodeById) : []),
+            ]
+          : [
+              ...highlightedNodes.flatMap((nodeId) => getSystemPath(nodeId, nodeById)),
+              ...(focusRequest?.nodeId ? getSystemPath(focusRequest.nodeId, nodeById) : []),
+              ...(selectedNode?.id ? getSystemPath(selectedNode.id, nodeById) : []),
+            ],
     )
-    const currentTreeLayout = buildSystemTreeLayout(nodes, expandedSystemIds)
-    const layoutSignature = getGraphLayoutSignature(nodes, edges)
+    const currentTreeLayout = buildSystemTreeLayout(nodes, expandedSystemIds, fileSizeById)
+    const topLevelLayoutSignature = getGraphLayoutSignature(nodes, edges)
     const cachedTopLevelLayout = cachedTopLevelLayoutRef.current
 
     const applyGeometry = (positionsById) => {
@@ -60,6 +169,24 @@ export function useLayout(zoomLevel) {
         const nextPosition = node.parentId
           ? currentTreeLayout.positionById.get(node.id) || node.position
           : positionsById.get(node.id) || node.position
+
+        if (node.type === 'function') {
+          return {
+            ...node,
+            position: getFunctionNodePosition(functionIndexById.get(node.id) || 0),
+          }
+        }
+
+        if (node.type === 'file') {
+          const nextSize = fileSizeById.get(node.id)
+
+          return {
+            ...node,
+            position: nextPosition,
+            width: nextSize?.width || FILE_NODE_WIDTH,
+            height: nextSize?.height || FILE_NODE_HEIGHT,
+          }
+        }
 
         if (node.type !== 'system') {
           return node.parentId
@@ -89,7 +216,7 @@ export function useLayout(zoomLevel) {
       setLayoutReady(true)
     }
 
-    if (cachedTopLevelLayout.signature === layoutSignature) {
+    if (cachedTopLevelLayout.signature === topLevelLayoutSignature) {
       applyGeometry(cachedTopLevelLayout.positionsById)
       return undefined
     }
@@ -97,7 +224,7 @@ export function useLayout(zoomLevel) {
     setLayoutReady(false)
 
     const fullyExpandedSystemIds = new Set(systemNodes.map((node) => node.id))
-    const maxTreeLayout = buildSystemTreeLayout(nodes, fullyExpandedSystemIds)
+    const maxTreeLayout = buildSystemTreeLayout(nodes, fullyExpandedSystemIds, maxFileSizeById)
     const sizedTopLevelNodes = topLevelSystemNodes.map((node) => ({
       ...node,
       width: maxTreeLayout.sizeById.get(node.id)?.width || node.width,
@@ -118,7 +245,7 @@ export function useLayout(zoomLevel) {
       )
 
       cachedTopLevelLayoutRef.current = {
-        signature: layoutSignature,
+        signature: topLevelLayoutSignature,
         positionsById,
       }
       applyGeometry(positionsById)
@@ -127,7 +254,17 @@ export function useLayout(zoomLevel) {
     return () => {
       cancelled = true
     }
-  }, [nodes, edges, hoveredPathIds, setGraph, zoomLevel])
+  }, [
+    nodes,
+    edges,
+    focusRequest,
+    highlightedNodes,
+    hoveredPathIds,
+    presentationMode,
+    selectedNode,
+    setGraph,
+    zoomLevel,
+  ])
 
   return layoutReady
 }

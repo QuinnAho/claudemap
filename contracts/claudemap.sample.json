@@ -1,6 +1,8 @@
 {
   "meta": {
     "repoName": "expressjs/express",
+    "branch": "main",
+    "creditLabel": "A Project by Quinn Aho",
     "generatedAt": "2026-04-11T00:00:00.000Z",
     "source": "sample"
   },
@@ -45,7 +47,7 @@
       "id": "routing-params",
       "label": "Param Handling",
       "type": "system",
-      "icon": "settings",
+      "icon": "gear",
       "parentId": "routing",
       "health": "green",
       "healthReason": null,
@@ -440,5 +442,193 @@
       "type": "calls"
     }
   ],
-  "files": []
+  "files": [
+    {
+      "path": "lib/express.js",
+      "relativePath": "lib/express.js",
+      "name": "express.js",
+      "directory": "lib",
+      "lineCount": 120,
+      "imports": [
+        "./application",
+        "./router",
+        "./request",
+        "./response"
+      ],
+      "exports": [
+        "createApplication"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1711843200000
+    },
+    {
+      "path": "lib/application.js",
+      "relativePath": "lib/application.js",
+      "name": "application.js",
+      "directory": "lib",
+      "lineCount": 200,
+      "imports": [
+        "./router",
+        "./middleware/init",
+        "./middleware/query",
+        "./request",
+        "./response",
+        "./view"
+      ],
+      "exports": [
+        "defaultConfiguration",
+        "lazyrouter"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1711843201000
+    },
+    {
+      "path": "lib/router/index.js",
+      "relativePath": "lib/router/index.js",
+      "name": "index.js",
+      "directory": "lib/router",
+      "lineCount": 310,
+      "imports": [
+        "./route",
+        "./layer",
+        "../request",
+        "../response"
+      ],
+      "exports": [
+        "handle",
+        "processParams"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1711843202000
+    },
+    {
+      "path": "lib/router/layer.js",
+      "relativePath": "lib/router/layer.js",
+      "name": "layer.js",
+      "directory": "lib/router",
+      "lineCount": 180,
+      "imports": [
+        "path-to-regexp"
+      ],
+      "exports": [
+        "Layer"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1711843203000
+    },
+    {
+      "path": "lib/router/route.js",
+      "relativePath": "lib/router/route.js",
+      "name": "route.js",
+      "directory": "lib/router",
+      "lineCount": 150,
+      "imports": [
+        "methods",
+        "../middleware/init"
+      ],
+      "exports": [
+        "dispatch"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1711843204000
+    },
+    {
+      "path": "lib/middleware/init.js",
+      "relativePath": "lib/middleware/init.js",
+      "name": "init.js",
+      "directory": "lib/middleware",
+      "lineCount": 130,
+      "imports": [
+        "../request",
+        "../response"
+      ],
+      "exports": [
+        "init"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1711843205000
+    },
+    {
+      "path": "lib/middleware/query.js",
+      "relativePath": "lib/middleware/query.js",
+      "name": "query.js",
+      "directory": "lib/middleware",
+      "lineCount": 90,
+      "imports": [
+        "qs",
+        "../request"
+      ],
+      "exports": [
+        "query"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1711843206000
+    },
+    {
+      "path": "lib/request.js",
+      "relativePath": "lib/request.js",
+      "name": "request.js",
+      "directory": "lib",
+      "lineCount": 280,
+      "imports": [
+        "accepts",
+        "type-is"
+      ],
+      "exports": [
+        "get"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1711843207000
+    },
+    {
+      "path": "lib/response.js",
+      "relativePath": "lib/response.js",
+      "name": "response.js",
+      "directory": "lib",
+      "lineCount": 350,
+      "imports": [
+        "./view",
+        "send",
+        "vary"
+      ],
+      "exports": [
+        "send",
+        "json"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1711843208000
+    },
+    {
+      "path": "lib/response/render.js",
+      "relativePath": "lib/response/render.js",
+      "name": "render.js",
+      "directory": "lib/response",
+      "lineCount": 180,
+      "imports": [
+        "../view",
+        "../response"
+      ],
+      "exports": [
+        "render"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1711843209000
+    },
+    {
+      "path": "lib/view.js",
+      "relativePath": "lib/view.js",
+      "name": "view.js",
+      "directory": "lib",
+      "lineCount": 180,
+      "imports": [
+        "fs",
+        "path"
+      ],
+      "exports": [
+        "lookup"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1711843210000
+    }
+  ]
 }

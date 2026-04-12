@@ -20,9 +20,9 @@ function getCollapsedSystemSize(node) {
   }
 }
 
-function getLeafNodeSize(node) {
+function getLeafNodeSize(node, leafSizeById = new Map()) {
   if (node.type === 'file') {
-    return {
+    return leafSizeById.get(node.id) || {
       width: FILE_NODE_WIDTH,
       height: FILE_NODE_HEIGHT,
     }
@@ -34,22 +34,50 @@ function getLeafNodeSize(node) {
   }
 }
 
-function layoutFileChildren(children) {
+function layoutFileChildren(children, getChildSize) {
   const positions = new Map()
   const columnCount = children.length > 1 ? 2 : 1
+  const columnWidths = Array.from({ length: columnCount }, () => 0)
+  const rowHeights = []
+  const childLayouts = children.map((child, index) => {
+    const childSize = getChildSize(child)
+    const columnIndex = index % columnCount
+    const rowIndex = Math.floor(index / columnCount)
+
+    columnWidths[columnIndex] = Math.max(columnWidths[columnIndex], childSize.width)
+    rowHeights[rowIndex] = Math.max(rowHeights[rowIndex] || 0, childSize.height)
+
+    return {
+      child,
+      childSize,
+      columnIndex,
+      rowIndex,
+    }
+  })
+  const columnOffsets = []
+  const rowOffsets = []
   let maxRight = 0
   let maxBottom = 0
+  let currentX = SYSTEM_NODE_BODY_PADDING_X
+  let currentY = SYSTEM_NODE_HEADER_HEIGHT + SYSTEM_NODE_BODY_PADDING_TOP
 
-  children.forEach((child, index) => {
-    const x = SYSTEM_NODE_BODY_PADDING_X + (index % columnCount) * (FILE_NODE_WIDTH + FILE_NODE_GAP_X)
-    const y =
-      SYSTEM_NODE_HEADER_HEIGHT +
-      SYSTEM_NODE_BODY_PADDING_TOP +
-      Math.floor(index / columnCount) * (FILE_NODE_HEIGHT + FILE_NODE_GAP_Y)
+  columnWidths.forEach((width, index) => {
+    columnOffsets[index] = currentX
+    currentX += width + FILE_NODE_GAP_X
+  })
+
+  rowHeights.forEach((height, index) => {
+    rowOffsets[index] = currentY
+    currentY += height + FILE_NODE_GAP_Y
+  })
+
+  childLayouts.forEach(({ child, childSize, columnIndex, rowIndex }) => {
+    const x = columnOffsets[columnIndex]
+    const y = rowOffsets[rowIndex]
 
     positions.set(child.id, { x, y })
-    maxRight = Math.max(maxRight, x + FILE_NODE_WIDTH)
-    maxBottom = Math.max(maxBottom, y + FILE_NODE_HEIGHT)
+    maxRight = Math.max(maxRight, x + childSize.width)
+    maxBottom = Math.max(maxBottom, y + childSize.height)
   })
 
   return { positions, maxRight, maxBottom }
@@ -87,11 +115,11 @@ function layoutChildren(children, getChildSize) {
   }
 
   return children.every((child) => child.type === 'file')
-    ? layoutFileChildren(children)
+    ? layoutFileChildren(children, getChildSize)
     : layoutStackedChildren(children, getChildSize)
 }
 
-export function buildSystemTreeLayout(nodes, expandedSystemIds) {
+export function buildSystemTreeLayout(nodes, expandedSystemIds, leafSizeById = new Map()) {
   const nodeById = new Map(nodes.map((node) => [node.id, node]))
   const childrenByParentId = new Map()
   const sizeById = new Map()
@@ -133,13 +161,13 @@ export function buildSystemTreeLayout(nodes, expandedSystemIds) {
     directChildren.forEach((child) => {
       childSizeById.set(
         child.id,
-        child.type === 'system' ? measureSystem(child.id) : getLeafNodeSize(child),
+        child.type === 'system' ? measureSystem(child.id) : getLeafNodeSize(child, leafSizeById),
       )
     })
 
     const { positions, maxRight, maxBottom } = layoutChildren(
       directChildren,
-      (child) => childSizeById.get(child.id) || getLeafNodeSize(child),
+      (child) => childSizeById.get(child.id) || getLeafNodeSize(child, leafSizeById),
     )
 
     positions.forEach((position, childId) => {

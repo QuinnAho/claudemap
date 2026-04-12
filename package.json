@@ -10,8 +10,13 @@
     "dev": "npm --workspace app run dev",
     "build": "npm --workspace app run build",
     "mcp": "npm --workspace app run mcp",
-    "claudemap": "npm --workspace skill run claudemap",
-    "update": "npm --workspace skill run update"
+    "setup-claudemap": "npm --workspace skill run setup-claudemap --",
+    "open-claudemap": "npm --workspace skill run open-claudemap --",
+    "refresh": "npm --workspace skill run refresh --",
+    "update": "npm --workspace skill run update --",
+    "control": "npm --workspace skill run control --",
+    "package-skill": "node ./scripts/package-claudemap-skill.js",
+    "link-cli": "npm link --workspace skill",
+    "unlink-cli": "npm unlink --workspace skill"
   }
 }
-

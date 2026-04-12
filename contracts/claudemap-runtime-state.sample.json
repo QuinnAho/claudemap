@@ -1,0 +1,28 @@
+{
+  "graphRevision": 3,
+  "updatedAt": "2026-04-11T00:05:00.000Z",
+  "graphMeta": {
+    "repoName": "expressjs/express",
+    "generatedAt": "2026-04-11T00:00:00.000Z",
+    "source": "sample",
+    "nodeCount": 32,
+    "edgeCount": 8,
+    "fileCount": 11
+  },
+  "runtime": {
+    "healthOverlay": false,
+    "highlightedNodeIds": [],
+    "highlightColor": "accent",
+    "focus": null,
+    "guidedFlow": null,
+    "presentation": {
+      "mode": "free",
+      "lockInput": false,
+      "title": null,
+      "explanation": null,
+      "body": null,
+      "stepLabel": null,
+      "updatedAt": null
+    }
+  }
+}

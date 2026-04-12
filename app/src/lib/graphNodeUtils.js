@@ -87,13 +87,42 @@ export function getSystemPath(nodeOrId, nodeById, includeSelf = true) {
   return path.reverse()
 }
 
-export function isNodeVisible(node, expandedSystemIds, isOverview, nodeById) {
-  if (node.type === 'function') {
-    return false
+export function getNodeAbsolutePosition(nodeOrId, nodeById) {
+  const currentNode =
+    typeof nodeOrId === 'string' ? nodeById.get(nodeOrId) : nodeOrId
+
+  if (!currentNode) {
+    return null
   }
 
+  let x = currentNode.position?.x || 0
+  let y = currentNode.position?.y || 0
+  let walker = currentNode.parentId ? nodeById.get(currentNode.parentId) : null
+
+  while (walker) {
+    x += walker.position?.x || 0
+    y += walker.position?.y || 0
+    walker = walker.parentId ? nodeById.get(walker.parentId) : null
+  }
+
+  return { x, y }
+}
+
+export function isNodeVisible(
+  node,
+  expandedSystemIds,
+  isOverview,
+  nodeById,
+  revealedFileIds = new Set(),
+) {
   if (isOverview) {
     return node.type === 'system' && !node.parentId
+  }
+
+  if (node.type === 'function') {
+    if (!node.parentId || !revealedFileIds.has(node.parentId)) {
+      return false
+    }
   }
 
   if (!node.parentId) {

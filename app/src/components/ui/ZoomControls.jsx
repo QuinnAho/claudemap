@@ -6,6 +6,8 @@ export default function ZoomControls() {
   const { zoomIn, zoomOut, fitView } = useReactFlow()
   const healthOverlay = useGraphStore((state) => state.healthOverlay)
   const setHealthOverlay = useGraphStore((state) => state.setHealthOverlay)
+  const presentationMode = useGraphStore((state) => state.presentationMode)
+
   const islandStyle = {
     backgroundColor: 'var(--bg-card)',
     border: '1px solid var(--border)',
@@ -25,6 +27,7 @@ export default function ZoomControls() {
     cursor: 'pointer',
     color: isActive ? 'var(--accent)' : 'var(--text-secondary)',
     transition: 'color 0.18s ease',
+    opacity: 1,
   })
 
   const dividerStyle = {
@@ -47,19 +50,22 @@ export default function ZoomControls() {
         flexDirection: 'column',
         gap: '10px',
         zIndex: 10,
+        pointerEvents: 'auto',
       }}
     >
-      <div style={islandStyle}>
-        <button
-          style={getButtonStyle(healthOverlay)}
-          onClick={() => setHealthOverlay(!healthOverlay)}
-          onMouseEnter={(event) => setHoverColor(event, { hover: true, active: healthOverlay })}
-          onMouseLeave={(event) => setHoverColor(event, { hover: false, active: healthOverlay })}
-          aria-label="Toggle health overlay"
-        >
-          <Activity size={16} />
-        </button>
-      </div>
+      {presentationMode === 'free' ? (
+        <div style={islandStyle}>
+          <button
+            style={getButtonStyle(healthOverlay)}
+            onClick={() => setHealthOverlay(!healthOverlay)}
+            onMouseEnter={(event) => setHoverColor(event, { hover: true, active: healthOverlay })}
+            onMouseLeave={(event) => setHoverColor(event, { hover: false, active: healthOverlay })}
+            aria-label="Toggle health overlay"
+          >
+            <Activity size={16} />
+          </button>
+        </div>
+      ) : null}
 
       <div style={islandStyle}>
         <button

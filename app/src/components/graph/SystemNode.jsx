@@ -24,13 +24,32 @@ export default function SystemNode({ data }) {
   const Icon = getNodeIcon(data.icon)
   const isExpanded = data.isExpanded
   const hasChildren = data.hasChildren
-  const showDescription = data.isSelected && data.summary
+  const showDescription = !data.hideDescription && data.isSelected && data.summary
+  const isHighlighted = data.isHighlighted && !data.isSelected
+  const isPresentationHighlight = isHighlighted && data.highlightMode === 'presentation'
+  const isSubtleHighlight = isHighlighted && !isPresentationHighlight
+  const isPresentationAncestor = data.isPresentationAncestor && !data.isPresentationLead
 
   const surfaceColor = data.healthOverlay
     ? healthBackgrounds[data.health] || healthBackgrounds.green
-    : 'var(--bg-card)'
+    : isPresentationHighlight
+      ? 'rgba(232, 97, 60, 0.08)'
+      : isSubtleHighlight
+        ? 'rgba(255, 255, 255, 0.012)'
+      : 'var(--bg-card)'
+  const restingOpacity = data.isGhosted
+    ? 0.1
+    : isPresentationAncestor
+      ? 0.2
+      : data.isDimmed
+        ? 0.42
+        : 1
   const borderColor = data.isSelected
     ? 'rgba(232, 97, 60, 0.7)'
+    : isPresentationHighlight
+      ? 'rgba(232, 97, 60, 0.42)'
+      : isSubtleHighlight
+        ? 'rgba(255, 255, 255, 0.07)'
     : isExpanded
       ? 'var(--border-light)'
       : 'transparent'
@@ -41,14 +60,24 @@ export default function SystemNode({ data }) {
     border: `1px solid ${borderColor}`,
     borderRadius: '12px',
     minHeight: `${SYSTEM_NODE_MIN_HEIGHT}px`,
-    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+    boxShadow: isPresentationAncestor
+      ? 'none'
+      : data.isSelected
+      ? '0 0 0 1px rgba(232, 97, 60, 0.12), 0 10px 24px rgba(232, 97, 60, 0.14)'
+      : isPresentationHighlight
+        ? '0 0 0 1px rgba(232, 97, 60, 0.1), 0 8px 22px rgba(232, 97, 60, 0.12)'
+        : isSubtleHighlight
+          ? '0 0 0 1px rgba(255, 255, 255, 0.025), 0 3px 8px rgba(0, 0, 0, 0.22)'
+        : '0 2px 8px rgba(0, 0, 0, 0.3)',
     cursor: 'pointer',
     display: 'flex',
     flexDirection: 'column',
     overflow: 'hidden',
-    opacity: data.isDimmed ? 0.32 : 1,
+    opacity: restingOpacity,
+    transform:
+      data.isPresentationLead ? 'translateY(0) scale(1.02)' : 'translateY(0) scale(1)',
     transition:
-      'opacity 0.25s ease, box-shadow 0.25s ease, background-color 0.3s ease, border-color 0.25s ease',
+      'opacity 0.26s ease, transform 0.28s ease, box-shadow 0.25s ease, background-color 0.3s ease, border-color 0.25s ease',
   }
 
   return (
@@ -88,12 +117,24 @@ export default function SystemNode({ data }) {
                 minWidth: 0,
               }}
             >
-              <Icon size={20} color="var(--text-secondary)" />
+              <Icon
+                size={20}
+                color={
+                  data.isSelected || isPresentationHighlight
+                    ? 'var(--accent)'
+                    : isSubtleHighlight
+                      ? 'rgba(255, 244, 239, 0.55)'
+                      : 'var(--text-secondary)'
+                }
+              />
               <span
                 style={{
                   fontSize: '14px',
                   fontWeight: 600,
-                  color: 'var(--text-primary)',
+                  color:
+                    data.isSelected || isPresentationHighlight
+                      ? '#fff4ef'
+                      : 'var(--text-primary)',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                   whiteSpace: 'nowrap',

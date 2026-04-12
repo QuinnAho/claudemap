@@ -6,6 +6,7 @@ export default function StatusBar() {
   const branch = useGraphStore((state) => state.meta.branch)
   const creditLabel = useGraphStore((state) => state.meta.creditLabel)
   const lastSyncedAt = useGraphStore((state) => state.meta.lastSyncedAt)
+  const presentationMode = useGraphStore((state) => state.presentationMode)
   const [currentTime, setCurrentTime] = useState(() => Date.now())
 
   useEffect(() => {
@@ -73,6 +74,9 @@ export default function StatusBar() {
         <div style={{ ...statusItemStyle, gap: '6px' }}>
           <Clock3 size={12} />
           <span>{getSyncLabel()}</span>
+        </div>
+        <div style={statusItemStyle}>
+          <span>{`Mode: ${presentationMode}`}</span>
         </div>
       </div>
 

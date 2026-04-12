@@ -3,9 +3,20 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "bin": {
+    "setup-claudemap": "./commands/setup-claudemap.js",
+    "open-claudemap": "./commands/open-claudemap.js",
+    "claudemap-refresh": "./commands/update.js",
+    "claudemap-update": "./commands/update.js",
+    "claudemap-control": "./commands/control.js",
+    "claudemap-snapshot": "./commands/snapshot.js"
+  },
   "scripts": {
-    "claudemap": "node ./commands/claudemap.js",
-    "update": "node ./commands/update.js"
+    "setup-claudemap": "node ./commands/setup-claudemap.js",
+    "open-claudemap": "node ./commands/open-claudemap.js",
+    "refresh": "node ./commands/update.js",
+    "update": "node ./commands/update.js",
+    "control": "node ./commands/control.js",
+    "snapshot": "node ./commands/snapshot.js"
   }
 }
-

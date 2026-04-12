@@ -1,8 +1,17 @@
 node_modules/
 dist/
+artifacts/
 .playwright-mcp/
 .DS_Store
 claudemap-cache.json
+app/public/claudemap-runtime.json
+app/public/claudemap-runtime-state.json
+tmp/
+free-mode.png
+present-mode.png
+demo/**/.claude/
+demo/**/node_modules/
+demo/**/claudemap-cache.json
 
 CALUDE-MAP-SPEC.md
 AGENTS.md

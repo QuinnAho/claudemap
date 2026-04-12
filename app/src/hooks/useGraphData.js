@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react'
-import sampleData from '../../../contracts/claudemap.sample.json'
+import { useEffect, useRef, useState } from 'react'
 import { useGraphStore } from '../store/graphStore'
 import {
   FILE_NODE_HEIGHT,
@@ -192,22 +191,177 @@ export function transformToReactFlow(graphData) {
   return { nodes, edges }
 }
 
+function isGraphPayload(value) {
+  return value && Array.isArray(value.nodes) && Array.isArray(value.edges)
+}
+
+function createDefaultRuntimeEnvelope() {
+  return {
+    graphRevision: -1,
+    updatedAt: '',
+    graphMeta: null,
+    runtime: {
+      healthOverlay: false,
+      highlightedNodeIds: [],
+      highlightColor: 'accent',
+      focus: null,
+      guidedFlow: null,
+      presentation: {
+        mode: 'free',
+        lockInput: false,
+        title: null,
+        explanation: null,
+        body: null,
+        stepLabel: null,
+        updatedAt: null,
+      },
+    },
+  }
+}
+
+function isRuntimeEnvelope(value) {
+  return value && typeof value.graphRevision === 'number' && value.runtime
+}
+
+let sampleGraphPromise = null
+
+function getRuntimeSignature(runtimeEnvelope) {
+  return [
+    runtimeEnvelope.graphRevision,
+    runtimeEnvelope.updatedAt || '',
+    JSON.stringify(runtimeEnvelope.runtime || {}),
+  ].join(':')
+}
+
+async function loadSampleGraph() {
+  if (!sampleGraphPromise) {
+    sampleGraphPromise = import('../../../contracts/claudemap.sample.json')
+      .then((module) => module.default || module)
+      .catch(() => null)
+  }
+
+  return sampleGraphPromise
+}
+
+async function fetchRuntimeGraph() {
+  try {
+    const response = await window.fetch(`/claudemap-runtime.json?t=${Date.now()}`, {
+      cache: 'no-store',
+    })
+
+    if (!response.ok) {
+      return null
+    }
+
+    const graphData = await response.json()
+    return isGraphPayload(graphData) ? graphData : null
+  } catch {
+    return null
+  }
+}
+
+async function fetchRuntimeEnvelope() {
+  try {
+    const response = await window.fetch(`/claudemap-runtime-state.json?t=${Date.now()}`, {
+      cache: 'no-store',
+    })
+
+    if (!response.ok) {
+      return null
+    }
+
+    const runtimeEnvelope = await response.json()
+    return isRuntimeEnvelope(runtimeEnvelope) ? runtimeEnvelope : null
+  } catch {
+    return null
+  }
+}
+
 export function useGraphData() {
   const setGraph = useGraphStore((state) => state.setGraph)
   const setMeta = useGraphStore((state) => state.setMeta)
+  const setRuntimeControls = useGraphStore((state) => state.setRuntimeControls)
   const [graphLoaded, setGraphLoaded] = useState(false)
+  const latestGraphRevisionRef = useRef(null)
+  const latestRuntimeSignatureRef = useRef('')
 
   useEffect(() => {
-    const { nodes, edges } = transformToReactFlow(sampleData)
-    const generatedAt = Date.parse(sampleData.meta?.generatedAt || '')
+    let isMounted = true
 
-    setGraph(nodes, edges)
-    setMeta({
-      repoName: sampleData.meta?.repoName || 'expressjs/express',
-      lastSyncedAt: Number.isNaN(generatedAt) ? Date.now() : generatedAt,
-    })
-    setGraphLoaded(true)
-  }, [setGraph, setMeta])
+    const applyGraphData = (graphData) => {
+      if (!isMounted || !isGraphPayload(graphData)) {
+        return
+      }
+
+      const { nodes, edges } = transformToReactFlow(graphData)
+
+      setGraph(nodes, edges)
+      setMeta({
+        repoName: graphData.meta?.repoName || 'expressjs/express',
+        branch: graphData.meta?.branch || 'current',
+        creditLabel: 'A Project by Quinn Aho',
+        source: graphData.meta?.source || 'sample',
+        lastSyncedAt: Date.now(),
+      })
+      setGraphLoaded(true)
+    }
+
+    const applyRuntimeEnvelope = (runtimeEnvelope) => {
+      const normalizedEnvelope = runtimeEnvelope || createDefaultRuntimeEnvelope()
+      const runtimeSignature = getRuntimeSignature(normalizedEnvelope)
+
+      if (runtimeSignature !== latestRuntimeSignatureRef.current) {
+        latestRuntimeSignatureRef.current = runtimeSignature
+        setRuntimeControls(normalizedEnvelope.runtime)
+        setMeta({ lastSyncedAt: Date.now() })
+      }
+    }
+
+    const loadRuntimeData = async () => {
+      if (document.visibilityState === 'hidden') {
+        return
+      }
+
+      const runtimeEnvelope = await fetchRuntimeEnvelope()
+
+      if (!runtimeEnvelope) {
+        applyGraphData(await loadSampleGraph())
+        applyRuntimeEnvelope(null)
+        latestGraphRevisionRef.current = -1
+        return
+      }
+
+      applyRuntimeEnvelope(runtimeEnvelope)
+
+      if (runtimeEnvelope.graphRevision === latestGraphRevisionRef.current) {
+        setGraphLoaded(true)
+        return
+      }
+
+      const runtimeGraph = await fetchRuntimeGraph()
+
+      if (runtimeGraph) {
+        applyGraphData(runtimeGraph)
+        latestGraphRevisionRef.current = runtimeEnvelope.graphRevision
+        return
+      }
+
+      applyGraphData(await loadSampleGraph())
+      applyRuntimeEnvelope(null)
+      latestGraphRevisionRef.current = -1
+    }
+
+    loadRuntimeData()
+
+    const intervalId = window.setInterval(loadRuntimeData, 1200)
+    window.addEventListener('focus', loadRuntimeData)
+
+    return () => {
+      isMounted = false
+      window.clearInterval(intervalId)
+      window.removeEventListener('focus', loadRuntimeData)
+    }
+  }, [setGraph, setMeta, setRuntimeControls])
 
   return graphLoaded
 }

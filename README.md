@@ -1,48 +1,66 @@
 # ClaudeMap
 
-Minimal scaffold for the architecture described in [claudemap-spec.md](/D:/ahoqp1/Repositories/claudemap/claudemap-spec.md).
+![ClaudeMap terminal and map view](resources/img/ClaudeTerminal+ClaudeMap.png)
 
-Current state:
+## Video Presentation
 
-- `app/`: placeholder React app
-- `skill/`: placeholder Node.js command and library files
-- `contracts/`: placeholder schema files
-- `demo/`: placeholder sample data
+Add video link here.
 
-## Setup
+## Project Information
+
+**Title**  
+ClaudeMap
+
+**Summary**  
+ClaudeMap is a live architecture mapping and walkthrough tool. It turns project
+structure into a visual system/file/function map, then lets the runtime guide
+that map through highlights, focus, and presentation steps. This repository also
+packages two demos: `FirstDemo`, a curated walkthrough of ClaudeMap itself, and
+`SecondDemo`, an Express-shaped sample project.
+
+**Contributors**  
+- Quinn Aho
+
+## Navigating The Repo
+
+- `app/` - React app for the interactive map UI
+- `skill/` - CLI/runtime commands and shared libraries
+- `scripts/` - packaging and artifact generation
+- `contracts/` - seeded graph JSON and runtime state contracts
+- `demo/` - demo sandbox sources and demo documentation
+- `artifacts/` - packaged outputs, including `FirstDemo` and `SecondDemo`
+
+## Where Things Live
+
+- Notebooks: there are no notebooks in this repository
+- Data and demo graph payloads: `contracts/` and `demo/`
+- App code: `app/src/`
+- Skill and runtime code: `skill/`
+- Packaging code: `scripts/`
+
+## Key Files
+
+- `contracts/claudemap-first-demo.json` - curated graph for the ClaudeMap demo
+- `contracts/claudemap.sample.json` - sample graph for the Express demo
+- `scripts/package-claudemap-skill.js` - packages the skill artifact and both demos
+- `app/src/components/graph/GraphCanvas.jsx` - main graph scene, focus, and camera behavior
+- `app/src/hooks/useGraphData.js` - loads runtime graph/state into the app
+- `skill/lib/mcp-client.js` - bridges runtime updates into the live app
+- `skill/commands/control.js` - manual control surface for highlight, present, caption, and mode changes
+
+## Run The Project
 
 ```bash
 npm install
 npm run dev
 ```
 
-Optional scaffold commands:
+Useful extras:
 
 ```bash
 npm run build
-npm run mcp
-npm run claudemap
-npm run update
+npm run package-skill
 ```
 
-## Playwright MCP
-
-For local UI testing with Codex, this machine is now configured to use the official Playwright MCP server:
-
-```toml
-[mcp_servers.playwright]
-command = "npx"
-args = ["@playwright/mcp@latest"]
-```
-
-To use it with this app:
-
-```bash
-npm run dev
-```
-
-Then start a fresh Codex session so it reloads MCP config, and point Playwright MCP at `http://localhost:5173`.
-
-## Scope
-
-This repo is intentionally setup-only right now. The file structure and dependencies are in place, but there is no implemented UI, graph logic, MCP runtime, file walking, enrichment, diffing, or browser-launch behavior yet.
+`npm run package-skill` creates the packaged artifact and the `FirstDemo` /
+`SecondDemo` demo bundles in `artifacts/claudemap-skill/claudemap/`.

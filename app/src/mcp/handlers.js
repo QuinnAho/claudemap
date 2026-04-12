@@ -1,77 +1,161 @@
-export const toolDefinitions = [
-  {
-    name: 'render_graph',
-    description: 'Placeholder for full graph rendering.',
-    inputSchema: { type: 'object', properties: {} },
-  },
-  {
-    name: 'add_node',
-    description: 'Placeholder for incremental node insertion.',
-    inputSchema: { type: 'object', properties: {} },
-  },
-  {
-    name: 'remove_node',
-    description: 'Placeholder for node removal.',
-    inputSchema: { type: 'object', properties: {} },
-  },
-  {
-    name: 'update_node',
-    description: 'Placeholder for node updates.',
-    inputSchema: { type: 'object', properties: {} },
-  },
-  {
-    name: 'add_edge',
-    description: 'Placeholder for edge insertion.',
-    inputSchema: { type: 'object', properties: {} },
-  },
-  {
-    name: 'remove_edge',
-    description: 'Placeholder for edge removal.',
-    inputSchema: { type: 'object', properties: {} },
-  },
-  {
-    name: 'highlight_nodes',
-    description: 'Placeholder for node highlighting.',
-    inputSchema: { type: 'object', properties: {} },
-  },
-  {
-    name: 'clear_highlight',
-    description: 'Placeholder for highlight reset.',
-    inputSchema: { type: 'object', properties: {} },
-  },
-  {
-    name: 'navigate_to',
-    description: 'Placeholder for camera navigation.',
-    inputSchema: { type: 'object', properties: {} },
-  },
-  {
-    name: 'guided_flow',
-    description: 'Placeholder for guided flow playback.',
-    inputSchema: { type: 'object', properties: {} },
-  },
-  {
-    name: 'set_health_overlay',
-    description: 'Placeholder for health overlay toggling.',
-    inputSchema: { type: 'object', properties: {} },
-  },
-];
+import {
+  applyGraphPatch,
+  addEdge,
+  addNode,
+  clearHighlight,
+  clearCaption,
+  createMcpClient,
+  guidedFlow,
+  highlightNodes,
+  navigateTo,
+  presentStep,
+  removeEdge,
+  removeNode,
+  renderGraph,
+  setPresentationMode,
+  setHealthOverlay,
+  showCaption,
+  updateNode,
+} from '../../../skill/lib/mcp-client.js'
 
-function textResponse(toolName) {
+export const toolDefinitions = [
+  { name: 'render_graph', description: 'Render a full ClaudeMap graph payload.' },
+  { name: 'apply_graph_patch', description: 'Apply a batched graph patch to the runtime graph.' },
+  { name: 'add_node', description: 'Insert a single node into the runtime graph.' },
+  { name: 'remove_node', description: 'Remove a node from the runtime graph.' },
+  { name: 'update_node', description: 'Update fields on an existing runtime node.' },
+  { name: 'add_edge', description: 'Insert a single edge into the runtime graph.' },
+  { name: 'remove_edge', description: 'Remove an edge from the runtime graph.' },
+  { name: 'highlight_nodes', description: 'Highlight one or more graph nodes.' },
+  { name: 'clear_highlight', description: 'Clear highlighted graph nodes.' },
+  { name: 'navigate_to', description: 'Focus the graph viewport on a node.' },
+  { name: 'guided_flow', description: 'Step through a sequence of nodes in the graph.' },
+  { name: 'set_health_overlay', description: 'Toggle the system health overlay.' },
+  { name: 'set_presentation_mode', description: 'Set the presentation mode and input lock behavior.' },
+  { name: 'present_step', description: 'Present a guided step by revealing a node and updating explanation text.' },
+  { name: 'show_caption', description: 'Display a guided walkthrough caption.' },
+  { name: 'clear_caption', description: 'Clear the current guided walkthrough caption.' },
+]
+
+function textResponse(toolName, text) {
   return {
     content: [
       {
         type: 'text',
-        text: `${toolName} is not implemented yet.`,
+        text,
       },
     ],
-  };
+  }
+}
+
+function createRuntimeClient() {
+  return createMcpClient()
 }
 
 export function createToolHandlers() {
-  return Object.fromEntries(
-    toolDefinitions.map((definition) => [
-      definition.name,
-      async () => textResponse(definition.name),
-    ]),
-  );
+  const client = createRuntimeClient()
+
+  return {
+    render_graph: async ({ meta, nodes, edges, files, runtime } = {}) => {
+      await renderGraph(client, {
+        meta,
+        nodes: nodes || [],
+        edges: edges || [],
+        files: files || [],
+        runtime,
+      })
+      return textResponse('render_graph', `Rendered ${nodes?.length || 0} nodes`)
+    },
+    apply_graph_patch: async ({ changes, meta, files, runtime } = {}) => {
+      await applyGraphPatch(client, {
+        changes,
+        meta,
+        files,
+        runtime,
+      })
+      return textResponse('apply_graph_patch', 'Applied batched graph patch')
+    },
+    add_node: async ({ node } = {}) => {
+      await addNode(client, node)
+      return textResponse('add_node', `Added node ${node?.id || 'unknown'}`)
+    },
+    remove_node: async ({ nodeId } = {}) => {
+      await removeNode(client, nodeId)
+      return textResponse('remove_node', `Removed node ${nodeId || 'unknown'}`)
+    },
+    update_node: async ({ nodeId, fields } = {}) => {
+      await updateNode(client, nodeId, fields || {})
+      return textResponse('update_node', `Updated node ${nodeId || 'unknown'}`)
+    },
+    add_edge: async ({ edge } = {}) => {
+      await addEdge(client, edge)
+      return textResponse('add_edge', `Added edge ${edge?.id || 'unknown'}`)
+    },
+    remove_edge: async ({ edgeId } = {}) => {
+      await removeEdge(client, edgeId)
+      return textResponse('remove_edge', `Removed edge ${edgeId || 'unknown'}`)
+    },
+    highlight_nodes: async ({ nodeIds, color } = {}) => {
+      await highlightNodes(client, nodeIds || [], color)
+      return textResponse('highlight_nodes', `Highlighted ${nodeIds?.length || 0} nodes`)
+    },
+    clear_highlight: async () => {
+      await clearHighlight(client)
+      return textResponse('clear_highlight', 'Cleared highlights')
+    },
+    navigate_to: async ({ nodeId, zoom } = {}) => {
+      await navigateTo(client, nodeId, zoom)
+      return textResponse('navigate_to', `Navigating to ${nodeId || 'unknown'}`)
+    },
+    guided_flow: async ({ steps, delay } = {}) => {
+      await guidedFlow(client, steps || [], delay)
+      return textResponse('guided_flow', `Started guided flow with ${steps?.length || 0} steps`)
+    },
+    set_health_overlay: async ({ enabled } = {}) => {
+      await setHealthOverlay(client, !!enabled)
+      return textResponse('set_health_overlay', `Health overlay ${enabled ? 'on' : 'off'}`)
+    },
+    set_presentation_mode: async ({ mode, lockInput, title, stepLabel, explanation, resetScene } = {}) => {
+      await setPresentationMode(client, mode || 'free', {
+        lockInput,
+        title,
+        stepLabel,
+        explanation,
+        resetScene,
+      })
+      return textResponse('set_presentation_mode', `Presentation mode ${mode || 'free'}`)
+    },
+    present_step: async ({
+      nodeId,
+      nodeIds,
+      color,
+      zoom,
+      mode,
+      lockInput,
+      title,
+      stepLabel,
+      explanation,
+    } = {}) => {
+      await presentStep(client, {
+        nodeId,
+        nodeIds,
+        color,
+        zoom,
+        mode,
+        lockInput,
+        title,
+        stepLabel,
+        explanation,
+      })
+      return textResponse('present_step', `Presented ${nodeId || nodeIds?.[0] || 'step'}`)
+    },
+    show_caption: async ({ title, body, stepLabel } = {}) => {
+      await showCaption(client, body || '', { title, stepLabel })
+      return textResponse('show_caption', `Caption: ${title || body || 'updated'}`)
+    },
+    clear_caption: async () => {
+      await clearCaption(client)
+      return textResponse('clear_caption', 'Caption cleared')
+    },
+  }
 }

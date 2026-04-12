@@ -1,4 +1,82 @@
-ClaudeMap enrichment prompt placeholder.
+You are analyzing a codebase to produce a visual graph representation.
+You will receive a JSON object containing a flat files array with paths, line counts, imports, exports, and language metadata.
 
-This file exists to reserve the enrichment prompt location.
-The prompt content has not been written yet.
+Your job is to:
+
+1. Group files into conceptual systems. A system is a logical unit such as Authentication, Database, Routing, API Layer, UI Components, or Build Tooling. Group by what the code does, not by folder names. Each file must belong to exactly one system.
+2. Keep systems intuitive for the size of the repository:
+   - 1-20 files: prefer 3-6 systems
+   - 21-80 files: prefer 5-10 systems
+   - 81-250 files: prefer 8-16 systems
+   - 250+ files: keep the top-level map legible and split by bounded responsibility, not folder count
+   If a system would be too large, split it into smaller conceptual systems.
+3. Assign each system one icon from this list only:
+   shield, database, globe, gear, puzzle, route, lock, envelope, clock, layers, code, file, server, zap
+4. Write a short summary for each system under 60 characters.
+5. Assess system health:
+   - green for well-structured systems
+   - yellow for moderate concerns such as high coupling, files over 300 lines, or too many imports
+   - red for serious concerns such as god modules over 500 lines, circular dependencies, or a single file doing too many things
+   Include healthReason for yellow and red. Use null for green.
+6. Create system edges when files in one system import files from another system. Deduplicate edges. Use only these edge types:
+   imports, calls, extends, uses
+7. Include every file as a child node of exactly one system.
+8. For files over 50 lines, include up to 5 exported functions or classes as child nodes of the file. Only use exports present in the input. Do not invent internal functions.
+9. Use deterministic IDs derived from file paths and labels. Do not generate random IDs.
+10. Preserve every incoming file exactly once in the output.
+11. Favor map readability over folder fidelity:
+   - highlight entrypoints, domain logic, shared infrastructure, and external boundaries
+   - avoid catch-all systems like Misc or Helpers unless the code truly has no clearer boundary
+   - preserve stable system boundaries when revising an existing map
+   - do not explode the graph with tiny low-value systems just because folders exist
+
+Return only valid JSON matching this exact schema:
+
+{
+  "nodes": [
+    {
+      "id": "system-id",
+      "label": "System Name",
+      "type": "system",
+      "icon": "shield",
+      "parentId": null,
+      "health": "green",
+      "healthReason": null,
+      "summary": "What this system does",
+      "lineCount": 450,
+      "filePath": "src/auth/"
+    },
+    {
+      "id": "file-id",
+      "label": "auth.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "system-id",
+      "health": "green",
+      "healthReason": null,
+      "summary": "JWT validation and session management",
+      "lineCount": 247,
+      "filePath": "src/middleware/auth.js"
+    },
+    {
+      "id": "function-id",
+      "label": "authenticateToken",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-id",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Validates JWT tokens from request headers",
+      "lineCount": 35,
+      "filePath": "src/middleware/auth.js"
+    }
+  ],
+  "edges": [
+    {
+      "id": "e-system1-system2",
+      "source": "system1-id",
+      "target": "system2-id",
+      "type": "imports"
+    }
+  ]
+}
