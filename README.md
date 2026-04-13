@@ -12,6 +12,8 @@ Unlike traditional visualization tools, ClaudeMap organizes your code by what it
 Use `/explain` and ask any question about your code and claude will present direclty on the map and explain step by step.
  
 All powered by the same AI you vibe code with.
+
+> Note: ClaudeMap started as a hackathon project, so parts of it are still rough around the edges. It was strong enough that I was encouraged to open source it, so if you want to use it, improve it, or help shape it, please do.
  
 ## Get Started
  
