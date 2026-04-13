@@ -6,15 +6,12 @@ Welcome to...
  
 ![ClaudeMap terminal and map view](resources/img/ClaudeTerminal+ClaudeMap.png)
  
-AI lets you build faster than ever — but devs are getting left behind, you don't understand what you're building anymore. You can vibe code a full app in a weekend and not be able to explain how your own auth flow works. ClaudeMap fixes that.
+AI lets you build faster than ever — but th very tools that help our productivity are leaving us behind, you don't understand what you're building anymore. You can vibe code a full app in a weekend and not even start to be able to explain how it works. ClaudeMap fixes that.
  
-Unlike traditional visualization tools that just mirror your folder structure, ClaudeMap organizes your code by what it actually does. Claude reads your project and groups it into concepts like Auth, Database, and Routing — the way you actually think about your app. Zoom out to see the big picture. Zoom in to see the details. Colors show what's healthy and what's broken. Click anything and Claude explains it in plain english. Use `/explain` and Claude doesn't just respond with text — it visually walks you through your codebase on the map, highlighting the path step by step.
+Unlike traditional visualization tools, ClaudeMap organizes your code by what it actually does. Claude reads your project and groups it into concepts in a way you actually think about your app. Zoom out to see the big picture. Zoom in to see the details. Colors show what's healthy and what's broken.
+Use `/explain` and ask any question about your code and claude will present direclty on the map and explain step by step.
  
 All powered by the same AI you vibe code with.
- 
-## Demo
- 
-https://www.youtube.com/watch?v=mubRRx5mXzA
  
 ## Get Started
  
