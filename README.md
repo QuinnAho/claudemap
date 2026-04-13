@@ -14,8 +14,6 @@ All powered by the same AI you vibecode with.
 
 ## See It In Action
 
-Click Me ↓
-
 [Play with ClaudeMap's map](https://quinnaho.github.io/claudemap/) (standalone preview, Claude features require Claude Code)
 
 Click Me ↓
