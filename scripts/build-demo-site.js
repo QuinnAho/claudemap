@@ -136,6 +136,7 @@ function main() {
     }
   }
 
+  fs.writeFileSync(path.join(OUTPUT_ROOT, '.nojekyll'), '')
   console.log(`ClaudeMap demo site ready at ${OUTPUT_ROOT}`)
 
   if (pagesConfig.publicUrl) {
