@@ -1,0 +1,2271 @@
+{
+  "meta": {
+    "repoName": "claudemap",
+    "branch": "main",
+    "creditLabel": "A Project by Quinn Aho",
+    "generatedAt": "2026-04-12T05:51:22.725Z",
+    "source": "manual"
+  },
+  "nodes": [
+    {
+      "id": "firstdemo-experience",
+      "label": "Map Experience",
+      "type": "system",
+      "icon": "code",
+      "parentId": null,
+      "health": "yellow",
+      "healthReason": "GraphCanvas and layout hooks carry most interaction complexity",
+      "summary": "React Flow UI for live architecture walkthroughs",
+      "filePath": "app/src/",
+      "lineCount": 3281
+    },
+    {
+      "id": "firstdemo-experience-shell",
+      "label": "Runtime Shell",
+      "type": "system",
+      "icon": "layers",
+      "parentId": "firstdemo-experience",
+      "health": "green",
+      "healthReason": null,
+      "summary": "App frame, chrome, and runtime bootstrapping",
+      "filePath": "app/src/",
+      "lineCount": 252
+    },
+    {
+      "id": "firstdemo-experience-scene",
+      "label": "Scene Orchestration",
+      "type": "system",
+      "icon": "route",
+      "parentId": "firstdemo-experience",
+      "health": "yellow",
+      "healthReason": "GraphCanvas concentrates focus, selection, and present-mode flow",
+      "summary": "Scene rendering, focus, and walkthrough overlays",
+      "filePath": "app/src/components/graph/",
+      "lineCount": 855
+    },
+    {
+      "id": "firstdemo-experience-nodes",
+      "label": "Node Composition",
+      "type": "system",
+      "icon": "layers",
+      "parentId": "firstdemo-experience",
+      "health": "green",
+      "healthReason": null,
+      "summary": "System, file, and function node surfaces",
+      "filePath": "app/src/components/graph/",
+      "lineCount": 642
+    },
+    {
+      "id": "firstdemo-experience-state",
+      "label": "Data & Layout",
+      "type": "system",
+      "icon": "gear",
+      "parentId": "firstdemo-experience",
+      "health": "yellow",
+      "healthReason": "Runtime polling, layout math, and graph state are spread across central hooks",
+      "summary": "Runtime data shaping, layout math, and state",
+      "filePath": "app/src/hooks/",
+      "lineCount": 1288
+    },
+    {
+      "id": "firstdemo-experience-bridge",
+      "label": "App MCP Bridge",
+      "type": "system",
+      "icon": "server",
+      "parentId": "firstdemo-experience",
+      "health": "green",
+      "healthReason": null,
+      "summary": "In-app MCP server and runtime tool handlers",
+      "filePath": "app/src/mcp/",
+      "lineCount": 192
+    },
+    {
+      "id": "firstdemo-experience-tooling",
+      "label": "App Tooling",
+      "type": "system",
+      "icon": "gear",
+      "parentId": "firstdemo-experience",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Bundled app build and styling configuration",
+      "filePath": "app/",
+      "lineCount": 52
+    },
+    {
+      "id": "firstdemo-skill",
+      "label": "Skill Pipeline",
+      "type": "system",
+      "icon": "server",
+      "parentId": null,
+      "health": "yellow",
+      "healthReason": "Control, enrichment, and transport logic meet in a few oversized files",
+      "summary": "CLI runtime that snapshots, enriches, and drives the map",
+      "filePath": "skill/",
+      "lineCount": 3014
+    },
+    {
+      "id": "firstdemo-skill-commands",
+      "label": "Command Surface",
+      "type": "system",
+      "icon": "zap",
+      "parentId": "firstdemo-skill",
+      "health": "yellow",
+      "healthReason": "control.js centralizes present, focus, caption, and mode flows",
+      "summary": "User-facing commands for setup, refresh, and demos",
+      "filePath": "skill/commands/",
+      "lineCount": 1066
+    },
+    {
+      "id": "firstdemo-skill-analysis",
+      "label": "Repo Analysis",
+      "type": "system",
+      "icon": "database",
+      "parentId": "firstdemo-skill",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Snapshotting, cache state, and diff utilities",
+      "filePath": "skill/lib/",
+      "lineCount": 454
+    },
+    {
+      "id": "firstdemo-skill-synthesis",
+      "label": "Graph Synthesis",
+      "type": "system",
+      "icon": "puzzle",
+      "parentId": "firstdemo-skill",
+      "health": "yellow",
+      "healthReason": "Prompting, fallback selection, and heuristic graphing live in one path",
+      "summary": "Prompt-guided graph shaping and fallback logic",
+      "filePath": "skill/lib/",
+      "lineCount": 639
+    },
+    {
+      "id": "firstdemo-skill-runtime",
+      "label": "Runtime Transport",
+      "type": "system",
+      "icon": "route",
+      "parentId": "firstdemo-skill",
+      "health": "red",
+      "healthReason": "mcp-client.js handles MCP, file-shim state, and runtime command wrappers",
+      "summary": "Bridges the CLI skill into the live app runtime",
+      "filePath": "skill/lib/",
+      "lineCount": 855
+    },
+    {
+      "id": "firstdemo-demo",
+      "label": "Demo Content",
+      "type": "system",
+      "icon": "layers",
+      "parentId": null,
+      "health": "green",
+      "healthReason": null,
+      "summary": "Seed graphs, cache payloads, and walkthrough docs",
+      "filePath": "contracts/",
+      "lineCount": 1590
+    },
+    {
+      "id": "firstdemo-demo-seeds",
+      "label": "Seed Graphs",
+      "type": "system",
+      "icon": "globe",
+      "parentId": "firstdemo-demo",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Sample graph payloads and runtime seed state",
+      "filePath": "contracts/",
+      "lineCount": 1490
+    },
+    {
+      "id": "firstdemo-demo-docs",
+      "label": "Demo Docs",
+      "type": "system",
+      "icon": "file",
+      "parentId": "firstdemo-demo",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Schema notes and demo sandbox guidance",
+      "filePath": "demo/",
+      "lineCount": 100
+    },
+    {
+      "id": "firstdemo-delivery",
+      "label": "Packaging",
+      "type": "system",
+      "icon": "puzzle",
+      "parentId": null,
+      "health": "yellow",
+      "healthReason": "Packaging logic handles artifact layout, slash commands, and demo sync",
+      "summary": "Builds the drop-in skill artifact and demo bundles",
+      "filePath": "scripts/",
+      "lineCount": 574
+    },
+    {
+      "id": "firstdemo-delivery-packager",
+      "label": "Artifact Builder",
+      "type": "system",
+      "icon": "gear",
+      "parentId": "firstdemo-delivery",
+      "health": "red",
+      "healthReason": "package-claudemap-skill.js packs runtime files, docs, and demos in one script",
+      "summary": "Creates the artifact, slash commands, and demo installs",
+      "filePath": "scripts/",
+      "lineCount": 574
+    },
+    {
+      "id": "file-app-src-main-jsx",
+      "label": "main.jsx",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-experience-shell",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Bootstraps the React app into the DOM",
+      "lineCount": 11,
+      "filePath": "app/src/main.jsx"
+    },
+    {
+      "id": "file-app-src-app-jsx",
+      "label": "App.jsx",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-experience-shell",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Mounts the chrome, runtime, and status frame",
+      "lineCount": 47,
+      "filePath": "app/src/App.jsx"
+    },
+    {
+      "id": "file-app-src-components-graph-graphruntime-jsx",
+      "label": "GraphRuntime.jsx",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-experience-shell",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Wraps React Flow and the presentation veil",
+      "lineCount": 31,
+      "filePath": "app/src/components/graph/GraphRuntime.jsx"
+    },
+    {
+      "id": "file-app-src-components-layout-topbar-jsx",
+      "label": "TopBar.jsx",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-experience-shell",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Shows repo identity and presentation banner",
+      "lineCount": 74,
+      "filePath": "app/src/components/layout/TopBar.jsx"
+    },
+    {
+      "id": "file-app-src-components-layout-statusbar-jsx",
+      "label": "StatusBar.jsx",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-experience-shell",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Shows branch, sync state, and project credit",
+      "lineCount": 89,
+      "filePath": "app/src/components/layout/StatusBar.jsx"
+    },
+    {
+      "id": "file-app-src-components-graph-graphcanvas-jsx",
+      "label": "GraphCanvas.jsx",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-experience-scene",
+      "health": "red",
+      "healthReason": "Scene orchestration hotspot at 589 lines",
+      "summary": "Builds the visible scene, emphasis, and camera rules",
+      "lineCount": 589,
+      "filePath": "app/src/components/graph/GraphCanvas.jsx"
+    },
+    {
+      "id": "file-app-src-components-graph-presentationoverlay-jsx",
+      "label": "PresentationOverlay.jsx",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-experience-scene",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Types walkthrough narration over the scene",
+      "lineCount": 108,
+      "filePath": "app/src/components/graph/PresentationOverlay.jsx"
+    },
+    {
+      "id": "file-app-src-components-graph-customedge-jsx",
+      "label": "CustomEdge.jsx",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-experience-scene",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Renders map relationships with emphasis styling",
+      "lineCount": 54,
+      "filePath": "app/src/components/graph/CustomEdge.jsx"
+    },
+    {
+      "id": "file-app-src-components-ui-zoomcontrols-jsx",
+      "label": "ZoomControls.jsx",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-experience-scene",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Viewport controls for free mode and presentation",
+      "lineCount": 104,
+      "filePath": "app/src/components/ui/ZoomControls.jsx"
+    },
+    {
+      "id": "file-app-src-components-graph-systemnode-jsx",
+      "label": "SystemNode.jsx",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-experience-nodes",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Renders expandable system containers",
+      "lineCount": 191,
+      "filePath": "app/src/components/graph/SystemNode.jsx"
+    },
+    {
+      "id": "file-app-src-components-graph-filenode-jsx",
+      "label": "FileNode.jsx",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-experience-nodes",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Renders file cards and nested function surfaces",
+      "lineCount": 154,
+      "filePath": "app/src/components/graph/FileNode.jsx"
+    },
+    {
+      "id": "file-app-src-components-graph-functionnode-jsx",
+      "label": "FunctionNode.jsx",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-experience-nodes",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Renders function chips with reveal motion",
+      "lineCount": 87,
+      "filePath": "app/src/components/graph/FunctionNode.jsx"
+    },
+    {
+      "id": "file-app-src-components-graph-floatingdescription-jsx",
+      "label": "FloatingDescription.jsx",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-experience-nodes",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Shows contextual descriptions near focused nodes",
+      "lineCount": 60,
+      "filePath": "app/src/components/graph/FloatingDescription.jsx"
+    },
+    {
+      "id": "file-app-src-components-graph-nodeicons-js",
+      "label": "nodeIcons.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-experience-nodes",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Maps system icons onto lucide glyphs",
+      "lineCount": 38,
+      "filePath": "app/src/components/graph/nodeIcons.js"
+    },
+    {
+      "id": "file-app-src-components-graph-systemnodesizing-js",
+      "label": "systemNodeSizing.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-experience-nodes",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Defines nested spacing and sizing rules for the map",
+      "lineCount": 112,
+      "filePath": "app/src/components/graph/systemNodeSizing.js"
+    },
+    {
+      "id": "file-app-src-hooks-usegraphdata-js",
+      "label": "useGraphData.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-experience-state",
+      "health": "yellow",
+      "healthReason": "Polling, graph transform, and runtime apply flow are tightly coupled",
+      "summary": "Polls runtime JSON and normalizes it for React Flow",
+      "lineCount": 368,
+      "filePath": "app/src/hooks/useGraphData.js"
+    },
+    {
+      "id": "file-app-src-hooks-uselayout-js",
+      "label": "useLayout.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-experience-state",
+      "health": "yellow",
+      "healthReason": "Layout caching and geometry mutation are coupled in one hook",
+      "summary": "Computes stable nested layout geometry for the scene",
+      "lineCount": 271,
+      "filePath": "app/src/hooks/useLayout.js"
+    },
+    {
+      "id": "file-app-src-store-graphstore-js",
+      "label": "graphStore.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-experience-state",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Zustand store for graph, emphasis, and presentation state",
+      "lineCount": 142,
+      "filePath": "app/src/store/graphStore.js"
+    },
+    {
+      "id": "file-app-src-lib-graphnodeutils-js",
+      "label": "graphNodeUtils.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-experience-state",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Branch, ancestry, and visibility helpers for the map",
+      "lineCount": 144,
+      "filePath": "app/src/lib/graphNodeUtils.js"
+    },
+    {
+      "id": "file-app-src-lib-systemtreelayout-js",
+      "label": "systemTreeLayout.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-experience-state",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Measures nested system trees without React Flow",
+      "lineCount": 219,
+      "filePath": "app/src/lib/systemTreeLayout.js"
+    },
+    {
+      "id": "file-app-src-lib-layoutengine-js",
+      "label": "layoutEngine.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-experience-state",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Runs ELK for top-level system placement",
+      "lineCount": 53,
+      "filePath": "app/src/lib/layoutEngine.js"
+    },
+    {
+      "id": "file-app-src-hooks-usezoomlevel-js",
+      "label": "useZoomLevel.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-experience-state",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Maps viewport zoom onto semantic detail levels",
+      "lineCount": 30,
+      "filePath": "app/src/hooks/useZoomLevel.js"
+    },
+    {
+      "id": "file-app-src-hooks-useclipboard-js",
+      "label": "useClipboard.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-experience-state",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Copies selected node context out of the map",
+      "lineCount": 61,
+      "filePath": "app/src/hooks/useClipboard.js"
+    },
+    {
+      "id": "file-app-src-mcp-handlers-js",
+      "label": "handlers.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-experience-bridge",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Maps MCP tool calls onto runtime-side handlers",
+      "lineCount": 162,
+      "filePath": "app/src/mcp/handlers.js"
+    },
+    {
+      "id": "file-app-src-mcp-server-js",
+      "label": "server.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-experience-bridge",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Starts the in-app MCP stdio server",
+      "lineCount": 30,
+      "filePath": "app/src/mcp/server.js"
+    },
+    {
+      "id": "file-app-vite-config-js",
+      "label": "vite.config.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-experience-tooling",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Configures Vite dev server and app bundling",
+      "lineCount": 40,
+      "filePath": "app/vite.config.js"
+    },
+    {
+      "id": "file-app-tailwind-config-js",
+      "label": "tailwind.config.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-experience-tooling",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Minimal Tailwind content scaffold for the app",
+      "lineCount": 9,
+      "filePath": "app/tailwind.config.js"
+    },
+    {
+      "id": "file-app-postcss-config-js",
+      "label": "postcss.config.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-experience-tooling",
+      "health": "green",
+      "healthReason": null,
+      "summary": "PostCSS plugin wiring for the bundled app",
+      "lineCount": 3,
+      "filePath": "app/postcss.config.js"
+    },
+    {
+      "id": "file-skill-commands-control-js",
+      "label": "control.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-skill-commands",
+      "health": "red",
+      "healthReason": "Single command surface handles mode, focus, highlight, and caption flows",
+      "summary": "Manual control surface for highlight, present, and mode changes",
+      "lineCount": 553,
+      "filePath": "skill/commands/control.js"
+    },
+    {
+      "id": "file-skill-commands-setup-claudemap-js",
+      "label": "setup-claudemap.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-skill-commands",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Full setup flow from snapshot to rendered graph",
+      "lineCount": 170,
+      "filePath": "skill/commands/setup-claudemap.js"
+    },
+    {
+      "id": "file-skill-commands-update-js",
+      "label": "update.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-skill-commands",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Refreshes graph state incrementally after file changes",
+      "lineCount": 182,
+      "filePath": "skill/commands/update.js"
+    },
+    {
+      "id": "file-skill-commands-open-claudemap-js",
+      "label": "open-claudemap.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-skill-commands",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Reopens the current runtime without rebuilding",
+      "lineCount": 93,
+      "filePath": "skill/commands/open-claudemap.js"
+    },
+    {
+      "id": "file-skill-commands-snapshot-js",
+      "label": "snapshot.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-skill-commands",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Writes a project snapshot JSON for graph synthesis",
+      "lineCount": 68,
+      "filePath": "skill/commands/snapshot.js"
+    },
+    {
+      "id": "file-skill-lib-file-walker-js",
+      "label": "file-walker.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-skill-analysis",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Recursively collects import and export aware file metadata",
+      "lineCount": 274,
+      "filePath": "skill/lib/file-walker.js"
+    },
+    {
+      "id": "file-skill-lib-cache-js",
+      "label": "cache.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-skill-analysis",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Persists cached graph state beside the target repo",
+      "lineCount": 88,
+      "filePath": "skill/lib/cache.js"
+    },
+    {
+      "id": "file-skill-lib-differ-js",
+      "label": "differ.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-skill-analysis",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Computes file and graph deltas for refresh flows",
+      "lineCount": 92,
+      "filePath": "skill/lib/differ.js"
+    },
+    {
+      "id": "file-skill-lib-enrichment-js",
+      "label": "enrichment.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-skill-synthesis",
+      "health": "yellow",
+      "healthReason": "Prompting, demo fallbacks, and graph selection share one file",
+      "summary": "Chooses demo, heuristic, or Claude-authored graphs",
+      "lineCount": 492,
+      "filePath": "skill/lib/enrichment.js"
+    },
+    {
+      "id": "file-skill-prompts-enrichment-txt",
+      "label": "enrichment.txt",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-skill-synthesis",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Graph contract and grouping rules for synthesis",
+      "lineCount": 78,
+      "filePath": "skill/prompts/enrichment.txt"
+    },
+    {
+      "id": "file-agents-claudemap-architect-md",
+      "label": "claudemap-architect.md",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-skill-synthesis",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Architect guidance for stable system boundaries",
+      "lineCount": 69,
+      "filePath": "agents/claudemap-architect.md"
+    },
+    {
+      "id": "file-skill-lib-mcp-client-js",
+      "label": "mcp-client.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-skill-runtime",
+      "health": "red",
+      "healthReason": "Bridge file mixes runtime IO, state normalization, and tool wrappers",
+      "summary": "Reads and writes runtime graph state through MCP or file shim",
+      "lineCount": 748,
+      "filePath": "skill/lib/mcp-client.js"
+    },
+    {
+      "id": "file-skill-lib-launcher-js",
+      "label": "launcher.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-skill-runtime",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Starts or reuses the ClaudeMap dev server and browser",
+      "lineCount": 107,
+      "filePath": "skill/lib/launcher.js"
+    },
+    {
+      "id": "file-contracts-claudemap-sample-json",
+      "label": "claudemap.sample.json",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-demo-seeds",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Express-shaped seeded graph used as the current demo",
+      "lineCount": 634,
+      "filePath": "contracts/claudemap.sample.json"
+    },
+    {
+      "id": "file-contracts-claudemap-runtime-state-sample-json",
+      "label": "claudemap-runtime-state.sample.json",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-demo-seeds",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Default free-mode runtime envelope for demos",
+      "lineCount": 28,
+      "filePath": "contracts/claudemap-runtime-state.sample.json"
+    },
+    {
+      "id": "file-demo-expressjs-cache-json",
+      "label": "expressjs-cache.json",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-demo-seeds",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Cached Express demo graph used by demo fallback",
+      "lineCount": 828,
+      "filePath": "demo/expressjs-cache.json"
+    },
+    {
+      "id": "file-contracts-schema-md",
+      "label": "schema.md",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-demo-docs",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Human-readable graph and runtime schema notes",
+      "lineCount": 90,
+      "filePath": "contracts/schema.md"
+    },
+    {
+      "id": "file-demo-readme-md",
+      "label": "README.md",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-demo-docs",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Explains the demo sandbox layout and usage",
+      "lineCount": 10,
+      "filePath": "demo/README.md"
+    },
+    {
+      "id": "file-scripts-package-claudemap-skill-js",
+      "label": "package-claudemap-skill.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "firstdemo-delivery-packager",
+      "health": "red",
+      "healthReason": "One script assembles runtime files, docs, and demo packaging",
+      "summary": "Builds the artifact, slash commands, and demo installs",
+      "lineCount": 574,
+      "filePath": "scripts/package-claudemap-skill.js"
+    },
+    {
+      "id": "function-app-src-app-jsx-app",
+      "label": "App",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-app-src-app-jsx",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Composes the app shell around the graph runtime",
+      "lineCount": 28,
+      "filePath": "app/src/App.jsx"
+    },
+    {
+      "id": "function-app-src-components-graph-graphruntime-jsx-graphruntime",
+      "label": "GraphRuntime",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-app-src-components-graph-graphruntime-jsx",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Wraps React Flow and presentation overlays",
+      "lineCount": 21,
+      "filePath": "app/src/components/graph/GraphRuntime.jsx"
+    },
+    {
+      "id": "function-app-src-components-layout-topbar-jsx-topbar",
+      "label": "TopBar",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-app-src-components-layout-topbar-jsx",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Renders the title bar and presentation banner",
+      "lineCount": 28,
+      "filePath": "app/src/components/layout/TopBar.jsx"
+    },
+    {
+      "id": "function-app-src-components-layout-statusbar-jsx-statusbar",
+      "label": "StatusBar",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-app-src-components-layout-statusbar-jsx",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Formats sync, branch, and credit status",
+      "lineCount": 33,
+      "filePath": "app/src/components/layout/StatusBar.jsx"
+    },
+    {
+      "id": "function-app-src-components-graph-graphcanvas-jsx-graphcanvas",
+      "label": "GraphCanvas",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-app-src-components-graph-graphcanvas-jsx",
+      "health": "red",
+      "healthReason": "Main graph scene hotspot",
+      "summary": "Binds store state into the visible React Flow scene",
+      "lineCount": 88,
+      "filePath": "app/src/components/graph/GraphCanvas.jsx"
+    },
+    {
+      "id": "function-app-src-components-graph-graphcanvas-jsx-focusnodebyid",
+      "label": "focusNodeById",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-app-src-components-graph-graphcanvas-jsx",
+      "health": "yellow",
+      "healthReason": "Camera rules are interleaved with selection state",
+      "summary": "Centers the camera on the current presentation target",
+      "lineCount": 64,
+      "filePath": "app/src/components/graph/GraphCanvas.jsx"
+    },
+    {
+      "id": "function-app-src-components-graph-graphcanvas-jsx-onnodeclick",
+      "label": "onNodeClick",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-app-src-components-graph-graphcanvas-jsx",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Handles selection, clipboard copy, and branch reset",
+      "lineCount": 24,
+      "filePath": "app/src/components/graph/GraphCanvas.jsx"
+    },
+    {
+      "id": "function-app-src-components-graph-presentationoverlay-jsx-presentationoverlay",
+      "label": "PresentationOverlay",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-app-src-components-graph-presentationoverlay-jsx",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Types explanation copy over the scene",
+      "lineCount": 35,
+      "filePath": "app/src/components/graph/PresentationOverlay.jsx"
+    },
+    {
+      "id": "function-app-src-components-graph-customedge-jsx-customedge",
+      "label": "CustomEdge",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-app-src-components-graph-customedge-jsx",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Styles edges for emphasis and presentation state",
+      "lineCount": 22,
+      "filePath": "app/src/components/graph/CustomEdge.jsx"
+    },
+    {
+      "id": "function-app-src-components-ui-zoomcontrols-jsx-zoomcontrols",
+      "label": "ZoomControls",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-app-src-components-ui-zoomcontrols-jsx",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Handles zoom, fit, and health toggles",
+      "lineCount": 42,
+      "filePath": "app/src/components/ui/ZoomControls.jsx"
+    },
+    {
+      "id": "function-app-src-components-graph-systemnode-jsx-systemnode",
+      "label": "SystemNode",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-app-src-components-graph-systemnode-jsx",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Draws expandable system cards and health state",
+      "lineCount": 60,
+      "filePath": "app/src/components/graph/SystemNode.jsx"
+    },
+    {
+      "id": "function-app-src-components-graph-filenode-jsx-filenode",
+      "label": "FileNode",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-app-src-components-graph-filenode-jsx",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Draws file cards with nested function sections",
+      "lineCount": 55,
+      "filePath": "app/src/components/graph/FileNode.jsx"
+    },
+    {
+      "id": "function-app-src-components-graph-functionnode-jsx-functionnode",
+      "label": "FunctionNode",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-app-src-components-graph-functionnode-jsx",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Draws function chips with reveal timing",
+      "lineCount": 34,
+      "filePath": "app/src/components/graph/FunctionNode.jsx"
+    },
+    {
+      "id": "function-app-src-components-graph-floatingdescription-jsx-floatingdescription",
+      "label": "FloatingDescription",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-app-src-components-graph-floatingdescription-jsx",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Shows contextual descriptions near nodes",
+      "lineCount": 24,
+      "filePath": "app/src/components/graph/FloatingDescription.jsx"
+    },
+    {
+      "id": "function-app-src-components-graph-nodeicons-js-getnodeicon",
+      "label": "getNodeIcon",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-app-src-components-graph-nodeicons-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Resolves system icon names into lucide components",
+      "lineCount": 18,
+      "filePath": "app/src/components/graph/nodeIcons.js"
+    },
+    {
+      "id": "function-app-src-components-graph-systemnodesizing-js-getsystemnodesize",
+      "label": "getSystemNodeSize",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-app-src-components-graph-systemnodesizing-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Computes system container dimensions from child layout",
+      "lineCount": 30,
+      "filePath": "app/src/components/graph/systemNodeSizing.js"
+    },
+    {
+      "id": "function-app-src-components-graph-systemnodesizing-js-getfunctionnodeposition",
+      "label": "getFunctionNodePosition",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-app-src-components-graph-systemnodesizing-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Places function chips inside expanded files",
+      "lineCount": 14,
+      "filePath": "app/src/components/graph/systemNodeSizing.js"
+    },
+    {
+      "id": "function-app-src-hooks-usegraphdata-js-transformtoreactflow",
+      "label": "transformToReactFlow",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-app-src-hooks-usegraphdata-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Transforms graph JSON into React Flow nodes and edges",
+      "lineCount": 88,
+      "filePath": "app/src/hooks/useGraphData.js"
+    },
+    {
+      "id": "function-app-src-hooks-usegraphdata-js-usegraphdata",
+      "label": "useGraphData",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-app-src-hooks-usegraphdata-js",
+      "health": "yellow",
+      "healthReason": "Fetch, apply, and fallback logic are bundled together",
+      "summary": "Polls runtime files and applies graph/runtime updates",
+      "lineCount": 86,
+      "filePath": "app/src/hooks/useGraphData.js"
+    },
+    {
+      "id": "function-app-src-hooks-uselayout-js-uselayout",
+      "label": "useLayout",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-app-src-hooks-uselayout-js",
+      "health": "yellow",
+      "healthReason": "Layout cache and geometry writes share one hook",
+      "summary": "Recomputes nested layout geometry while keeping the scene stable",
+      "lineCount": 92,
+      "filePath": "app/src/hooks/useLayout.js"
+    },
+    {
+      "id": "function-app-src-store-graphstore-js-setruntimecontrols",
+      "label": "setRuntimeControls",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-app-src-store-graphstore-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Applies runtime focus, highlight, and presentation state",
+      "lineCount": 44,
+      "filePath": "app/src/store/graphStore.js"
+    },
+    {
+      "id": "function-app-src-lib-graphnodeutils-js-getsystempath",
+      "label": "getSystemPath",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-app-src-lib-graphnodeutils-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Builds the ancestor system path for a node",
+      "lineCount": 22,
+      "filePath": "app/src/lib/graphNodeUtils.js"
+    },
+    {
+      "id": "function-app-src-lib-graphnodeutils-js-isnodevisible",
+      "label": "isNodeVisible",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-app-src-lib-graphnodeutils-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Decides which nested nodes are visible in the current scene",
+      "lineCount": 28,
+      "filePath": "app/src/lib/graphNodeUtils.js"
+    },
+    {
+      "id": "function-app-src-lib-systemtreelayout-js-buildsystemtreelayout",
+      "label": "buildSystemTreeLayout",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-app-src-lib-systemtreelayout-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Measures nested system trees and child positions",
+      "lineCount": 78,
+      "filePath": "app/src/lib/systemTreeLayout.js"
+    },
+    {
+      "id": "function-app-src-lib-layoutengine-js-computelayout",
+      "label": "computeLayout",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-app-src-lib-layoutengine-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Uses ELK to place top-level systems",
+      "lineCount": 28,
+      "filePath": "app/src/lib/layoutEngine.js"
+    },
+    {
+      "id": "function-app-src-hooks-usezoomlevel-js-usezoomlevel",
+      "label": "useZoomLevel",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-app-src-hooks-usezoomlevel-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Converts viewport zoom into semantic detail levels",
+      "lineCount": 18,
+      "filePath": "app/src/hooks/useZoomLevel.js"
+    },
+    {
+      "id": "function-app-src-hooks-useclipboard-js-copynodetoclipboard",
+      "label": "copyNodeToClipboard",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-app-src-hooks-useclipboard-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Copies clicked node context for explanation flows",
+      "lineCount": 24,
+      "filePath": "app/src/hooks/useClipboard.js"
+    },
+    {
+      "id": "function-app-src-mcp-handlers-js-createtoolhandlers",
+      "label": "createToolHandlers",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-app-src-mcp-handlers-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Builds MCP tool handlers backed by the runtime bridge",
+      "lineCount": 54,
+      "filePath": "app/src/mcp/handlers.js"
+    },
+    {
+      "id": "function-skill-commands-control-js-main",
+      "label": "main",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-commands-control-js",
+      "health": "red",
+      "healthReason": "Control entrypoint spans many presentation flows",
+      "summary": "Routes CLI control actions into the live map runtime",
+      "lineCount": 120,
+      "filePath": "skill/commands/control.js"
+    },
+    {
+      "id": "function-skill-commands-control-js-resolvenodes",
+      "label": "resolveNodes",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-commands-control-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Resolves one or more graph targets from user queries",
+      "lineCount": 18,
+      "filePath": "skill/commands/control.js"
+    },
+    {
+      "id": "function-skill-commands-control-js-buildhighlightnodeids",
+      "label": "buildHighlightNodeIds",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-commands-control-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Expands selection into ancestors and branch highlights",
+      "lineCount": 24,
+      "filePath": "skill/commands/control.js"
+    },
+    {
+      "id": "function-skill-commands-setup-claudemap-js-main",
+      "label": "main",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-commands-setup-claudemap-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Runs snapshot, enrichment, render, and app launch setup",
+      "lineCount": 82,
+      "filePath": "skill/commands/setup-claudemap.js"
+    },
+    {
+      "id": "function-skill-commands-update-js-main",
+      "label": "main",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-commands-update-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Runs refresh flow and preserves preferred graphs",
+      "lineCount": 92,
+      "filePath": "skill/commands/update.js"
+    },
+    {
+      "id": "function-skill-commands-update-js-applyincrementalgraphupdate",
+      "label": "applyIncrementalGraphUpdate",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-commands-update-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Patches the live graph when the delta is small enough",
+      "lineCount": 30,
+      "filePath": "skill/commands/update.js"
+    },
+    {
+      "id": "function-skill-commands-open-claudemap-js-main",
+      "label": "main",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-commands-open-claudemap-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Reopens the app and reports current runtime state",
+      "lineCount": 44,
+      "filePath": "skill/commands/open-claudemap.js"
+    },
+    {
+      "id": "function-skill-commands-open-claudemap-js-readruntimegraph",
+      "label": "readRuntimeGraph",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-commands-open-claudemap-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Reads the current runtime graph summary from disk",
+      "lineCount": 24,
+      "filePath": "skill/commands/open-claudemap.js"
+    },
+    {
+      "id": "function-skill-commands-snapshot-js-main",
+      "label": "main",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-commands-snapshot-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Writes a snapshot payload for a target project",
+      "lineCount": 28,
+      "filePath": "skill/commands/snapshot.js"
+    },
+    {
+      "id": "function-skill-lib-file-walker-js-collectprojectsnapshot",
+      "label": "collectProjectSnapshot",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-file-walker-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Walks the repo and extracts import/export-aware file records",
+      "lineCount": 44,
+      "filePath": "skill/lib/file-walker.js"
+    },
+    {
+      "id": "function-skill-lib-cache-js-writecache",
+      "label": "writeCache",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-cache-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Persists a graph and normalized file list to disk",
+      "lineCount": 22,
+      "filePath": "skill/lib/cache.js"
+    },
+    {
+      "id": "function-skill-lib-cache-js-iscachestale",
+      "label": "isCacheStale",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-cache-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Checks whether cached file metadata still matches the repo",
+      "lineCount": 28,
+      "filePath": "skill/lib/cache.js"
+    },
+    {
+      "id": "function-skill-lib-differ-js-difffiles",
+      "label": "diffFiles",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-differ-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Calculates added, removed, and changed files",
+      "lineCount": 26,
+      "filePath": "skill/lib/differ.js"
+    },
+    {
+      "id": "function-skill-lib-differ-js-diffgraphs",
+      "label": "diffGraphs",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-differ-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Calculates node and edge deltas between graph revisions",
+      "lineCount": 38,
+      "filePath": "skill/lib/differ.js"
+    },
+    {
+      "id": "function-skill-lib-enrichment-js-enrichgraph",
+      "label": "enrichGraph",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-enrichment-js",
+      "health": "yellow",
+      "healthReason": "Enrichment path combines several fallback modes",
+      "summary": "Chooses response overrides, demo fallback, or heuristic graphing",
+      "lineCount": 42,
+      "filePath": "skill/lib/enrichment.js"
+    },
+    {
+      "id": "function-skill-lib-enrichment-js-selectpreferredgraph",
+      "label": "selectPreferredGraph",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-enrichment-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Preserves higher-priority graphs over weaker regenerations",
+      "lineCount": 18,
+      "filePath": "skill/lib/enrichment.js"
+    },
+    {
+      "id": "function-skill-lib-enrichment-js-createheuristicgraph",
+      "label": "createHeuristicGraph",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-enrichment-js",
+      "health": "yellow",
+      "healthReason": "Folder heuristics are packed into one large function",
+      "summary": "Builds a fallback graph from file-group heuristics",
+      "lineCount": 92,
+      "filePath": "skill/lib/enrichment.js"
+    },
+    {
+      "id": "function-skill-lib-mcp-client-js-rendergraph",
+      "label": "renderGraph",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-mcp-client-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Writes a full graph payload into the live runtime",
+      "lineCount": 18,
+      "filePath": "skill/lib/mcp-client.js"
+    },
+    {
+      "id": "function-skill-lib-mcp-client-js-setpresentationmode",
+      "label": "setPresentationMode",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-mcp-client-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Changes presentation mode and resets scene state when needed",
+      "lineCount": 18,
+      "filePath": "skill/lib/mcp-client.js"
+    },
+    {
+      "id": "function-skill-lib-mcp-client-js-presentstep",
+      "label": "presentStep",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-mcp-client-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Applies a guided step with focus, highlights, and narration",
+      "lineCount": 20,
+      "filePath": "skill/lib/mcp-client.js"
+    },
+    {
+      "id": "function-skill-lib-mcp-client-js-applygraphpatch",
+      "label": "applyGraphPatch",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-mcp-client-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Applies incremental graph changes into the runtime",
+      "lineCount": 18,
+      "filePath": "skill/lib/mcp-client.js"
+    },
+    {
+      "id": "function-skill-lib-launcher-js-launchclaudemapwindow",
+      "label": "launchClaudeMapWindow",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-launcher-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Starts or reuses the dev server and optionally opens the browser",
+      "lineCount": 36,
+      "filePath": "skill/lib/launcher.js"
+    },
+    {
+      "id": "function-skill-lib-launcher-js-isclaudemapapprunning",
+      "label": "isClaudeMapAppRunning",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-launcher-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Checks whether the dev server is already reachable",
+      "lineCount": 18,
+      "filePath": "skill/lib/launcher.js"
+    },
+    {
+      "id": "function-scripts-package-claudemap-skill-js-writeruntimeplaceholders",
+      "label": "writeRuntimePlaceholders",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-scripts-package-claudemap-skill-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Seeds runtime graph and clean runtime state into the artifact",
+      "lineCount": 24,
+      "filePath": "scripts/package-claudemap-skill.js"
+    },
+    {
+      "id": "function-scripts-package-claudemap-skill-js-writeslashcommands",
+      "label": "writeSlashCommands",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-scripts-package-claudemap-skill-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Writes slash-command docs into the packaged bundle",
+      "lineCount": 18,
+      "filePath": "scripts/package-claudemap-skill.js"
+    },
+    {
+      "id": "function-scripts-package-claudemap-skill-js-syncartifactintodemo",
+      "label": "syncArtifactIntoDemo",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-scripts-package-claudemap-skill-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Refreshes the local demo install from the packaged artifact",
+      "lineCount": 22,
+      "filePath": "scripts/package-claudemap-skill.js"
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-experience-skill",
+      "source": "firstdemo-experience",
+      "target": "firstdemo-skill",
+      "type": "uses"
+    },
+    {
+      "id": "edge-skill-experience",
+      "source": "firstdemo-skill",
+      "target": "firstdemo-experience",
+      "type": "uses"
+    },
+    {
+      "id": "edge-experience-demo",
+      "source": "firstdemo-experience",
+      "target": "firstdemo-demo",
+      "type": "imports"
+    },
+    {
+      "id": "edge-skill-demo",
+      "source": "firstdemo-skill",
+      "target": "firstdemo-demo",
+      "type": "uses"
+    },
+    {
+      "id": "edge-delivery-experience",
+      "source": "firstdemo-delivery",
+      "target": "firstdemo-experience",
+      "type": "uses"
+    },
+    {
+      "id": "edge-delivery-skill",
+      "source": "firstdemo-delivery",
+      "target": "firstdemo-skill",
+      "type": "uses"
+    },
+    {
+      "id": "edge-delivery-demo",
+      "source": "firstdemo-delivery",
+      "target": "firstdemo-demo",
+      "type": "uses"
+    }
+  ],
+  "files": [
+    {
+      "path": "app/src/main.jsx",
+      "relativePath": "app/src/main.jsx",
+      "name": "main.jsx",
+      "directory": "app/src",
+      "lineCount": 11,
+      "imports": [
+        "react",
+        "react-dom/client",
+        "./App",
+        "./styles/globals.css"
+      ],
+      "exports": [],
+      "language": "javascript",
+      "mtimeMs": 1775924668954.3645
+    },
+    {
+      "path": "app/src/App.jsx",
+      "relativePath": "app/src/App.jsx",
+      "name": "App.jsx",
+      "directory": "app/src",
+      "lineCount": 47,
+      "imports": [
+        "react",
+        "./components/layout/TopBar",
+        "./components/layout/StatusBar",
+        "./components/graph/GraphRuntime"
+      ],
+      "exports": [
+        "App"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1775946057425.3186
+    },
+    {
+      "path": "app/src/components/graph/GraphRuntime.jsx",
+      "relativePath": "app/src/components/graph/GraphRuntime.jsx",
+      "name": "GraphRuntime.jsx",
+      "directory": "app/src/components/graph",
+      "lineCount": 31,
+      "imports": [
+        "@xyflow/react",
+        "./GraphCanvas",
+        "./PresentationOverlay",
+        "../../store/graphStore"
+      ],
+      "exports": [
+        "GraphRuntime"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1775964089358.1638
+    },
+    {
+      "path": "app/src/components/layout/TopBar.jsx",
+      "relativePath": "app/src/components/layout/TopBar.jsx",
+      "name": "TopBar.jsx",
+      "directory": "app/src/components/layout",
+      "lineCount": 74,
+      "imports": [
+        "lucide-react",
+        "../../store/graphStore"
+      ],
+      "exports": [
+        "TopBar"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1775970903896.5896
+    },
+    {
+      "path": "app/src/components/layout/StatusBar.jsx",
+      "relativePath": "app/src/components/layout/StatusBar.jsx",
+      "name": "StatusBar.jsx",
+      "directory": "app/src/components/layout",
+      "lineCount": 89,
+      "imports": [
+        "react",
+        "lucide-react",
+        "../../store/graphStore"
+      ],
+      "exports": [
+        "StatusBar"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1775972349509.5037
+    },
+    {
+      "path": "app/src/components/graph/GraphCanvas.jsx",
+      "relativePath": "app/src/components/graph/GraphCanvas.jsx",
+      "name": "GraphCanvas.jsx",
+      "directory": "app/src/components/graph",
+      "lineCount": 589,
+      "imports": [
+        "@xyflow/react",
+        "react",
+        "../ui/ZoomControls",
+        "../../store/graphStore",
+        "../../hooks/useGraphData",
+        "../../hooks/useLayout",
+        "./SystemNode",
+        "./CustomEdge",
+        "./FileNode",
+        "./FunctionNode",
+        "../../hooks/useZoomLevel",
+        "../../hooks/useClipboard",
+        "./systemNodeSizing",
+        "../../lib/graphNodeUtils",
+        "@xyflow/react/dist/style.css"
+      ],
+      "exports": [
+        "GraphCanvas"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1775970927864.4497
+    },
+    {
+      "path": "app/src/components/graph/PresentationOverlay.jsx",
+      "relativePath": "app/src/components/graph/PresentationOverlay.jsx",
+      "name": "PresentationOverlay.jsx",
+      "directory": "app/src/components/graph",
+      "lineCount": 108,
+      "imports": [
+        "react",
+        "../../store/graphStore"
+      ],
+      "exports": [
+        "PresentationOverlay"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1775970903901.8535
+    },
+    {
+      "path": "app/src/components/graph/CustomEdge.jsx",
+      "relativePath": "app/src/components/graph/CustomEdge.jsx",
+      "name": "CustomEdge.jsx",
+      "directory": "app/src/components/graph",
+      "lineCount": 54,
+      "imports": [
+        "@xyflow/react"
+      ],
+      "exports": [
+        "CustomEdge"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1775965185178.6084
+    },
+    {
+      "path": "app/src/components/ui/ZoomControls.jsx",
+      "relativePath": "app/src/components/ui/ZoomControls.jsx",
+      "name": "ZoomControls.jsx",
+      "directory": "app/src/components/ui",
+      "lineCount": 104,
+      "imports": [
+        "lucide-react",
+        "@xyflow/react",
+        "../../store/graphStore"
+      ],
+      "exports": [
+        "ZoomControls"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1775970903906.335
+    },
+    {
+      "path": "app/src/components/graph/SystemNode.jsx",
+      "relativePath": "app/src/components/graph/SystemNode.jsx",
+      "name": "SystemNode.jsx",
+      "directory": "app/src/components/graph",
+      "lineCount": 191,
+      "imports": [
+        "@xyflow/react",
+        "lucide-react",
+        "./nodeIcons",
+        "./systemNodeSizing",
+        "./FloatingDescription"
+      ],
+      "exports": [
+        "SystemNode"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1775965140660.0537
+    },
+    {
+      "path": "app/src/components/graph/FileNode.jsx",
+      "relativePath": "app/src/components/graph/FileNode.jsx",
+      "name": "FileNode.jsx",
+      "directory": "app/src/components/graph",
+      "lineCount": 154,
+      "imports": [
+        "@xyflow/react",
+        "react",
+        "./FloatingDescription"
+      ],
+      "exports": [
+        "FileNode"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1775968748790.6116
+    },
+    {
+      "path": "app/src/components/graph/FunctionNode.jsx",
+      "relativePath": "app/src/components/graph/FunctionNode.jsx",
+      "name": "FunctionNode.jsx",
+      "directory": "app/src/components/graph",
+      "lineCount": 87,
+      "imports": [
+        "@xyflow/react",
+        "react",
+        "./systemNodeSizing"
+      ],
+      "exports": [
+        "FunctionNode"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1775968693268.4856
+    },
+    {
+      "path": "app/src/components/graph/FloatingDescription.jsx",
+      "relativePath": "app/src/components/graph/FloatingDescription.jsx",
+      "name": "FloatingDescription.jsx",
+      "directory": "app/src/components/graph",
+      "lineCount": 60,
+      "imports": [
+        "react"
+      ],
+      "exports": [
+        "FloatingDescription"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1775940983810.4568
+    },
+    {
+      "path": "app/src/components/graph/nodeIcons.js",
+      "relativePath": "app/src/components/graph/nodeIcons.js",
+      "name": "nodeIcons.js",
+      "directory": "app/src/components/graph",
+      "lineCount": 38,
+      "imports": [
+        "lucide-react"
+      ],
+      "exports": [
+        "getNodeIcon"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1775926829887.1482
+    },
+    {
+      "path": "app/src/components/graph/systemNodeSizing.js",
+      "relativePath": "app/src/components/graph/systemNodeSizing.js",
+      "name": "systemNodeSizing.js",
+      "directory": "app/src/components/graph",
+      "lineCount": 112,
+      "imports": [],
+      "exports": [
+        "getSystemNodeWidth",
+        "getSystemNodeSize",
+        "getContainerChildPosition",
+        "getExpandedFileNodeHeight",
+        "getFunctionNodePosition",
+        "SYSTEM_NODE_MIN_HEIGHT",
+        "SYSTEM_NODE_LAYOUT_HEIGHT",
+        "SYSTEM_NODE_HEADER_HEIGHT",
+        "SYSTEM_NODE_BODY_PADDING_X",
+        "SYSTEM_NODE_BODY_PADDING_TOP",
+        "SYSTEM_NODE_BODY_PADDING_BOTTOM",
+        "FILE_NODE_WIDTH",
+        "FILE_NODE_HEIGHT",
+        "FILE_NODE_GAP_X",
+        "FILE_NODE_GAP_Y",
+        "FUNCTION_NODE_WIDTH",
+        "FUNCTION_NODE_HEIGHT",
+        "FUNCTION_NODE_STACK_X",
+        "FUNCTION_NODE_STACK_Y",
+        "FUNCTION_NODE_GAP_X",
+        "FUNCTION_NODE_GAP_Y",
+        "FILE_NODE_FUNCTION_PADDING_BOTTOM",
+        "SYSTEM_CHILD_CARD_WIDTH",
+        "SYSTEM_CHILD_CARD_HEIGHT"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1775968693261.7808
+    },
+    {
+      "path": "app/src/hooks/useGraphData.js",
+      "relativePath": "app/src/hooks/useGraphData.js",
+      "name": "useGraphData.js",
+      "directory": "app/src/hooks",
+      "lineCount": 368,
+      "imports": [
+        "react",
+        "../store/graphStore",
+        "../components/graph/systemNodeSizing",
+        "../../../contracts/claudemap.sample.json"
+      ],
+      "exports": [
+        "transformToReactFlow",
+        "useGraphData"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1775972349511.7412
+    },
+    {
+      "path": "app/src/hooks/useLayout.js",
+      "relativePath": "app/src/hooks/useLayout.js",
+      "name": "useLayout.js",
+      "directory": "app/src/hooks",
+      "lineCount": 271,
+      "imports": [
+        "react",
+        "../lib/layoutEngine",
+        "../lib/systemTreeLayout",
+        "../components/graph/systemNodeSizing",
+        "../lib/graphNodeUtils",
+        "../store/graphStore",
+        "./useZoomLevel"
+      ],
+      "exports": [
+        "useLayout"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1775969700627.4963
+    },
+    {
+      "path": "app/src/store/graphStore.js",
+      "relativePath": "app/src/store/graphStore.js",
+      "name": "graphStore.js",
+      "directory": "app/src/store",
+      "lineCount": 142,
+      "imports": [
+        "zustand"
+      ],
+      "exports": [
+        "useGraphStore"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1775970903917.5525
+    },
+    {
+      "path": "app/src/lib/graphNodeUtils.js",
+      "relativePath": "app/src/lib/graphNodeUtils.js",
+      "name": "graphNodeUtils.js",
+      "directory": "app/src/lib",
+      "lineCount": 144,
+      "imports": [],
+      "exports": [
+        "buildNodeByIdMap",
+        "isDescendantOf",
+        "isAncestorOf",
+        "isNodeInSelectedBranch",
+        "getTopLevelSystemId",
+        "getSystemPath",
+        "getNodeAbsolutePosition",
+        "isNodeVisible"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1775964951012.2075
+    },
+    {
+      "path": "app/src/lib/systemTreeLayout.js",
+      "relativePath": "app/src/lib/systemTreeLayout.js",
+      "name": "systemTreeLayout.js",
+      "directory": "app/src/lib",
+      "lineCount": 219,
+      "imports": [
+        "../components/graph/systemNodeSizing"
+      ],
+      "exports": [
+        "buildSystemTreeLayout",
+        "getGraphLayoutSignature"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1775964940045.089
+    },
+    {
+      "path": "app/src/lib/layoutEngine.js",
+      "relativePath": "app/src/lib/layoutEngine.js",
+      "name": "layoutEngine.js",
+      "directory": "app/src/lib",
+      "lineCount": 53,
+      "imports": [
+        "elkjs/lib/elk.bundled.js",
+        "../components/graph/systemNodeSizing"
+      ],
+      "exports": [
+        "computeLayout"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1775926829949.0425
+    },
+    {
+      "path": "app/src/hooks/useZoomLevel.js",
+      "relativePath": "app/src/hooks/useZoomLevel.js",
+      "name": "useZoomLevel.js",
+      "directory": "app/src/hooks",
+      "lineCount": 30,
+      "imports": [
+        "react"
+      ],
+      "exports": [
+        "useZoomLevel",
+        "ZOOM_LEVELS"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1775927204173.536
+    },
+    {
+      "path": "app/src/hooks/useClipboard.js",
+      "relativePath": "app/src/hooks/useClipboard.js",
+      "name": "useClipboard.js",
+      "directory": "app/src/hooks",
+      "lineCount": 61,
+      "imports": [],
+      "exports": [
+        "copyNodeToClipboard"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1775953404129.0093
+    },
+    {
+      "path": "app/src/mcp/handlers.js",
+      "relativePath": "app/src/mcp/handlers.js",
+      "name": "handlers.js",
+      "directory": "app/src/mcp",
+      "lineCount": 162,
+      "imports": [
+        "../../../skill/lib/mcp-client.js"
+      ],
+      "exports": [
+        "createToolHandlers",
+        "toolDefinitions"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1775970903933.5825
+    },
+    {
+      "path": "app/src/mcp/server.js",
+      "relativePath": "app/src/mcp/server.js",
+      "name": "server.js",
+      "directory": "app/src/mcp",
+      "lineCount": 30,
+      "imports": [
+        "@modelcontextprotocol/sdk/server/mcp.js",
+        "@modelcontextprotocol/sdk/server/stdio.js",
+        "./handlers.js"
+      ],
+      "exports": [],
+      "language": "javascript",
+      "mtimeMs": 1775945043573.9421
+    },
+    {
+      "path": "app/vite.config.js",
+      "relativePath": "app/vite.config.js",
+      "name": "vite.config.js",
+      "directory": "app",
+      "lineCount": 40,
+      "imports": [
+        "node:url",
+        "vite",
+        "@vitejs/plugin-react",
+        "@tailwindcss/vite"
+      ],
+      "exports": [
+        "defineConfig"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1775947063340.5923
+    },
+    {
+      "path": "app/tailwind.config.js",
+      "relativePath": "app/tailwind.config.js",
+      "name": "tailwind.config.js",
+      "directory": "app",
+      "lineCount": 9,
+      "imports": [],
+      "exports": [
+        "default"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1775920232673.2725
+    },
+    {
+      "path": "app/postcss.config.js",
+      "relativePath": "app/postcss.config.js",
+      "name": "postcss.config.js",
+      "directory": "app",
+      "lineCount": 3,
+      "imports": [],
+      "exports": [
+        "default"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1775920232677.2725
+    },
+    {
+      "path": "skill/commands/control.js",
+      "relativePath": "skill/commands/control.js",
+      "name": "control.js",
+      "directory": "skill/commands",
+      "lineCount": 553,
+      "imports": [
+        "../lib/mcp-client.js"
+      ],
+      "exports": [],
+      "language": "javascript",
+      "mtimeMs": 1775970903928.5698
+    },
+    {
+      "path": "skill/commands/setup-claudemap.js",
+      "relativePath": "skill/commands/setup-claudemap.js",
+      "name": "setup-claudemap.js",
+      "directory": "skill/commands",
+      "lineCount": 170,
+      "imports": [
+        "path",
+        "../lib/file-walker.js",
+        "../lib/enrichment.js",
+        "../lib/cache.js",
+        "../lib/launcher.js",
+        "../lib/mcp-client.js",
+        "fs/promises"
+      ],
+      "exports": [],
+      "language": "javascript",
+      "mtimeMs": 1775954886127.0923
+    },
+    {
+      "path": "skill/commands/update.js",
+      "relativePath": "skill/commands/update.js",
+      "name": "update.js",
+      "directory": "skill/commands",
+      "lineCount": 182,
+      "imports": [
+        "path",
+        "../lib/file-walker.js",
+        "../lib/cache.js",
+        "../lib/differ.js",
+        "../lib/enrichment.js",
+        "../lib/mcp-client.js",
+        "fs/promises"
+      ],
+      "exports": [],
+      "language": "javascript",
+      "mtimeMs": 1775954623828.761
+    },
+    {
+      "path": "skill/commands/open-claudemap.js",
+      "relativePath": "skill/commands/open-claudemap.js",
+      "name": "open-claudemap.js",
+      "directory": "skill/commands",
+      "lineCount": 93,
+      "imports": [
+        "fs",
+        "path",
+        "url",
+        "../lib/launcher.js"
+      ],
+      "exports": [],
+      "language": "javascript",
+      "mtimeMs": 1775959102991.765
+    },
+    {
+      "path": "skill/commands/snapshot.js",
+      "relativePath": "skill/commands/snapshot.js",
+      "name": "snapshot.js",
+      "directory": "skill/commands",
+      "lineCount": 68,
+      "imports": [
+        "fs",
+        "path",
+        "../lib/file-walker.js"
+      ],
+      "exports": [],
+      "language": "javascript",
+      "mtimeMs": 1775954511555.0154
+    },
+    {
+      "path": "skill/lib/file-walker.js",
+      "relativePath": "skill/lib/file-walker.js",
+      "name": "file-walker.js",
+      "directory": "skill/lib",
+      "lineCount": 274,
+      "imports": [
+        "fs",
+        "path"
+      ],
+      "exports": [
+        "collectProjectSnapshot"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1775943628829.8225
+    },
+    {
+      "path": "skill/lib/cache.js",
+      "relativePath": "skill/lib/cache.js",
+      "name": "cache.js",
+      "directory": "skill/lib",
+      "lineCount": 88,
+      "imports": [
+        "fs",
+        "path"
+      ],
+      "exports": [
+        "getCachePath",
+        "writeCache",
+        "readCache",
+        "isCacheStale"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1775943273956.4316
+    },
+    {
+      "path": "skill/lib/differ.js",
+      "relativePath": "skill/lib/differ.js",
+      "name": "differ.js",
+      "directory": "skill/lib",
+      "lineCount": 92,
+      "imports": [],
+      "exports": [
+        "diffFiles",
+        "diffGraphs"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1775944276924.541
+    },
+    {
+      "path": "skill/lib/enrichment.js",
+      "relativePath": "skill/lib/enrichment.js",
+      "name": "enrichment.js",
+      "directory": "skill/lib",
+      "lineCount": 492,
+      "imports": [
+        "fs",
+        "path",
+        "url"
+      ],
+      "exports": [
+        "getGraphSourcePriority",
+        "hasEnrichmentResponseOverride",
+        "shouldPreserveExistingGraph",
+        "selectPreferredGraph",
+        "enrichGraph",
+        "enrichSnapshot",
+        "getClaudeMapArchitectDefinition"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1775954156956.0605
+    },
+    {
+      "path": "skill/prompts/enrichment.txt",
+      "relativePath": "skill/prompts/enrichment.txt",
+      "name": "enrichment.txt",
+      "directory": "skill/prompts",
+      "lineCount": 78,
+      "imports": [],
+      "exports": [],
+      "language": "text",
+      "mtimeMs": 0
+    },
+    {
+      "path": "agents/claudemap-architect.md",
+      "relativePath": "agents/claudemap-architect.md",
+      "name": "claudemap-architect.md",
+      "directory": "agents",
+      "lineCount": 69,
+      "imports": [],
+      "exports": [],
+      "language": "markdown",
+      "mtimeMs": 0
+    },
+    {
+      "path": "skill/lib/mcp-client.js",
+      "relativePath": "skill/lib/mcp-client.js",
+      "name": "mcp-client.js",
+      "directory": "skill/lib",
+      "lineCount": 748,
+      "imports": [
+        "fs",
+        "path",
+        "url",
+        "@modelcontextprotocol/sdk/client/index.js",
+        "@modelcontextprotocol/sdk/client/stdio.js"
+      ],
+      "exports": [
+        "createMcpClient",
+        "connectMcpClient",
+        "closeMcpClient",
+        "getRuntimeGraphPath",
+        "getRuntimeStatePath",
+        "readRuntimeGraph",
+        "readRuntimeState",
+        "renderGraph",
+        "highlightNodes",
+        "clearHighlight",
+        "navigateTo",
+        "guidedFlow",
+        "setHealthOverlay",
+        "setPresentationMode",
+        "presentStep",
+        "showCaption",
+        "clearCaption",
+        "addNode",
+        "removeNode",
+        "updateNode",
+        "addEdge",
+        "removeEdge",
+        "applyGraphPatch"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1775970903923.5706
+    },
+    {
+      "path": "skill/lib/launcher.js",
+      "relativePath": "skill/lib/launcher.js",
+      "name": "launcher.js",
+      "directory": "skill/lib",
+      "lineCount": 107,
+      "imports": [
+        "http",
+        "path",
+        "child_process",
+        "url"
+      ],
+      "exports": [
+        "isClaudeMapAppRunning",
+        "launchClaudeMapWindow"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1775947111329.7122
+    },
+    {
+      "path": "contracts/claudemap.sample.json",
+      "relativePath": "contracts/claudemap.sample.json",
+      "name": "claudemap.sample.json",
+      "directory": "contracts",
+      "lineCount": 634,
+      "imports": [],
+      "exports": [],
+      "language": "json",
+      "mtimeMs": 0
+    },
+    {
+      "path": "contracts/claudemap-runtime-state.sample.json",
+      "relativePath": "contracts/claudemap-runtime-state.sample.json",
+      "name": "claudemap-runtime-state.sample.json",
+      "directory": "contracts",
+      "lineCount": 28,
+      "imports": [],
+      "exports": [],
+      "language": "json",
+      "mtimeMs": 0
+    },
+    {
+      "path": "demo/expressjs-cache.json",
+      "relativePath": "demo/expressjs-cache.json",
+      "name": "expressjs-cache.json",
+      "directory": "demo",
+      "lineCount": 828,
+      "imports": [],
+      "exports": [],
+      "language": "json",
+      "mtimeMs": 0
+    },
+    {
+      "path": "contracts/schema.md",
+      "relativePath": "contracts/schema.md",
+      "name": "schema.md",
+      "directory": "contracts",
+      "lineCount": 90,
+      "imports": [],
+      "exports": [],
+      "language": "markdown",
+      "mtimeMs": 0
+    },
+    {
+      "path": "demo/README.md",
+      "relativePath": "demo/README.md",
+      "name": "README.md",
+      "directory": "demo",
+      "lineCount": 10,
+      "imports": [],
+      "exports": [],
+      "language": "markdown",
+      "mtimeMs": 0
+    },
+    {
+      "path": "scripts/package-claudemap-skill.js",
+      "relativePath": "scripts/package-claudemap-skill.js",
+      "name": "package-claudemap-skill.js",
+      "directory": "scripts",
+      "lineCount": 574,
+      "imports": [
+        "fs",
+        "path",
+        "child_process"
+      ],
+      "exports": [],
+      "language": "javascript",
+      "mtimeMs": 1775970903939.6133
+    }
+  ]
+}

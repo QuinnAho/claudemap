@@ -38,6 +38,7 @@
   "scripts": {
     "dev": "npm --workspace app run dev",
     "build": "npm --workspace app run build",
+    "build-demo-site": "node ./scripts/build-demo-site.js",
     "mcp": "npm --workspace app run mcp",
     "install-claudemap": "node ./scripts/install-claudemap.js",
     "setup-claudemap": "npm --workspace skill run setup-claudemap --",

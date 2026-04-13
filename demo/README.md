@@ -1,33 +1,21 @@
-# Demo Sandboxes
+# Demo
 
-ClaudeMap now packages two demo-ready project sandboxes under
-`artifacts/claudemap-skill/claudemap/demo-packages/`:
+`demo/` is the source-of-truth folder for ClaudeMap's public demo story.
 
-- `FirstDemo`: a curated walkthrough of the ClaudeMap repository itself, seeded
-  from `contracts/claudemap-first-demo.json`
-- `SecondDemo`: the current Express-shaped demo, seeded from
-  `contracts/claudemap.sample.json`
+What lives here:
 
-`demo/expressjs-express/` remains the source sandbox for `SecondDemo`. Running
-`npm run package-skill` refreshes its `.claude/` install so the source demo
-still works locally:
+- `expressjs-cache.json` is the seeded graph cache used by the `--demo-cache` fallback for Express-shaped repos.
+- `../contracts/claudemap-first-demo.json` is the curated self-demo graph that powers the public "Play with ClaudeMap's map" experience.
+
+Public demo flow:
 
 ```powershell
-npm run setup-claudemap -- demo/expressjs-express
+npm run build-demo-site
 ```
 
-The Express sandbox is intentionally lightweight. It is meant for map demos,
-clipboard context, explain mode, and refresh flows, not for running a real
-server.
+That command builds the existing app as a static site, preloads the ClaudeMap self-demo graph, and writes the output to `docs/` for GitHub Pages hosting.
 
-For non-demo repositories, use the generic installer instead:
+Packaged demo flow:
 
-```powershell
-npm run install-claudemap -- ..\some-other-repo
-```
-
-After the package is published, the equivalent public flow is:
-
-```powershell
-npx claudemap install ..\some-other-repo
-```
+- `npm run package-skill` emits a single demo-ready project under `artifacts/claudemap-skill/claudemap/demo-packages/ClaudeMapDemo`.
+- That package is a curated walkthrough of the ClaudeMap repository itself, not a generic sample repo.

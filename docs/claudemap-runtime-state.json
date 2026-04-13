@@ -1,0 +1,28 @@
+{
+  "graphRevision": 0,
+  "updatedAt": "2026-04-12T05:51:22.725Z",
+  "graphMeta": {
+    "repoName": "claudemap",
+    "generatedAt": "2026-04-12T05:51:22.725Z",
+    "source": "manual",
+    "nodeCount": 118,
+    "edgeCount": 7,
+    "fileCount": 47
+  },
+  "runtime": {
+    "healthOverlay": false,
+    "highlightedNodeIds": [],
+    "highlightColor": "accent",
+    "focus": null,
+    "guidedFlow": null,
+    "presentation": {
+      "mode": "free",
+      "lockInput": false,
+      "title": null,
+      "explanation": null,
+      "body": null,
+      "stepLabel": null,
+      "updatedAt": null
+    }
+  }
+}

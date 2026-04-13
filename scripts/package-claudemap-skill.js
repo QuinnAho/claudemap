@@ -8,16 +8,14 @@ const REPO_ROOT = path.resolve(__dirname, '..')
 const DEFAULT_OUTPUT_ROOT = path.join(REPO_ROOT, 'artifacts', 'claudemap-skill')
 const ARTIFACT_NAME = 'claudemap'
 const CLAUDE_ROOT = '.claude'
-const DEMO_SOURCE_ROOT = path.join(REPO_ROOT, 'demo', 'expressjs-express')
-const DEMO_SOURCE_CLAUDE_ROOT = path.join(DEMO_SOURCE_ROOT, CLAUDE_ROOT)
 const SKILL_ROOT = path.join(CLAUDE_ROOT, 'skills', 'claudemap-runtime')
 const COMMANDS_ROOT = path.join(CLAUDE_ROOT, 'commands')
 const AGENTS_ROOT = path.join(CLAUDE_ROOT, 'agents')
 const DEMO_PACKAGES_ROOT = path.join('demo-packages')
 const DEFAULT_RUNTIME_GRAPH_PATH = path.join(REPO_ROOT, 'contracts', 'claudemap.sample.json')
-const FIRST_DEMO_GRAPH_PATH = path.join(REPO_ROOT, 'contracts', 'claudemap-first-demo.json')
-const GENERATED_DEMO_NAMES = new Set(['FirstDemo', 'SecondDemo'])
-const FIRST_DEMO_SUPPORT_FILES = [
+const CLAUDEMAP_DEMO_GRAPH_PATH = path.join(REPO_ROOT, 'contracts', 'claudemap-first-demo.json')
+const GENERATED_DEMO_NAMES = new Set(['ClaudeMapDemo'])
+const CLAUDEMAP_DEMO_SUPPORT_FILES = [
   'README.md',
   'CLAUDE.md',
   'AGENTS.md',
@@ -29,19 +27,11 @@ const FIRST_DEMO_SUPPORT_FILES = [
 
 const DEMO_DEFINITIONS = [
   {
-    name: 'FirstDemo',
-    graphSourcePath: FIRST_DEMO_GRAPH_PATH,
+    name: 'ClaudeMapDemo',
+    graphSourcePath: CLAUDEMAP_DEMO_GRAPH_PATH,
     graphContract: 'contracts/claudemap-first-demo.json',
     description: 'Curated walkthrough of the ClaudeMap codebase with nested systems, core files, and important functions.',
-    stageProject: stageFirstDemoProject,
-  },
-  {
-    name: 'SecondDemo',
-    graphSourcePath: DEFAULT_RUNTIME_GRAPH_PATH,
-    graphContract: 'contracts/claudemap.sample.json',
-    description: 'Packaged Express-shaped sandbox seeded with the current sample graph.',
-    sourceProject: 'demo/expressjs-express',
-    stageProject: stageSecondDemoProject,
+    stageProject: stageClaudeMapDemoProject,
   },
 ]
 
@@ -498,7 +488,7 @@ function writeArtifactManifest(artifactRoot, demoPackages) {
       'Install the bundled .claude directory into your target project root with scripts/install-claudemap.js, or copy it manually.',
       'The public surface is .claude/commands/*.md. The skill bundle under .claude/skills/claudemap-runtime is shared runtime infrastructure for those commands.',
       'The packaged runtime ships with the current seeded app/public graph so /open-claudemap can render immediately after install.',
-      'Demo-ready project packages are emitted under demo-packages/FirstDemo and demo-packages/SecondDemo.',
+      'The packaged demo project is emitted under demo-packages/ClaudeMapDemo.',
       'The installer script automatically runs npm install inside .claude/skills/claudemap-runtime. Manual installs still need that step.',
       'Claude Code loads project subagents from .claude/agents at session start. Restart the session or use /agents after installing the artifact if needed.',
       'If ClaudeMap is later packaged as a plugin instead of a project drop-in, subagent files should live in the plugin agents/ directory rather than .claude/agents/.',
@@ -579,23 +569,8 @@ function copyDirectoryInto(relativeSourcePath, artifactRoot, relativeTargetPath,
   })
 }
 
-function copyAbsoluteDirectoryInto(sourcePath, targetPath, shouldExclude = () => false) {
-  fs.cpSync(sourcePath, targetPath, {
-    recursive: true,
-    filter: (currentSourcePath) => {
-      const relativePath = toPosix(path.relative(sourcePath, currentSourcePath))
-
-      if (!relativePath) {
-        return true
-      }
-
-      return !shouldExclude(relativePath)
-    },
-  })
-}
-
-function stageFirstDemoProject(projectRoot) {
-  const firstDemoGraph = readJsonFileOrFallback(FIRST_DEMO_GRAPH_PATH, createEmptyRuntimeGraph)
+function stageClaudeMapDemoProject(projectRoot) {
+  const firstDemoGraph = readJsonFileOrFallback(CLAUDEMAP_DEMO_GRAPH_PATH, createEmptyRuntimeGraph)
   const mappedPaths = new Set(
     Array.isArray(firstDemoGraph.files)
       ? firstDemoGraph.files
@@ -608,13 +583,9 @@ function stageFirstDemoProject(projectRoot) {
     copyOptionalFile(relativePath, projectRoot, relativePath)
   }
 
-  for (const relativePath of FIRST_DEMO_SUPPORT_FILES) {
+  for (const relativePath of CLAUDEMAP_DEMO_SUPPORT_FILES) {
     copyOptionalFile(relativePath, projectRoot, relativePath)
   }
-}
-
-function stageSecondDemoProject(projectRoot) {
-  copyAbsoluteDirectoryInto(DEMO_SOURCE_ROOT, projectRoot, shouldExcludeDemo)
 }
 
 function createDemoPackage(artifactRoot, demoDefinition) {
@@ -678,29 +649,6 @@ function maybeCreateZip(artifactRoot, outputRoot, zipRequested) {
   return createWindowsZip(artifactRoot, outputRoot)
 }
 
-function syncSecondDemoIntoSourceSandbox(demoPackages) {
-  if (!fs.existsSync(DEMO_SOURCE_ROOT)) {
-    return null
-  }
-
-  const secondDemoPackage = demoPackages.find((demoPackage) => demoPackage.name === 'SecondDemo')
-
-  if (!secondDemoPackage) {
-    return null
-  }
-
-  const packagedClaudeRoot = path.join(secondDemoPackage.projectRoot, CLAUDE_ROOT)
-
-  if (!fs.existsSync(packagedClaudeRoot)) {
-    throw new Error(`Expected packaged ${CLAUDE_ROOT} directory at ${packagedClaudeRoot}`)
-  }
-
-  fs.rmSync(DEMO_SOURCE_CLAUDE_ROOT, { recursive: true, force: true })
-  fs.cpSync(packagedClaudeRoot, DEMO_SOURCE_CLAUDE_ROOT, { recursive: true })
-
-  return DEMO_SOURCE_CLAUDE_ROOT
-}
-
 function main() {
   const options = parseArgs(process.argv.slice(2))
 
@@ -718,7 +666,6 @@ function main() {
   writeArtifactManifest(artifactRoot, demoPackages)
 
   const zipPath = maybeCreateZip(artifactRoot, options.outputRoot, options.zip)
-  const demoSyncPath = options.demoSync ? syncSecondDemoIntoSourceSandbox(demoPackages) : null
 
   console.log(`ClaudeMap skill artifact ready at ${artifactRoot}`)
   for (const demoPackage of demoPackages) {
@@ -726,9 +673,6 @@ function main() {
   }
   if (zipPath) {
     console.log(`Zip archive ready at ${zipPath}`)
-  }
-  if (demoSyncPath) {
-    console.log(`Source demo bundle refreshed at ${demoSyncPath}`)
   }
 }
 

@@ -1,11 +1,20 @@
+import fs from 'node:fs';
 import { fileURLToPath, URL } from 'node:url';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 
+const buildConfigPath = fileURLToPath(new URL('./.claudemap-build.json', import.meta.url));
+const buildOverrides = fs.existsSync(buildConfigPath)
+  ? JSON.parse(fs.readFileSync(buildConfigPath, 'utf8'))
+  : null;
+
 export default defineConfig({
+  base: buildOverrides?.base || '/',
   plugins: [react(), tailwindcss()],
   build: {
+    outDir: buildOverrides?.outDir || 'dist',
+    emptyOutDir: Boolean(buildOverrides?.emptyOutDir),
     rollupOptions: {
       output: {
         manualChunks(id) {

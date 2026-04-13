@@ -233,6 +233,15 @@ function getRuntimeSignature(runtimeEnvelope) {
   ].join(':')
 }
 
+function createPublicAssetUrl(relativePath) {
+  if (typeof window === 'undefined') {
+    return `${import.meta.env.BASE_URL}${relativePath}`
+  }
+
+  const baseOrigin = new URL(import.meta.env.BASE_URL, window.location.origin)
+  return new URL(relativePath, baseOrigin)
+}
+
 async function loadSampleGraph() {
   if (!sampleGraphPromise) {
     sampleGraphPromise = import('../../../contracts/claudemap.sample.json')
@@ -245,7 +254,10 @@ async function loadSampleGraph() {
 
 async function fetchRuntimeGraph() {
   try {
-    const response = await window.fetch(`/claudemap-runtime.json?t=${Date.now()}`, {
+    const runtimeGraphUrl = createPublicAssetUrl('claudemap-runtime.json')
+    runtimeGraphUrl.searchParams.set('t', String(Date.now()))
+
+    const response = await window.fetch(runtimeGraphUrl, {
       cache: 'no-store',
     })
 
@@ -262,7 +274,10 @@ async function fetchRuntimeGraph() {
 
 async function fetchRuntimeEnvelope() {
   try {
-    const response = await window.fetch(`/claudemap-runtime-state.json?t=${Date.now()}`, {
+    const runtimeStateUrl = createPublicAssetUrl('claudemap-runtime-state.json')
+    runtimeStateUrl.searchParams.set('t', String(Date.now()))
+
+    const response = await window.fetch(runtimeStateUrl, {
       cache: 'no-store',
     })
 
@@ -297,9 +312,9 @@ export function useGraphData() {
 
       setGraph(nodes, edges)
       setMeta({
-        repoName: graphData.meta?.repoName || 'expressjs/express',
+        repoName: graphData.meta?.repoName || 'claudemap',
         branch: graphData.meta?.branch || 'current',
-        creditLabel: 'A Project by Quinn Aho',
+        creditLabel: graphData.meta?.creditLabel || 'ClaudeMap graph',
         source: graphData.meta?.source || 'sample',
         lastSyncedAt: Date.now(),
       })
