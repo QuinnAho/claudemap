@@ -1,154 +1,68 @@
-# ClaudeMap
-
+Welcome to...
+ 
+![ClaudeMap branding](resources/img/ClaudeMapBranding.png)
+ 
+**Google Maps for vibecoders.**
+ 
 ![ClaudeMap terminal and map view](resources/img/ClaudeTerminal+ClaudeMap.png)
-
-ClaudeMap turns a repository into a live architecture map inside Claude Code.
-It installs a `.claude` bundle, snapshots the repo, asks a dedicated
-architecture subagent to build a detailed graph, and opens a bundled UI for
-navigation, walkthroughs, and updates.
-
+ 
+AI lets you build faster than ever — but devs are getting left behind, you don't understand what you're building anymore. You can vibe code a full app in a weekend and not be able to explain how your own auth flow works. ClaudeMap fixes that.
+ 
+Unlike traditional visualization tools that just mirror your folder structure, ClaudeMap organizes your code by what it actually does. Claude reads your project and groups it into concepts like Auth, Database, and Routing — the way you actually think about your app. Zoom out to see the big picture. Zoom in to see the details. Colors show what's healthy and what's broken. Click anything and Claude explains it in plain english. Use `/explain` and Claude doesn't just respond with text — it visually walks you through your codebase on the map, highlighting the path step by step.
+ 
+All powered by the same AI you vibe code with.
+ 
 ## Demo
-
+ 
 https://www.youtube.com/watch?v=mubRRx5mXzA
-
-## 30-Second Setup
-
-Install into the repo you want to map:
-
+ 
+## Get Started
+ 
 ```bash
 npx claudemap install
 ```
-
-Then inside Claude Code:
-
-```text
+ 
+Then in Claude Code:
+ 
+```
 /setup-claudemap
 ```
-
-After code changes:
-
-```text
-/refresh
-```
-
-If you only need the UI back:
-
-```text
-/open-claudemap
-```
-
+ 
+Your codebase is now a map.
+ 
+## Commands
+ 
+| Command | What it does |
+|---------|-------------|
+| `/setup-claudemap` | Analyze your repo and generate the map |
+| `/refresh` | Update the map after code changes |
+| `/open-claudemap` | Reopen the map without rebuilding |
+| `/explain` | Visual guided walkthroughs — Claude highlights the path on your map as it explains |
+| `/claudemap-control` | Direct the map with natural language — "show me auth", "what's broken" |
+ 
 ## How It Works
-
-1. `claudemap install` copies a ClaudeMap-owned `.claude` bundle into the target repository and runs `npm install` for the bundled runtime.
-2. `/setup-claudemap` snapshots the repository and asks the bundled `claudemap-architect` subagent to convert that snapshot into a detailed, human-readable graph.
-3. ClaudeMap renders that graph in the bundled UI, then `/refresh`, `/explain`, and `/claudemap-control` keep the map useful as the code and conversation evolve.
-
-## What You Get
-
-- `/setup-claudemap` for first-time graph generation
-- `/refresh` for graph refresh after edits
-- `/open-claudemap` to reopen the UI without rebuilding
-- `/explain` for guided walkthroughs
-- `/claudemap-control` for directing the live map with natural-language presentation intent
-
-## Current State
-
-ClaudeMap is still early. The install/refresh surface is real and shippable, but
-the overall product is still scaffold-heavy.
-
-Implemented today:
-
-- npm/npx installer flow
-- packaged `.claude` runtime bundle
-- slash commands and subagent scaffolding
-- placeholder app/runtime implementation
-- seeded contracts and demo payloads
-
-Not fully implemented yet:
-
-- production-quality graph extraction
-- production-quality enrichment
-- mature live MCP behavior
-- polished browser/runtime UX
-
-Use `claudemap-spec.md` as future-state intent only. The current repository contents are the source of truth.
-
-## Repository Layout
-
-- `app/` - placeholder web app workspace
-- `skill/` - placeholder runtime commands, prompts, and shared libraries
-- `scripts/` - artifact packaging plus install/refresh scripts
-- `contracts/` - seeded graph and runtime JSON
-- `demo/` - demo sandboxes used by the packaged artifact
-- `artifacts/` - generated release output
-
-## Local Development
-
+ 
+ClaudeMap installs as a Claude Code skill. When you run `/setup-claudemap`, it reads your project, sends the structure to a dedicated architecture subagent, and renders the result as an interactive map in your browser. No cloud, no backend — everything runs locally through Claude Code.
+ 
+After code changes, `/refresh` detects what changed and updates the map without rebuilding from scratch.
+ 
+## Project Structure
+ 
+```
+app/        → Visual map interface
+skill/      → Claude Code skill and architecture subagent
+scripts/    → Install and packaging scripts
+contracts/  → Graph schema and sample data
+demo/       → Demo sandboxes and cached payloads
+```
+ 
+## Development
+ 
 ```bash
 npm install
 npm run dev
 ```
-
-Useful commands:
-
-```bash
-npm run build
-npm run mcp
-npm run package-skill
-```
-
-## Install Into Another Repository
-
-ClaudeMap uses a Node/npm installer rather than an MCP bootstrap flow. That
-keeps setup generic: it can merge into an existing `.claude/` directory, copy
-only the ClaudeMap bundle, and run `npm install` automatically for the bundled
-runtime.
-
-From this repository checkout:
-
-Install into any target repository:
-
-```bash
-npm run install-claudemap -- ../target-repo
-```
-
-That command:
-
-- packages the latest ClaudeMap artifact from this checkout
-- merges `.claude/` into the target repo without deleting unrelated `.claude` files
-- writes `.claude/claudemap-install.json`
-- runs `npm install` inside `.claude/skills/claudemap-runtime`
-
-To refresh an existing install after pulling new ClaudeMap changes, rerun the
-same flow or use the explicit update alias:
-
-```bash
-npm run update-claudemap-install -- ../target-repo
-```
-
-## NPX Usage
-
-The package is now structured to publish as a real `npx` entrypoint. After
-publishing, the install and update flow becomes:
-
-```bash
-npx claudemap install
-npx claudemap update
-```
-
-Both commands default to the current working directory. You can also target a
-different repository explicitly:
-
-```bash
-npx claudemap install ../target-repo
-npx claudemap update ../target-repo
-```
-
-For publish packaging, `npm pack` and `npm publish` now stage a bundled
-ClaudeMap artifact automatically during `prepack`.
-
-Maintainer release steps live in `PUBLISHING.md`.
-
+ 
 ## License
-
-MIT. See `LICENSE`.
+ 
+MIT

@@ -1,7 +1,0 @@
-[     307ms] [INFO] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold @ http://localhost:5174/node_modules/.vite/deps/chunk-2MB5YU2Q.js?v=2b82b0ce:21550
-[   26778ms] [LOG] [vite] server connection lost. Polling for restart... @ http://localhost:5174/@vite/client:559
-[   29116ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:5174/src/components/graph/GraphCanvas.jsx?t=1775937152685:0
-[   29117ms] [ERROR] [hmr] Failed to reload /src/components/graph/GraphCanvas.jsx. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://localhost:5174/@vite/client:175
-[   29117ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:5174/src/styles/globals.css?t=1775937152685:0
-[   29119ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:5174/:0
-[   29120ms] [ERROR] [hmr] Failed to reload /src/styles/globals.css. This could be due to syntax errors or importing non-existent modules. (see errors above) @ http://localhost:5174/@vite/client:175
