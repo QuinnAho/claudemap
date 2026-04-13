@@ -13,9 +13,7 @@ All powered by the same AI you vibecode with.
 
 > Note: ClaudeMap started as a hackathon project, so parts of it are still rough around the edges. It was strong enough that I was encouraged to open source it, so if you want to use it, improve it, or help shape it, please do.
 
-<img src="resources/vids/demo.gif" alt="ClaudeMap demo" width="1200" />
-
-Quick UX demo vid: https://www.loom.com/share/6a2ff0948ae64ae6994fb3817cb3607e
+[![ClaudeMap Demo](resources/img/thumbnail.png)](https://www.loom.com/share/6a2ff0948ae64ae6994fb3817cb3607e)
  
 ## Get Started
  
