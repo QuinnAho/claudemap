@@ -6,7 +6,7 @@ Welcome to...
   
 AI lets you build faster than ever, but the very tools that help our productivity are leaving us behind, you don't understand what you're building anymore. You can vibecode a full app in a weekend and not even start to explain how it works. ClaudeMap fixes that.
  
-Unlike traditional visualization tools, ClaudeMap organizes your code by what it actually does. Claude reads your project and groups it into concepts in a way you actually think about your app. Zoom out to see the big picture. Zoom in to see the details. Colors show what's healthy and what's broken.
+Unlike traditional visualization tools, ClaudeMap organizes your code by what it actually does. Claude reads your project and groups it into concepts in a way you actually think about your project. Zoom out to see the big picture. Zoom in to see the details. Colors show what's healthy and what's broken.
 Use `/explain` and ask any question about your code and claude will present direclty on the map and explain step by step.
  
 All powered by the same AI you vibecode with.
