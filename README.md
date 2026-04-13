@@ -14,10 +14,11 @@ All powered by the same AI you vibecode with.
 
 ## See It In Action
 
-Click me ↓
+Click Me ↓
+
 [Play with ClaudeMap's map](https://quinnaho.github.io/claudemap/) (standalone preview, Claude features require Claude Code)
 
-Click me ↓
+Click Me ↓
 [![ClaudeMap Demo](resources/img/thumbnail.png)](https://www.loom.com/share/6a2ff0948ae64ae6994fb3817cb3607e)
 
 ## Get Started
