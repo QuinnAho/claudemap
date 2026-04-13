@@ -3,10 +3,8 @@ Welcome to...
 ![ClaudeMap branding](resources/img/ClaudeMapBranding.png)
  
 **Google Maps for vibecoders.**
- 
-![ClaudeMap terminal and map view](resources/img/ClaudeTerminal+ClaudeMap.png)
- 
-AI lets you build faster than ever — but th very tools that help our productivity are leaving us behind, you don't understand what you're building anymore. You can vibe code a full app in a weekend and not even start to be able to explain how it works. ClaudeMap fixes that.
+  
+AI lets you build faster than ever, but the very tools that help our productivity are leaving us behind, you don't understand what you're building anymore. You can vibe code a full app in a weekend and not even start t0 explain how it works. ClaudeMap fixes that.
  
 Unlike traditional visualization tools, ClaudeMap organizes your code by what it actually does. Claude reads your project and groups it into concepts in a way you actually think about your app. Zoom out to see the big picture. Zoom in to see the details. Colors show what's healthy and what's broken.
 Use `/explain` and ask any question about your code and claude will present direclty on the map and explain step by step.
@@ -14,6 +12,8 @@ Use `/explain` and ask any question about your code and claude will present dire
 All powered by the same AI you vibe code with.
 
 > Note: ClaudeMap started as a hackathon project, so parts of it are still rough around the edges. It was strong enough that I was encouraged to open source it, so if you want to use it, improve it, or help shape it, please do.
+
+![ClaudeMap terminal and map view](resources/img/ClaudeTerminal+ClaudeMap.png)
  
 ## Get Started
  
