@@ -7,6 +7,10 @@ It installs a `.claude` bundle, snapshots the repo, asks a dedicated
 architecture subagent to build a detailed graph, and opens a bundled UI for
 navigation, walkthroughs, and updates.
 
+## Demo
+
+https://www.youtube.com/watch?v=mubRRx5mXzA
+
 ## 30-Second Setup
 
 Install into the repo you want to map:
