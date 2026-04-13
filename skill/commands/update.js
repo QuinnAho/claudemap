@@ -47,7 +47,7 @@ function getOptionValue(argv, optionName) {
 function printUsage() {
   console.log('ClaudeMap refresh')
   console.log(
-    '  claudemap-update|claudemap-refresh [project-root] [--force-refresh] [--demo-cache] [--no-render] [--stdio-mcp] [--enrichment-file <file>]',
+    '  claudemap-refresh [project-root] [--force-refresh] [--demo-cache] [--no-render] [--stdio-mcp] [--enrichment-file <file>]',
   )
 }
 
@@ -171,7 +171,7 @@ async function main() {
 }
 
 main().catch((error) => {
-  console.error(`ClaudeMap update failed: ${error.message}`)
+  console.error(`ClaudeMap refresh failed: ${error.message}`)
   process.exitCode = 1
 })
 

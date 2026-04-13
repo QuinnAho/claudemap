@@ -2,65 +2,149 @@
 
 ![ClaudeMap terminal and map view](resources/img/ClaudeTerminal+ClaudeMap.png)
 
-## Video Presentation
+ClaudeMap turns a repository into a live architecture map inside Claude Code.
+It installs a `.claude` bundle, snapshots the repo, asks a dedicated
+architecture subagent to build a detailed graph, and opens a bundled UI for
+navigation, walkthroughs, and updates.
 
-Add video link here.
+## 30-Second Setup
 
-## Project Information
+Install into the repo you want to map:
 
-**Title**  
-ClaudeMap
+```bash
+npx claudemap install
+```
 
-**Summary**  
-ClaudeMap is a live architecture mapping and walkthrough tool. It turns project
-structure into a visual system/file/function map, then lets the runtime guide
-that map through highlights, focus, and presentation steps. This repository also
-packages two demos: `FirstDemo`, a curated walkthrough of ClaudeMap itself, and
-`SecondDemo`, an Express-shaped sample project.
+Then inside Claude Code:
 
-**Contributors**  
-- Quinn Aho
+```text
+/setup-claudemap
+```
 
-## Navigating The Repo
+After code changes:
 
-- `app/` - React app for the interactive map UI
-- `skill/` - CLI/runtime commands and shared libraries
-- `scripts/` - packaging and artifact generation
-- `contracts/` - seeded graph JSON and runtime state contracts
-- `demo/` - demo sandbox sources and demo documentation
-- `artifacts/` - packaged outputs, including `FirstDemo` and `SecondDemo`
+```text
+/refresh
+```
 
-## Where Things Live
+If you only need the UI back:
 
-- Notebooks: there are no notebooks in this repository
-- Data and demo graph payloads: `contracts/` and `demo/`
-- App code: `app/src/`
-- Skill and runtime code: `skill/`
-- Packaging code: `scripts/`
+```text
+/open-claudemap
+```
 
-## Key Files
+## How It Works
 
-- `contracts/claudemap-first-demo.json` - curated graph for the ClaudeMap demo
-- `contracts/claudemap.sample.json` - sample graph for the Express demo
-- `scripts/package-claudemap-skill.js` - packages the skill artifact and both demos
-- `app/src/components/graph/GraphCanvas.jsx` - main graph scene, focus, and camera behavior
-- `app/src/hooks/useGraphData.js` - loads runtime graph/state into the app
-- `skill/lib/mcp-client.js` - bridges runtime updates into the live app
-- `skill/commands/control.js` - manual control surface for highlight, present, caption, and mode changes
+1. `claudemap install` copies a ClaudeMap-owned `.claude` bundle into the target repository and runs `npm install` for the bundled runtime.
+2. `/setup-claudemap` snapshots the repository and asks the bundled `claudemap-architect` subagent to convert that snapshot into a detailed, human-readable graph.
+3. ClaudeMap renders that graph in the bundled UI, then `/refresh`, `/explain`, and `/claudemap-control` keep the map useful as the code and conversation evolve.
 
-## Run The Project
+## What You Get
+
+- `/setup-claudemap` for first-time graph generation
+- `/refresh` for graph refresh after edits
+- `/open-claudemap` to reopen the UI without rebuilding
+- `/explain` for guided walkthroughs
+- `/claudemap-control` for directing the live map with natural-language presentation intent
+
+## Current State
+
+ClaudeMap is still early. The install/refresh surface is real and shippable, but
+the overall product is still scaffold-heavy.
+
+Implemented today:
+
+- npm/npx installer flow
+- packaged `.claude` runtime bundle
+- slash commands and subagent scaffolding
+- placeholder app/runtime implementation
+- seeded contracts and demo payloads
+
+Not fully implemented yet:
+
+- production-quality graph extraction
+- production-quality enrichment
+- mature live MCP behavior
+- polished browser/runtime UX
+
+Use `claudemap-spec.md` as future-state intent only. The current repository contents are the source of truth.
+
+## Repository Layout
+
+- `app/` - placeholder web app workspace
+- `skill/` - placeholder runtime commands, prompts, and shared libraries
+- `scripts/` - artifact packaging plus install/refresh scripts
+- `contracts/` - seeded graph and runtime JSON
+- `demo/` - demo sandboxes used by the packaged artifact
+- `artifacts/` - generated release output
+
+## Local Development
 
 ```bash
 npm install
 npm run dev
 ```
 
-Useful extras:
+Useful commands:
 
 ```bash
 npm run build
+npm run mcp
 npm run package-skill
 ```
 
-`npm run package-skill` creates the packaged artifact and the `FirstDemo` /
-`SecondDemo` demo bundles in `artifacts/claudemap-skill/claudemap/`.
+## Install Into Another Repository
+
+ClaudeMap uses a Node/npm installer rather than an MCP bootstrap flow. That
+keeps setup generic: it can merge into an existing `.claude/` directory, copy
+only the ClaudeMap bundle, and run `npm install` automatically for the bundled
+runtime.
+
+From this repository checkout:
+
+Install into any target repository:
+
+```bash
+npm run install-claudemap -- ../target-repo
+```
+
+That command:
+
+- packages the latest ClaudeMap artifact from this checkout
+- merges `.claude/` into the target repo without deleting unrelated `.claude` files
+- writes `.claude/claudemap-install.json`
+- runs `npm install` inside `.claude/skills/claudemap-runtime`
+
+To refresh an existing install after pulling new ClaudeMap changes, rerun the
+same flow or use the explicit update alias:
+
+```bash
+npm run update-claudemap-install -- ../target-repo
+```
+
+## NPX Usage
+
+The package is now structured to publish as a real `npx` entrypoint. After
+publishing, the install and update flow becomes:
+
+```bash
+npx claudemap install
+npx claudemap update
+```
+
+Both commands default to the current working directory. You can also target a
+different repository explicitly:
+
+```bash
+npx claudemap install ../target-repo
+npx claudemap update ../target-repo
+```
+
+For publish packaging, `npm pack` and `npm publish` now stage a bundled
+ClaudeMap artifact automatically during `prepack`.
+
+Maintainer release steps live in `PUBLISHING.md`.
+
+## License
+
+MIT. See `LICENSE`.

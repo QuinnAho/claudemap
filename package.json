@@ -1,7 +1,36 @@
 {
   "name": "claudemap",
   "version": "0.1.0",
-  "private": true,
+  "description": "ClaudeMap installer CLI for bootstrapping the bundled .claude runtime into any repository",
+  "license": "MIT",
+  "author": "Quinn Aho",
+  "homepage": "https://github.com/QuinnAho/claudemap#readme",
+  "bugs": {
+    "url": "https://github.com/QuinnAho/claudemap/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/QuinnAho/claudemap.git"
+  },
+  "keywords": [
+    "claude",
+    "codex",
+    "cli",
+    "developer-tools",
+    "architecture",
+    "mcp"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "bin": "./bin/claudemap.js",
+  "files": [
+    "bin/",
+    "scripts/install-claudemap.js",
+    ".npm-bundle/claudemap/",
+    "README.md",
+    "PUBLISHING.md"
+  ],
   "workspaces": [
     "app",
     "skill"
@@ -10,12 +39,15 @@
     "dev": "npm --workspace app run dev",
     "build": "npm --workspace app run build",
     "mcp": "npm --workspace app run mcp",
+    "install-claudemap": "node ./scripts/install-claudemap.js",
     "setup-claudemap": "npm --workspace skill run setup-claudemap --",
     "open-claudemap": "npm --workspace skill run open-claudemap --",
     "refresh": "npm --workspace skill run refresh --",
-    "update": "npm --workspace skill run update --",
+    "update-claudemap-install": "node ./scripts/install-claudemap.js --update",
     "control": "npm --workspace skill run control --",
     "package-skill": "node ./scripts/package-claudemap-skill.js",
+    "prepare-npm-bundle": "node ./scripts/prepare-npm-bundle.js",
+    "prepack": "node ./scripts/prepare-npm-bundle.js",
     "link-cli": "npm link --workspace skill",
     "unlink-cli": "npm unlink --workspace skill"
   }

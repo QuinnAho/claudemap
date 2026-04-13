@@ -47,13 +47,15 @@ const DEMO_DEFINITIONS = [
 
 function printUsage() {
   console.log('ClaudeMap skill packager')
-  console.log('  node scripts/package-claudemap-skill.js [--output <dir>] [--zip]')
+  console.log('  node scripts/package-claudemap-skill.js [--output <dir>] [--zip] [--no-demo-sync] [--no-demo-packages]')
 }
 
 function parseArgs(argv) {
   const options = {
     outputRoot: DEFAULT_OUTPUT_ROOT,
     zip: false,
+    demoSync: true,
+    demoPackages: true,
   }
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -66,6 +68,17 @@ function parseArgs(argv) {
 
     if (argument === '--zip') {
       options.zip = true
+      continue
+    }
+
+    if (argument === '--no-demo-sync') {
+      options.demoSync = false
+      continue
+    }
+
+    if (argument === '--no-demo-packages') {
+      options.demoPackages = false
+      options.demoSync = false
       continue
     }
 
@@ -246,11 +259,17 @@ function writeTextFile(filePath, content) {
 function createSlashCommandTemplates() {
   return {
     'setup-claudemap.md': `---
-description: Set up ClaudeMap for the current project by delegating repo-to-graph synthesis to the bundled claudemap-architect subagent, then rendering the graph UI.
+description: Build a detailed architecture map for the current repository and open it in ClaudeMap.
 argument-hint: '[project-root]'
 ---
 
-Run the bundled ClaudeMap setup workflow.
+Set up ClaudeMap for the target repository.
+
+High-level goal:
+
+- snapshot the repository
+- ask the bundled \`@claudemap-architect\` subagent to build a detailed graph with intuitive human grouping
+- render that graph in the ClaudeMap UI
 
 Steps:
 1. Treat the current working directory as the target project root unless the user gave a different path.
@@ -261,6 +280,7 @@ Steps:
    - the snapshot JSON
    - the enrichment contract
    - instructions to return only valid graph JSON
+   - instructions to optimize for detailed systems, useful file/function depth, and human-intuitive grouping
 6. Save the subagent result to \`.claude/skills/claudemap-runtime/tmp/claudemap-enrichment.json\`.
 7. Run \`.claude/skills/claudemap-runtime/skill/commands/setup-claudemap.js\` with \`--enrichment-file\` pointing to that JSON file.
 8. Add \`--force-refresh\` only when the user explicitly asks for a full rebuild.
@@ -296,36 +316,30 @@ Steps:
 4. If no graph is loaded yet, tell the user to run \`/setup-claudemap\` first.
 5. Report whether the app server was reused, started, or still unavailable.
 `,
-    'update.md': `---
-description: Compatibility alias for /refresh. Refresh the bundled ClaudeMap graph for the current project after local code changes.
-argument-hint: '[project-root]'
-disable-model-invocation: true
----
-
-Use the bundled ClaudeMap update command to refresh the graph for the current working directory.
-
-Steps:
-1. Treat the current working directory as the target project root unless the user gave a different path.
-2. Resolve the bundled command script at \`.claude/skills/claudemap-runtime/skill/commands/update.js\`.
-3. Run the update command with Node for the target project root.
-4. Report added, removed, and changed file counts plus the refresh mode.
-5. Preserve any cached Claude-authored graph unless the user explicitly asks for a force refresh.
-`,
     'claudemap-control.md': `---
-description: Drive the bundled ClaudeMap UI by highlighting nodes, presenting guided explanation steps, toggling health, focusing nodes, or running guided flows.
-argument-hint: '<action>'
-disable-model-invocation: true
+description: Direct the live ClaudeMap session. Use it to focus the map, highlight architecture, present a step, compare regions, or show flow.
+argument-hint: '[intent]'
 ---
 
-Use the bundled ClaudeMap control command to drive the live map UI.
+Use ClaudeMap as a live presentation and navigation surface.
 
-Steps:
+Principles:
+
+- optimize for the fewest actions that make the user's intent visually obvious
+- prefer \`present\` when the user wants explanation plus focus
+- prefer \`highlight\` or \`navigate\` when the user wants quick emphasis without narration
+- prefer \`flow\` when the user wants sequence or dependency motion
+- keep the map legible and avoid noisy multi-step control spam
+
+Workflow:
 1. Resolve the bundled command script at \`.claude/skills/claudemap-runtime/skill/commands/control.js\`.
-2. Convert the user request into the closest supported control command.
-3. Run the control command with Node.
-4. Report what was highlighted, focused, or toggled.
+2. Read the user request as presentation intent, not just a literal command request.
+3. If needed, read the current runtime graph from \`.claude/skills/claudemap-runtime/app/public/claudemap-runtime.json\` to choose the right node names or path through the graph.
+4. Translate the request into the smallest useful set of control commands.
+5. Run the control command or short command sequence with Node.
+6. Briefly report what changed in the UI.
 
-Built-in actions currently include:
+Built-in control actions include:
 - \`highlight <query> [--zoom <value>] [--explain "..."]\`
 - \`clear-highlight\`
 - \`present <query> [--title "..."] [--step "..."] [--explain "..."]\`
@@ -336,9 +350,16 @@ Built-in actions currently include:
 - \`clear-caption\`
 - \`flow <query1> <query2> [query3 ...]\`
 - \`ask "<phrase>"\`
+
+Examples of intent translation:
+
+- "focus the auth system" -> \`navigate\` or \`highlight\`
+- "walk me through request handling" -> a short \`present\` or \`flow\` sequence
+- "show the riskiest area" -> \`ask "what's wrong"\`
+- "put the UI in guided mode and caption this step" -> \`mode\` plus \`caption\`
 `,
     'explain.md': `---
-description: Explain a ClaudeMap node, system, or pasted click-context by running a guided walkthrough through the live map.
+description: Explain part of the codebase by turning the live map into a guided walkthrough.
 argument-hint: '[topic-or-click-context]'
 ---
 
@@ -349,7 +370,7 @@ Workflow:
 2. If the user provided a plain topic or node name, use that as the walkthrough anchor.
 3. If no usable topic is available, ask the user to click a node in ClaudeMap and paste the copied context, or provide a topic directly.
 4. Read the current runtime graph from \`.claude/skills/claudemap-runtime/app/public/claudemap-runtime.json\`.
-5. For broad or ambiguous requests, use the \`@claudemap-architect\` subagent to turn the request into a short walkthrough plan of 2-6 steps.
+5. For broad or ambiguous requests, use the \`@claudemap-architect\` subagent to turn the request into a short walkthrough plan of 2-6 steps that follows intuitive architectural groupings.
 6. Start presentation mode by running \`node .claude/skills/claudemap-runtime/skill/commands/control.js mode guided\`.
 7. Drive the map in discrete steps. Prefer one present command per explanation beat so the highlight, navigation, and narration update atomically:
    - \`node .claude/skills/claudemap-runtime/skill/commands/control.js present <query> --title "..." --step "Step 1" --explain "..."\`
@@ -379,16 +400,29 @@ function writeNavigationDocs(artifactRoot) {
     path.join(artifactRoot, SKILL_ROOT, 'NAVIGATION.md'),
     `# ClaudeMap Navigation
 
+## Quick Start
+
+1. Run \`/setup-claudemap\`
+2. Ask Claude to explain a system, file, or flow
+3. Run \`/refresh\` after edits
+
 ## Public Commands
 
 Use these first:
 
-- \`/setup-claudemap\`: analyze the current project and render a graph
+- \`/setup-claudemap\`: build a detailed architecture map for the current project
 - \`/open-claudemap\`: reopen the existing map UI without rebuilding the graph
 - \`/refresh\`: refresh the current graph after code changes
-- \`/update\`: compatibility alias for \`/refresh\`
 - \`/explain\`: run a guided walkthrough against the live graph
-- \`/claudemap-control\`: manually drive highlights, focus, health, and flow
+- \`/claudemap-control\`: direct the live map for focus, highlights, presentation, health, and flow
+
+## Mental Model
+
+ClaudeMap works in three stages:
+
+1. Snapshot the repository
+2. Ask \`@claudemap-architect\` for a detailed, human-intuitive graph
+3. Render and control that graph in the bundled UI
 
 ## Internal Runtime Layout
 
@@ -399,27 +433,31 @@ Use these first:
 - \`.claude/skills/claudemap-runtime/app/\`: bundled map app
 - \`.claude/skills/claudemap-runtime/demo/\`: demo sandboxes and fallback data
 - \`.claude/agents/claudemap-architect.md\`: bundled architecture-mapping subagent
-
-## Fastest Workflow
-
-1. Run \`/setup-claudemap\`
-2. Run \`/open-claudemap\` later if you just need the UI back
-3. Run \`/refresh\` after edits
-4. Run \`/explain\` for guided demos
 `,
   )
 }
 
 function writeArtifactManifest(artifactRoot, demoPackages) {
+  const managedPaths = [
+    toPosix(SKILL_ROOT),
+    toPosix(path.join(AGENTS_ROOT, 'claudemap-architect.md')),
+    toPosix(path.join(COMMANDS_ROOT, 'setup-claudemap.md')),
+    toPosix(path.join(COMMANDS_ROOT, 'open-claudemap.md')),
+    toPosix(path.join(COMMANDS_ROOT, 'refresh.md')),
+    toPosix(path.join(COMMANDS_ROOT, 'claudemap-control.md')),
+    toPosix(path.join(COMMANDS_ROOT, 'explain.md')),
+    toPosix(path.join(CLAUDE_ROOT, 'claudemap-install.json')),
+  ]
+
   writeJsonFile(path.join(artifactRoot, 'claudemap-artifact.json'), {
     name: ARTIFACT_NAME,
+    version: require(path.join(REPO_ROOT, 'package.json')).version,
     generatedAt: new Date().toISOString(),
     entrypoints: {
       skill: toPosix(path.join(SKILL_ROOT, 'SKILL.md')),
       'setup-claudemap': toPosix(path.join(SKILL_ROOT, 'skill', 'commands', 'setup-claudemap.js')),
       'open-claudemap': toPosix(path.join(SKILL_ROOT, 'skill', 'commands', 'open-claudemap.js')),
       refresh: toPosix(path.join(SKILL_ROOT, 'skill', 'commands', 'update.js')),
-      update: toPosix(path.join(SKILL_ROOT, 'skill', 'commands', 'update.js')),
       'claudemap-control': toPosix(path.join(SKILL_ROOT, 'skill', 'commands', 'control.js')),
     },
     subagents: {
@@ -430,17 +468,16 @@ function writeArtifactManifest(artifactRoot, demoPackages) {
       explain: toPosix(path.join(COMMANDS_ROOT, 'explain.md')),
       'open-claudemap': toPosix(path.join(COMMANDS_ROOT, 'open-claudemap.md')),
       refresh: toPosix(path.join(COMMANDS_ROOT, 'refresh.md')),
-      update: toPosix(path.join(COMMANDS_ROOT, 'update.md')),
       'claudemap-control': toPosix(path.join(COMMANDS_ROOT, 'claudemap-control.md')),
     },
     publicCommands: [
       'setup-claudemap',
       'open-claudemap',
       'refresh',
-      'update',
       'explain',
       'claudemap-control',
     ],
+    managedPaths,
     internalRuntime: {
       skillRoot: toPosix(SKILL_ROOT),
       navigationDoc: toPosix(path.join(SKILL_ROOT, 'NAVIGATION.md')),
@@ -458,11 +495,11 @@ function writeArtifactManifest(artifactRoot, demoPackages) {
       ]),
     ),
     notes: [
-      'Drop the bundled .claude directory into your target project root.',
+      'Install the bundled .claude directory into your target project root with scripts/install-claudemap.js, or copy it manually.',
       'The public surface is .claude/commands/*.md. The skill bundle under .claude/skills/claudemap-runtime is shared runtime infrastructure for those commands.',
       'The packaged runtime ships with the current seeded app/public graph so /open-claudemap can render immediately after install.',
       'Demo-ready project packages are emitted under demo-packages/FirstDemo and demo-packages/SecondDemo.',
-      'Run npm install inside .claude/skills/claudemap-runtime before starting the bundled app on a fresh machine.',
+      'The installer script automatically runs npm install inside .claude/skills/claudemap-runtime. Manual installs still need that step.',
       'Claude Code loads project subagents from .claude/agents at session start. Restart the session or use /agents after installing the artifact if needed.',
       'If ClaudeMap is later packaged as a plugin instead of a project drop-in, subagent files should live in the plugin agents/ directory rather than .claude/agents/.',
     ],
@@ -677,11 +714,11 @@ function main() {
   writeRuntimePlaceholders(artifactRoot, DEFAULT_RUNTIME_GRAPH_PATH)
   writeSlashCommands(artifactRoot)
   writeNavigationDocs(artifactRoot)
-  const demoPackages = createDemoPackages(artifactRoot)
+  const demoPackages = options.demoPackages ? createDemoPackages(artifactRoot) : []
   writeArtifactManifest(artifactRoot, demoPackages)
 
   const zipPath = maybeCreateZip(artifactRoot, options.outputRoot, options.zip)
-  const demoSyncPath = syncSecondDemoIntoSourceSandbox(demoPackages)
+  const demoSyncPath = options.demoSync ? syncSecondDemoIntoSourceSandbox(demoPackages) : null
 
   console.log(`ClaudeMap skill artifact ready at ${artifactRoot}`)
   for (const demoPackage of demoPackages) {

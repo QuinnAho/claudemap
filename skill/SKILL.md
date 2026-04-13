@@ -1,22 +1,28 @@
 ---
 name: claudemap-runtime
-description: Internal ClaudeMap runtime bundle used by /setup-claudemap, /open-claudemap, /refresh, /explain, and /claudemap-control. Prefer the packaged commands in .claude/commands for normal use.
+description: Internal ClaudeMap runtime for turning a repository into a live architecture map and driving that map during walkthroughs. Prefer the public commands in .claude/commands for normal use.
 ---
 
-This skill is shared infrastructure for the ClaudeMap command set.
+ClaudeMap is a repo-to-architecture-map workflow.
 
-Use the public command layer for normal operation:
+High-level model:
 
-- `/setup-claudemap` to analyze and render a graph
-- `/open-claudemap` to reopen the existing UI
-- `/refresh` after code changes
-- `/update` as the compatibility alias
-- `/explain` for guided walkthroughs
-- `/claudemap-control` for manual map control
+- snapshot the repository
+- ask `@claudemap-architect` to turn that snapshot into a detailed, human-legible graph
+- render the graph in the bundled ClaudeMap UI
+- keep the graph and presentation state updated as the user explores the codebase
 
-If this skill is invoked directly, run the bundled ClaudeMap setup workflow.
+Public commands:
 
-Target project root:
+- `/setup-claudemap`: build or rebuild the map for the current repository
+- `/open-claudemap`: reopen the existing UI without rebuilding
+- `/refresh`: update the graph after code changes
+- `/explain`: run a guided walkthrough through the live map
+- `/claudemap-control`: direct the live map for highlights, focus, presentation, and flows
+
+If this skill is invoked directly, default to the setup workflow.
+
+Target repository:
 
 - If the user passed an argument to the invoked skill command, use `$ARGUMENTS` as the project root.
 - If no argument was passed, use the current working directory.
@@ -30,6 +36,7 @@ Execution rules:
    - the raw snapshot JSON
    - the graph schema contract from the enrichment prompt
    - instructions to return only valid graph JSON
+   - instructions to optimize for a detailed graph with intuitive human grouping
 5. Save the subagent result to `${CLAUDE_SKILL_DIR}/tmp/claudemap-enrichment.json`.
 6. Run `${CLAUDE_SKILL_DIR}/skill/commands/setup-claudemap.js` for the target project root with `--enrichment-file ${CLAUDE_SKILL_DIR}/tmp/claudemap-enrichment.json`.
 7. Add `--force-refresh` only when the user explicitly asks for a fresh rebuild.
@@ -40,10 +47,9 @@ Execution rules:
 Important details:
 
 - The bundled runtime lives inside this skill directory, so keep all paths anchored to `${CLAUDE_SKILL_DIR}`.
-- The current Node runtime still supports deterministic and demo-backed fallback, but `/setup-claudemap` should try the `@claudemap-architect` subagent path first.
-- The packaged project also includes a `claudemap-architect` subagent in `.claude/agents/` for system identification, graph reshaping, and architecture-map refinement tasks.
+- `/setup-claudemap` should treat the `@claudemap-architect` path as the primary path, not an optional extra.
+- The packaged project includes a `claudemap-architect` subagent in `.claude/agents/` for system identification, graph refinement, and human-first graph restructuring.
 - If a cached Claude-authored graph already exists, do not replace it with a heuristic regeneration unless the user explicitly asks for `--force-refresh`.
 - If the user only wants to reopen the existing map UI, use `/open-claudemap` instead of rerunning setup.
 - Follow-up refreshes should use the `/refresh` command shipped in `.claude/commands/refresh.md`.
-- `/update` remains as a compatibility alias for `/refresh`.
-- Live UI controls should use `/claudemap-control`.
+- `/claudemap-control` should be treated as a presentation-direction command, not just a low-level transport wrapper.
