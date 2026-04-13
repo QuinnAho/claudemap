@@ -1,5 +1,5 @@
 {
-  "name": "claudemap",
+  "name": "@quinnaho/claudemap",
   "version": "0.1.0",
   "description": "ClaudeMap installer CLI for bootstrapping the bundled .claude runtime into any repository",
   "license": "MIT",
@@ -23,7 +23,9 @@
   "engines": {
     "node": ">=18"
   },
-  "bin": "./bin/claudemap.js",
+  "bin": {
+    "claudemap": "./bin/claudemap.js"
+  },
   "files": [
     "bin/",
     "scripts/install-claudemap.js",
