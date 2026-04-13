@@ -7,14 +7,14 @@
     "setup-claudemap": "./commands/setup-claudemap.js",
     "open-claudemap": "./commands/open-claudemap.js",
     "claudemap-refresh": "./commands/update.js",
-    "claudemap-control": "./commands/control.js",
+    "claudemap-show": "./commands/show.js",
     "claudemap-snapshot": "./commands/snapshot.js"
   },
   "scripts": {
     "setup-claudemap": "node ./commands/setup-claudemap.js",
     "open-claudemap": "node ./commands/open-claudemap.js",
     "refresh": "node ./commands/update.js",
-    "control": "node ./commands/control.js",
+    "show": "node ./commands/show.js",
     "snapshot": "node ./commands/snapshot.js"
   }
 }

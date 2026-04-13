@@ -45,7 +45,7 @@
     "open-claudemap": "npm --workspace skill run open-claudemap --",
     "refresh": "npm --workspace skill run refresh --",
     "update-claudemap-install": "node ./scripts/install-claudemap.js --update",
-    "control": "npm --workspace skill run control --",
+    "show": "npm --workspace skill run show --",
     "package-skill": "node ./scripts/package-claudemap-skill.js",
     "prepare-npm-bundle": "node ./scripts/prepare-npm-bundle.js",
     "prepack": "node ./scripts/prepare-npm-bundle.js",

@@ -18,7 +18,7 @@ Public commands:
 - `/open-claudemap`: reopen the existing UI without rebuilding
 - `/refresh`: update the graph after code changes
 - `/explain`: run a guided walkthrough through the live map
-- `/claudemap-control`: direct the live map for highlights, focus, presentation, and flows
+- `/show`: direct the live map for highlights, focus, presentation, and flows
 
 If this skill is invoked directly, default to the setup workflow.
 
@@ -52,4 +52,4 @@ Important details:
 - If a cached Claude-authored graph already exists, do not replace it with a heuristic regeneration unless the user explicitly asks for `--force-refresh`.
 - If the user only wants to reopen the existing map UI, use `/open-claudemap` instead of rerunning setup.
 - Follow-up refreshes should use the `/refresh` command shipped in `.claude/commands/refresh.md`.
-- `/claudemap-control` should be treated as a presentation-direction command, not just a low-level transport wrapper.
+- `/show` should be treated as a presentation-direction command, not just a low-level transport wrapper.

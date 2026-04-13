@@ -233,21 +233,21 @@ function readGraphOrExit() {
 }
 
 function printUsage() {
-  console.log('ClaudeMap control commands:')
+  console.log('ClaudeMap show commands:')
   console.log(
-    '  node skill/commands/control.js highlight <query[, query2 ...]> [--zoom <value>] [--explain "..."]',
+    '  node skill/commands/show.js highlight <query[, query2 ...]> [--zoom <value>] [--explain "..."]',
   )
-  console.log('  node skill/commands/control.js clear-highlight')
+  console.log('  node skill/commands/show.js clear-highlight')
   console.log(
-    '  node skill/commands/control.js present <query[, query2 ...]> [--title "..."] [--step "..."] [--explain "..."]',
+    '  node skill/commands/show.js present <query[, query2 ...]> [--title "..."] [--step "..."] [--explain "..."]',
   )
-  console.log('  node skill/commands/control.js navigate <query> [--zoom <value>]')
-  console.log('  node skill/commands/control.js health <on|off>')
-  console.log('  node skill/commands/control.js mode <free|guided|locked-demo>')
-  console.log('  node skill/commands/control.js caption [--title <title>] [--step <step>] <body>')
-  console.log('  node skill/commands/control.js clear-caption')
-  console.log('  node skill/commands/control.js flow <query1> <query2> [query3 ...]')
-  console.log('  node skill/commands/control.js ask "<phrase>"')
+  console.log('  node skill/commands/show.js navigate <query> [--zoom <value>]')
+  console.log('  node skill/commands/show.js health <on|off>')
+  console.log('  node skill/commands/show.js mode <free|guided|locked-demo>')
+  console.log('  node skill/commands/show.js caption [--title <title>] [--step <step>] <body>')
+  console.log('  node skill/commands/show.js clear-caption')
+  console.log('  node skill/commands/show.js flow <query1> <query2> [query3 ...]')
+  console.log('  node skill/commands/show.js ask "<phrase>"')
 }
 
 async function main() {
@@ -547,6 +547,6 @@ function uniqueArray(values) {
 }
 
 main().catch((error) => {
-  console.error(`ClaudeMap control failed: ${error.message}`)
+  console.error(`ClaudeMap show failed: ${error.message}`)
   process.exitCode = 1
 })

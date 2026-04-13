@@ -306,7 +306,7 @@ Steps:
 4. If no graph is loaded yet, tell the user to run \`/setup-claudemap\` first.
 5. Report whether the app server was reused, started, or still unavailable.
 `,
-    'claudemap-control.md': `---
+    'show.md': `---
 description: Direct the live ClaudeMap session. Use it to focus the map, highlight architecture, present a step, compare regions, or show flow.
 argument-hint: '[intent]'
 ---
@@ -319,17 +319,17 @@ Principles:
 - prefer \`present\` when the user wants explanation plus focus
 - prefer \`highlight\` or \`navigate\` when the user wants quick emphasis without narration
 - prefer \`flow\` when the user wants sequence or dependency motion
-- keep the map legible and avoid noisy multi-step control spam
+- keep the map legible and avoid noisy multi-step show-command spam
 
 Workflow:
-1. Resolve the bundled command script at \`.claude/skills/claudemap-runtime/skill/commands/control.js\`.
+1. Resolve the bundled command script at \`.claude/skills/claudemap-runtime/skill/commands/show.js\`.
 2. Read the user request as presentation intent, not just a literal command request.
 3. If needed, read the current runtime graph from \`.claude/skills/claudemap-runtime/app/public/claudemap-runtime.json\` to choose the right node names or path through the graph.
-4. Translate the request into the smallest useful set of control commands.
-5. Run the control command or short command sequence with Node.
+4. Translate the request into the smallest useful set of show commands.
+5. Run the show command or short command sequence with Node.
 6. Briefly report what changed in the UI.
 
-Built-in control actions include:
+Built-in show actions include:
 - \`highlight <query> [--zoom <value>] [--explain "..."]\`
 - \`clear-highlight\`
 - \`present <query> [--title "..."] [--step "..."] [--explain "..."]\`
@@ -361,16 +361,16 @@ Workflow:
 3. If no usable topic is available, ask the user to click a node in ClaudeMap and paste the copied context, or provide a topic directly.
 4. Read the current runtime graph from \`.claude/skills/claudemap-runtime/app/public/claudemap-runtime.json\`.
 5. For broad or ambiguous requests, use the \`@claudemap-architect\` subagent to turn the request into a short walkthrough plan of 2-6 steps that follows intuitive architectural groupings.
-6. Start presentation mode by running \`node .claude/skills/claudemap-runtime/skill/commands/control.js mode guided\`.
+6. Start presentation mode by running \`node .claude/skills/claudemap-runtime/skill/commands/show.js mode guided\`.
 7. Drive the map in discrete steps. Prefer one present command per explanation beat so the highlight, navigation, and narration update atomically:
-   - \`node .claude/skills/claudemap-runtime/skill/commands/control.js present <query> --title "..." --step "Step 1" --explain "..."\`
-   - \`node .claude/skills/claudemap-runtime/skill/commands/control.js highlight <query>\`
-   - \`node .claude/skills/claudemap-runtime/skill/commands/control.js health on\`
-   - \`node .claude/skills/claudemap-runtime/skill/commands/control.js flow <query1> <query2> ...\`
-8. Treat each control command as the visual step boundary. Do not rely on plain chat text streaming alone for transitions.
+   - \`node .claude/skills/claudemap-runtime/skill/commands/show.js present <query> --title "..." --step "Step 1" --explain "..."\`
+   - \`node .claude/skills/claudemap-runtime/skill/commands/show.js highlight <query>\`
+   - \`node .claude/skills/claudemap-runtime/skill/commands/show.js health on\`
+   - \`node .claude/skills/claudemap-runtime/skill/commands/show.js flow <query1> <query2> ...\`
+8. Treat each show command as the visual step boundary. Do not rely on plain chat text streaming alone for transitions.
 9. When the explanation is complete, always release the map by running:
-   - \`node .claude/skills/claudemap-runtime/skill/commands/control.js clear-caption\`
-   - \`node .claude/skills/claudemap-runtime/skill/commands/control.js mode free\`
+   - \`node .claude/skills/claudemap-runtime/skill/commands/show.js clear-caption\`
+   - \`node .claude/skills/claudemap-runtime/skill/commands/show.js mode free\`
 10. Use high-level, intuitive language first. Prefer plain-English descriptions of purpose, flow, and impact before lower-level implementation details.
 11. Keep narration concise and synchronized to the step you just triggered.
 `,
@@ -404,7 +404,7 @@ Use these first:
 - \`/open-claudemap\`: reopen the existing map UI without rebuilding the graph
 - \`/refresh\`: refresh the current graph after code changes
 - \`/explain\`: run a guided walkthrough against the live graph
-- \`/claudemap-control\`: direct the live map for focus, highlights, presentation, health, and flow
+- \`/show\`: direct the live map for focus, highlights, presentation, health, and flow
 
 ## Mental Model
 
@@ -434,7 +434,7 @@ function writeArtifactManifest(artifactRoot, demoPackages) {
     toPosix(path.join(COMMANDS_ROOT, 'setup-claudemap.md')),
     toPosix(path.join(COMMANDS_ROOT, 'open-claudemap.md')),
     toPosix(path.join(COMMANDS_ROOT, 'refresh.md')),
-    toPosix(path.join(COMMANDS_ROOT, 'claudemap-control.md')),
+    toPosix(path.join(COMMANDS_ROOT, 'show.md')),
     toPosix(path.join(COMMANDS_ROOT, 'explain.md')),
     toPosix(path.join(CLAUDE_ROOT, 'claudemap-install.json')),
   ]
@@ -448,7 +448,7 @@ function writeArtifactManifest(artifactRoot, demoPackages) {
       'setup-claudemap': toPosix(path.join(SKILL_ROOT, 'skill', 'commands', 'setup-claudemap.js')),
       'open-claudemap': toPosix(path.join(SKILL_ROOT, 'skill', 'commands', 'open-claudemap.js')),
       refresh: toPosix(path.join(SKILL_ROOT, 'skill', 'commands', 'update.js')),
-      'claudemap-control': toPosix(path.join(SKILL_ROOT, 'skill', 'commands', 'control.js')),
+      show: toPosix(path.join(SKILL_ROOT, 'skill', 'commands', 'show.js')),
     },
     subagents: {
       claudemapArchitect: toPosix(path.join(AGENTS_ROOT, 'claudemap-architect.md')),
@@ -458,14 +458,14 @@ function writeArtifactManifest(artifactRoot, demoPackages) {
       explain: toPosix(path.join(COMMANDS_ROOT, 'explain.md')),
       'open-claudemap': toPosix(path.join(COMMANDS_ROOT, 'open-claudemap.md')),
       refresh: toPosix(path.join(COMMANDS_ROOT, 'refresh.md')),
-      'claudemap-control': toPosix(path.join(COMMANDS_ROOT, 'claudemap-control.md')),
+      show: toPosix(path.join(COMMANDS_ROOT, 'show.md')),
     },
     publicCommands: [
       'setup-claudemap',
       'open-claudemap',
       'refresh',
       'explain',
-      'claudemap-control',
+      'show',
     ],
     managedPaths,
     internalRuntime: {
