@@ -2,6 +2,8 @@ Welcome to...
 
 ![ClaudeMap branding](resources/img/ClaudeMapBranding.png)
 
+![npm weekly downloads](https://img.shields.io/npm/dw/%40quinnaho%2Fclaudemap) ![GitHub Repo stars](https://img.shields.io/github/stars/QuinnAho/claudemap)
+
 **Google Maps for vibecoders.**
 
 AI lets you build faster than ever, but the very tools that help our productivity are leaving us behind - you don't understand what you're building anymore. You can vibecode a full app in a weekend and not even start to explain how it works. ClaudeMap fixes that.
