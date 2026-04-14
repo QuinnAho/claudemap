@@ -28,11 +28,7 @@ You'll need [Claude Code](https://docs.anthropic.com/en/docs/claude-code) instal
 ```bash
 cd <my-repo>
 npx @quinnaho/claudemap install
-```
-
-Then in Claude Code:
-
-```
+claude
 /setup-claudemap
 ```
 
