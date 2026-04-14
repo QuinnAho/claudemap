@@ -38,6 +38,12 @@ Then in Claude Code:
 
 Your codebase is now a map.
 
+Already using ClaudeMap? Update the install with:
+
+```bash
+npx @quinnaho/claudemap update
+```
+
 ## Commands
 
 | Command | What it does |
