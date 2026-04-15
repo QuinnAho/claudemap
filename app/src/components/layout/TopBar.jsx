@@ -1,13 +1,36 @@
 import { Compass } from 'lucide-react'
+import { useState } from 'react'
+import { setActiveMap } from '../../lib/mapApi'
 import { useGraphStore } from '../../store/graphStore'
 import MapSelector from './MapSelector'
 
 export default function TopBar() {
   const presentationMode = useGraphStore((state) => state.presentationMode)
+  const activeMapId = useGraphStore((state) => state.activeMapId)
+  const meta = useGraphStore((state) => state.meta)
+  const [isReturningHome, setIsReturningHome] = useState(false)
   const headerText =
     presentationMode !== 'free'
       ? 'shhh... claude is presenting...'
       : ''
+
+  const homeLabel = meta?.repoName?.trim() || 'repository'
+
+  const handleReturnHome = async () => {
+    if (isReturningHome || activeMapId === 'root') {
+      return
+    }
+
+    setIsReturningHome(true)
+
+    try {
+      await setActiveMap('root')
+    } catch (error) {
+      console.error('Failed to switch ClaudeMap map:', error)
+    } finally {
+      setIsReturningHome(false)
+    }
+  }
 
   return (
     <div
@@ -23,8 +46,38 @@ export default function TopBar() {
         flexShrink: 0,
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <Compass size={20} color="var(--accent)" />
+      <button
+        type="button"
+        className="topbar-home"
+        disabled={isReturningHome}
+        onClick={handleReturnHome}
+        title={
+          activeMapId === 'root'
+            ? `${homeLabel} overview`
+            : `Return to ${homeLabel} overview`
+        }
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '8px',
+          padding: 0,
+          border: 'none',
+          background: 'transparent',
+          cursor: isReturningHome ? 'default' : 'pointer',
+          opacity: isReturningHome ? 0.68 : 1,
+        }}
+      >
+        <span
+          className="topbar-home-icon"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'var(--accent)',
+          }}
+        >
+          <Compass size={20} />
+        </span>
         <span
           style={{
             fontSize: '16px',
@@ -36,7 +89,7 @@ export default function TopBar() {
         >
           ClaudeMap
         </span>
-      </div>
+      </button>
 
       {headerText ? (
         <div

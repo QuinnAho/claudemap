@@ -1,14 +1,52 @@
-import { ChevronDown } from 'lucide-react'
+import { ChevronDown, CornerDownRight } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { setActiveMap } from '../../lib/mapApi'
 import { useGraphStore } from '../../store/graphStore'
 
+function getMapDepth(mapEntry) {
+  if (!mapEntry?.scope) {
+    return 0
+  }
+
+  return (mapEntry.scope.ancestorPath?.length || 0) + 1
+}
+
+function getMapTreeKey(mapEntry) {
+  if (!mapEntry?.scope) {
+    return ''
+  }
+
+  return [...(mapEntry.scope.ancestorPath || []), mapEntry.scope.rootSystemLabel || mapEntry.label]
+    .join('/')
+    .toLowerCase()
+}
+
+function getMapDisplayLabel(mapEntry, rootMapLabel) {
+  if (!mapEntry) {
+    return ''
+  }
+
+  return !mapEntry.scope || mapEntry.id === 'root' ? rootMapLabel : mapEntry.label
+}
+
 export default function MapSelector() {
   const mapsManifest = useGraphStore((state) => state.mapsManifest)
   const activeMapId = useGraphStore((state) => state.activeMapId)
+  const meta = useGraphStore((state) => state.meta)
   const maps = mapsManifest?.maps || []
   const activeMap = maps.find((mapEntry) => mapEntry.id === activeMapId) || maps[0] || null
   const staleMaps = maps.filter((mapEntry) => mapEntry.scope?.stale === true)
+  const rootMapLabel = meta?.repoName?.trim() || activeMap?.label || 'Repository'
+  const orderedMaps = [...maps].sort((leftMap, rightMap) => {
+    const leftDepth = getMapDepth(leftMap)
+    const rightDepth = getMapDepth(rightMap)
+
+    if (leftDepth !== rightDepth) {
+      return leftDepth - rightDepth
+    }
+
+    return getMapTreeKey(leftMap).localeCompare(getMapTreeKey(rightMap))
+  })
   const [isOpen, setIsOpen] = useState(false)
   const [shouldRenderMenu, setShouldRenderMenu] = useState(false)
   const [isMenuVisible, setIsMenuVisible] = useState(false)
@@ -125,7 +163,7 @@ export default function MapSelector() {
             whiteSpace: 'nowrap',
           }}
         >
-          {activeMap.label}
+          {getMapDisplayLabel(activeMap, rootMapLabel)}
         </span>
         <ChevronDown
           size={12}
@@ -169,9 +207,11 @@ export default function MapSelector() {
               gap: '1px',
             }}
           >
-            {maps.map((mapEntry) => {
+            {orderedMaps.map((mapEntry) => {
               const isActive = mapEntry.id === activeMapId
               const isStale = mapEntry.scope?.stale === true
+              const depth = getMapDepth(mapEntry)
+              const displayLabel = getMapDisplayLabel(mapEntry, rootMapLabel)
 
               return (
                 <button
@@ -205,11 +245,32 @@ export default function MapSelector() {
                       minWidth: 0,
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '6px',
+                      gap: '8px',
                     }}
                   >
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '5px',
+                        paddingLeft: `${depth * 14}px`,
+                          flexShrink: 0,
+                      }}
+                    >
+                      {depth > 0 ? (
+                        <CornerDownRight
+                          size={12}
+                          style={{
+                            color: isActive
+                              ? 'rgba(229, 229, 229, 0.56)'
+                              : 'rgba(255, 255, 255, 0.22)',
+                          }}
+                        />
+                      ) : null}
+                    </div>
                     <span
                       style={{
+                        minWidth: 0,
                         fontSize: '12px',
                         fontWeight: isActive ? 500 : 400,
                         overflow: 'hidden',
@@ -217,8 +278,18 @@ export default function MapSelector() {
                         whiteSpace: 'nowrap',
                       }}
                     >
-                      {mapEntry.label}
+                      {displayLabel}
                     </span>
+                  </div>
+
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      flexShrink: 0,
+                    }}
+                  >
                     {isStale ? (
                       <span
                         style={{
@@ -232,19 +303,6 @@ export default function MapSelector() {
                       </span>
                     ) : null}
                   </div>
-
-                  {isActive ? (
-                    <div
-                      style={{
-                        width: '4px',
-                        height: '4px',
-                        borderRadius: '50%',
-                        backgroundColor: 'var(--accent)',
-                        flexShrink: 0,
-                        opacity: 0.9,
-                      }}
-                    />
-                  ) : null}
                 </button>
               )
             })}
