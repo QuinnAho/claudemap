@@ -577,6 +577,7 @@ export default function GraphCanvas() {
           isHighlighted: false,
           isDimmed: false,
           highlightMode,
+          isSelectionTrace: false,
           isPresentationTrace: false,
         },
       }
@@ -584,11 +585,14 @@ export default function GraphCanvas() {
 
     const sourceSystemId = getTopLevelSystemId(nodeById.get(edge.source), nodeById)
     const targetSystemId = getTopLevelSystemId(nodeById.get(edge.target), nodeById)
+    const isSelectionTrace =
+      presentationMode === 'free' &&
+      !!selectedSystemId &&
+      (sourceSystemId === selectedSystemId || targetSystemId === selectedSystemId)
     const isHighlighted =
       presentationMode !== 'free'
         ? presentationSystemIds.has(sourceSystemId) || presentationSystemIds.has(targetSystemId)
-        : (selectedSystemId &&
-            (sourceSystemId === selectedSystemId || targetSystemId === selectedSystemId)) ||
+        : isSelectionTrace ||
           explicitHighlightedNodeIds.has(edge.source) ||
           explicitHighlightedNodeIds.has(edge.target) ||
           highlightedSystemIds.has(sourceSystemId) ||
@@ -601,6 +605,7 @@ export default function GraphCanvas() {
         isHighlighted,
         isDimmed: presentationMode !== 'free' ? !isHighlighted : !isHighlighted,
         highlightMode,
+        isSelectionTrace,
         isPresentationTrace: false,
       },
     }
