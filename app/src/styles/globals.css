@@ -61,3 +61,26 @@ body,
 .react-flow__node {
   transition: transform 0.3s ease, width 0.3s ease, height 0.3s ease;
 }
+
+.map-affordance {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  cursor: pointer;
+  pointer-events: auto;
+  white-space: nowrap;
+  transition: color 0.18s ease;
+}
+
+.map-affordance:hover,
+.map-affordance[data-copied='true'] {
+  color: var(--accent);
+}

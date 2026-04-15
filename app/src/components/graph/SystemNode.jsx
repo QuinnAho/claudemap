@@ -97,8 +97,8 @@ export default function SystemNode({ data }) {
         <div
           style={{
             position: 'absolute',
-            top: '10px',
-            right: '12px',
+            top: '2px',
+            right: '9px',
             zIndex: 4,
             opacity: isHovered ? 1 : 0,
             transform: isHovered ? 'translateY(0)' : 'translateY(-2px)',
