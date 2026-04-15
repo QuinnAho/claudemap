@@ -42,14 +42,26 @@ npm pkg get name version
 npm run build
 ```
 
-4. Verify the publish bundle.
+4. Build a local test package and smoke-test it in another repository.
 
 ```bash
-npm pack --dry-run
-npm publish --dry-run
+npm run pack:test
 ```
 
-5. Commit and tag the release.
+Then, in a separate target repository:
+
+```bash
+npm exec --package="<absolute-path-to-artifacts/npm/quinnaho-claudemap-<version>.tgz>" -- claudemap install
+```
+
+5. Verify the publish bundle.
+
+```bash
+npm pack --dry-run --cache artifacts/.npm-cache
+npm publish --dry-run --cache artifacts/.npm-cache
+```
+
+6. Commit and tag the release.
 
 ```bash
 git add .
@@ -57,13 +69,13 @@ git commit -m "Release v0.1.0"
 git tag v0.1.0
 ```
 
-6. Publish the first public release.
+7. Publish the first public release.
 
 ```bash
 npm publish --access public
 ```
 
-7. Verify the live package page.
+8. Verify the live package page.
 
 ```text
 https://www.npmjs.com/package/@quinnaho/claudemap
@@ -72,6 +84,7 @@ https://www.npmjs.com/package/@quinnaho/claudemap
 ## Notes
 
 - `prepack` already stages the bundled `.claude` artifact automatically.
+- `npm run pack:test` creates a real tarball in `artifacts/npm/`.
 - The published tarball currently contains only the installer CLI and bundled
   runtime artifact, not the demo packages.
 - The publish command does not run the app at publish time; it only packages

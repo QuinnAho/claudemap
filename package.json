@@ -40,6 +40,7 @@
   "scripts": {
     "dev": "npm --workspace app run dev",
     "build": "npm --workspace app run build",
+    "pack:test": "npm pack --pack-destination artifacts/npm --cache artifacts/.npm-cache",
     "generate-seed-map": "node ./scripts/generate-seed-map.js",
     "build-site": "npm run generate-seed-map && node ./scripts/build-site.js",
     "mcp": "npm --workspace app run mcp",

@@ -74,6 +74,18 @@ npm install
 npm run dev
 ```
 
+Build a local installable package before testing ClaudeMap in another repo:
+
+```bash
+npm run pack:test
+```
+
+Then, from the target repo:
+
+```bash
+npm exec --package="<absolute-path-to-artifacts/npm/quinnaho-claudemap-<version>.tgz>" -- claudemap install
+```
+
 > ClaudeMap started as a hackathon project and is now open source. If you want to use it, improve it, or help shape where it goes: jump in.
 
 ## License

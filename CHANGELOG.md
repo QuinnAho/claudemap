@@ -1,5 +1,20 @@
 # Changelog
 
+## Unreleased
+
+Highlights:
+
+- added multi-map support so ClaudeMap can switch between scoped graph views
+  instead of forcing every relationship through a single global map
+- removed subsystem-only edges from overview layouts so cross-system
+  relationships stay legible and scoped maps own their internal wiring
+- improved click-driven edge highlighting so related paths read more clearly
+  during exploration
+- hardened hover, expand, and collapse UX so graph motion stays smoother under
+  rapid interaction and collapse transitions no longer bloat before shrinking
+- added a local `npm run pack:test` flow for building an installable tarball and
+  smoke-testing the package in other repositories before publishing
+
 ## 0.1.0 - 2026-04-12
 
 Initial public npm release of the `claudemap` installer CLI.
