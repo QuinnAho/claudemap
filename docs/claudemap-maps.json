@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "activeMapId": "root",
+  "maps": [
+    {
+      "id": "root",
+      "label": "ClaudeMap",
+      "summary": "Full repo overview",
+      "scope": null,
+      "cachePath": "claudemap-cache.json",
+      "graphPath": "claudemap-runtime.json",
+      "statePath": "claudemap-runtime-state.json"
+    }
+  ]
+}

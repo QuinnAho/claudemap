@@ -13,6 +13,7 @@ import {
   setHealthOverlay,
   showCaption,
 } from '../lib/mcp-client.js'
+import { resolveActiveMap } from '../lib/active-map.js'
 
 function scoreNode(node, query) {
   const normalizedQuery = query.toLowerCase()
@@ -222,8 +223,8 @@ function buildGuidedSteps(graph, node) {
   return [node.parentId, node.id].filter(Boolean)
 }
 
-function readGraphOrExit() {
-  const graph = readRuntimeGraph()
+function readGraphOrExit(graphPath) {
+  const graph = readRuntimeGraph(graphPath)
 
   if (!Array.isArray(graph.nodes) || graph.nodes.length === 0) {
     throw new Error('No runtime graph found. Run /setup-claudemap first.')
@@ -243,7 +244,7 @@ function printUsage() {
   )
   console.log('  node skill/commands/show.js navigate <query> [--zoom <value>]')
   console.log('  node skill/commands/show.js health <on|off>')
-  console.log('  node skill/commands/show.js mode <free|guided|locked-demo>')
+  console.log('  node skill/commands/show.js mode <free|guided|locked>')
   console.log('  node skill/commands/show.js caption [--title <title>] [--step <step>] <body>')
   console.log('  node skill/commands/show.js clear-caption')
   console.log('  node skill/commands/show.js flow <query1> <query2> [query3 ...]')
@@ -254,7 +255,14 @@ async function main() {
   const [action, ...args] = process.argv.slice(2)
   const useStdioMcp = args.includes('--stdio-mcp')
   const commandArgs = args.filter((arg) => arg !== '--stdio-mcp')
-  const client = await connectMcpClient({ mode: useStdioMcp ? 'stdio' : 'file-shim' })
+  const projectRoot =
+    process.env.CLAUDEMAP_PROJECT_ROOT || process.env.INIT_CWD || process.cwd()
+  const activeMap = resolveActiveMap(projectRoot)
+  const client = await connectMcpClient({
+    mode: useStdioMcp ? 'stdio' : 'file-shim',
+    graphPath: activeMap.graphPath,
+    statePath: activeMap.statePath,
+  })
 
   if (!action) {
     printUsage()
@@ -265,14 +273,14 @@ async function main() {
 
   if (action === 'clear-highlight') {
     await clearHighlight(client)
-    console.log('Cleared highlights')
+    console.log(`[${activeMap.mapId}] Cleared highlights`)
     await closeMcpClient(client)
     return
   }
 
   if (action === 'clear-caption') {
     await clearCaption(client)
-    console.log('Cleared presentation caption')
+    console.log(`[${activeMap.mapId}] Cleared presentation caption`)
     await closeMcpClient(client)
     return
   }
@@ -285,22 +293,23 @@ async function main() {
     }
 
     await setHealthOverlay(client, value === 'on')
-    console.log(`Health overlay ${value}`)
+    console.log(`[${activeMap.mapId}] Health overlay ${value}`)
     await closeMcpClient(client)
     return
   }
 
   if (action === 'mode') {
-    const mode = (commandArgs[0] || '').toLowerCase()
+    const requestedMode = (commandArgs[0] || '').toLowerCase()
+    const mode = requestedMode === 'locked-demo' ? 'locked' : requestedMode
 
-    if (!['free', 'guided', 'locked-demo'].includes(mode)) {
-      throw new Error('Usage: mode <free|guided|locked-demo>')
+    if (!['free', 'guided', 'locked'].includes(mode)) {
+      throw new Error('Usage: mode <free|guided|locked>')
     }
 
     await setPresentationMode(client, mode, {
-      lockInput: mode === 'locked-demo',
+      lockInput: mode === 'locked',
     })
-    console.log(`Presentation mode ${mode}`)
+    console.log(`[${activeMap.mapId}] Presentation mode ${mode}`)
     await closeMcpClient(client)
     return
   }
@@ -328,12 +337,12 @@ async function main() {
       title: title || null,
       stepLabel: stepLabel || null,
     })
-    console.log(`Caption updated${title ? `: ${title}` : ''}`)
+    console.log(`[${activeMap.mapId}] Caption updated${title ? `: ${title}` : ''}`)
     await closeMcpClient(client)
     return
   }
 
-  const graph = readGraphOrExit()
+  const graph = readGraphOrExit(activeMap.graphPath)
 
   if (action === 'highlight') {
     const { positional, options } = parseCommandOptions(commandArgs)
@@ -367,7 +376,7 @@ async function main() {
         stepLabel: options.step || null,
         explanation: options.explain || null,
       })
-      console.log(`Presented ${resolvedNodes.map((node) => node.label).join(', ')}`)
+      console.log(`[${activeMap.mapId}] Presented ${resolvedNodes.map((node) => node.label).join(', ')}`)
       await closeMcpClient(client)
       return
     }
@@ -375,7 +384,7 @@ async function main() {
     await highlightNodes(client, nodeIds)
     await navigateTo(client, primaryNode.id, zoom)
     console.log(
-      `Highlighted ${resolvedNodes.map((node) => node.label).join(', ')} (${nodeIds.length} nodes)`,
+      `[${activeMap.mapId}] Highlighted ${resolvedNodes.map((node) => node.label).join(', ')} (${nodeIds.length} nodes)`,
     )
     await closeMcpClient(client)
     return
@@ -406,7 +415,7 @@ async function main() {
       stepLabel: options.step || null,
       explanation: options.explain || null,
     })
-    console.log(`Presented ${resolvedNodes.map((node) => node.label).join(', ')}`)
+    console.log(`[${activeMap.mapId}] Presented ${resolvedNodes.map((node) => node.label).join(', ')}`)
     await closeMcpClient(client)
     return
   }
@@ -426,7 +435,7 @@ async function main() {
     }
 
     await navigateTo(client, node.id, options.zoom ?? getDefaultZoomForNode(node))
-    console.log(`Navigating to ${node.label}`)
+    console.log(`[${activeMap.mapId}] Navigating to ${node.label}`)
     await closeMcpClient(client)
     return
   }
@@ -451,7 +460,7 @@ async function main() {
       resolvedNodes.map((node) => node.id),
       1200,
     )
-    console.log(`Started guided flow across ${resolvedNodes.length} nodes`)
+    console.log(`[${activeMap.mapId}] Started guided flow across ${resolvedNodes.length} nodes`)
     await closeMcpClient(client)
     return
   }
@@ -473,7 +482,7 @@ async function main() {
       await setHealthOverlay(client, true)
       await navigateTo(client, worstNode.id, 1.05)
       console.log(
-        `${worstNode.label}: ${worstNode.healthReason || 'This node has the highest current health severity.'}`,
+        `[${activeMap.mapId}] ${worstNode.label}: ${worstNode.healthReason || 'This node has the highest current health severity.'}`,
       )
       await closeMcpClient(client)
       return
@@ -490,7 +499,7 @@ async function main() {
       const nodeIds = buildHighlightNodeIds(graph, node)
       await highlightNodes(client, nodeIds)
       await navigateTo(client, node.id, getDefaultZoomForNode(node))
-      console.log(`Highlighted ${node.label}`)
+      console.log(`[${activeMap.mapId}] Highlighted ${node.label}`)
       await closeMcpClient(client)
       return
     }
@@ -512,8 +521,8 @@ async function main() {
       await highlightNodes(client, nodeIds)
       console.log(
         nodeIds.length
-          ? `Highlighted ${dependentSystemIds.length} dependent systems for ${node.label}`
-          : `No systems currently depend on ${node.label}`,
+          ? `[${activeMap.mapId}] Highlighted ${dependentSystemIds.length} dependent systems for ${node.label}`
+          : `[${activeMap.mapId}] No systems currently depend on ${node.label}`,
       )
       await closeMcpClient(client)
       return
@@ -529,7 +538,7 @@ async function main() {
 
       const steps = buildGuidedSteps(graph, node)
       await guidedFlow(client, steps, 1200)
-      console.log(`Started guided flow for ${node.label}`)
+      console.log(`[${activeMap.mapId}] Started guided flow for ${node.label}`)
       await closeMcpClient(client)
       return
     }

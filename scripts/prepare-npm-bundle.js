@@ -10,7 +10,7 @@ const OUTPUT_ROOT = path.join(REPO_ROOT, '.npm-bundle')
 function main() {
   const result = spawnSync(
     process.execPath,
-    [PACKAGE_SCRIPT_PATH, '--output', OUTPUT_ROOT, '--no-demo-sync', '--no-demo-packages'],
+    [PACKAGE_SCRIPT_PATH, '--output', OUTPUT_ROOT],
     {
       cwd: REPO_ROOT,
       stdio: 'inherit',

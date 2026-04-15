@@ -1,0 +1,1431 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-04-15T05:55:01.304Z",
+  "fileCount": 16,
+  "files": [
+    {
+      "path": "skill/commands/create-map.js",
+      "relativePath": "skill/commands/create-map.js",
+      "name": "create-map.js",
+      "directory": "skill/commands",
+      "lineCount": 236,
+      "language": "javascript",
+      "mtimeMs": 1776227143807.425,
+      "imports": [
+        "path",
+        "../lib/active-map.js",
+        "../lib/cache.js",
+        "../lib/map-manifest.js",
+        "../lib/mcp-client.js",
+        "../lib/scoped-map.js"
+      ],
+      "exports": []
+    },
+    {
+      "path": "skill/commands/open-claudemap.js",
+      "relativePath": "skill/commands/open-claudemap.js",
+      "name": "open-claudemap.js",
+      "directory": "skill/commands",
+      "lineCount": 100,
+      "language": "javascript",
+      "mtimeMs": 1776226449549.4167,
+      "imports": [
+        "fs",
+        "path",
+        "../lib/launcher.js",
+        "../lib/active-map.js"
+      ],
+      "exports": []
+    },
+    {
+      "path": "skill/commands/setup-claudemap.js",
+      "relativePath": "skill/commands/setup-claudemap.js",
+      "name": "setup-claudemap.js",
+      "directory": "skill/commands",
+      "lineCount": 187,
+      "language": "javascript",
+      "mtimeMs": 1776229559042.1855,
+      "imports": [
+        "path",
+        "../lib/file-walker.js",
+        "../lib/enrichment.js",
+        "../lib/cache.js",
+        "../lib/launcher.js",
+        "../lib/active-map.js",
+        "../lib/map-manifest.js",
+        "../lib/mcp-client.js",
+        "fs/promises"
+      ],
+      "exports": []
+    },
+    {
+      "path": "skill/commands/show.js",
+      "relativePath": "skill/commands/show.js",
+      "name": "show.js",
+      "directory": "skill/commands",
+      "lineCount": 562,
+      "language": "javascript",
+      "mtimeMs": 1776229648361.8425,
+      "imports": [
+        "../lib/mcp-client.js",
+        "../lib/active-map.js"
+      ],
+      "exports": []
+    },
+    {
+      "path": "skill/commands/snapshot.js",
+      "relativePath": "skill/commands/snapshot.js",
+      "name": "snapshot.js",
+      "directory": "skill/commands",
+      "lineCount": 68,
+      "language": "javascript",
+      "mtimeMs": 1776228710937.583,
+      "imports": [
+        "fs",
+        "path",
+        "../lib/file-walker.js"
+      ],
+      "exports": []
+    },
+    {
+      "path": "skill/commands/update.js",
+      "relativePath": "skill/commands/update.js",
+      "name": "update.js",
+      "directory": "skill/commands",
+      "lineCount": 264,
+      "language": "javascript",
+      "mtimeMs": 1776229572847.5146,
+      "imports": [
+        "path",
+        "../lib/active-map.js",
+        "../lib/cache.js",
+        "../lib/differ.js",
+        "../lib/enrichment.js",
+        "../lib/file-walker.js",
+        "../lib/map-manifest.js",
+        "../lib/mcp-client.js",
+        "../lib/scoped-map.js",
+        "fs/promises"
+      ],
+      "exports": []
+    },
+    {
+      "path": "skill/lib/active-map.js",
+      "relativePath": "skill/lib/active-map.js",
+      "name": "active-map.js",
+      "directory": "skill/lib",
+      "lineCount": 53,
+      "language": "javascript",
+      "mtimeMs": 1776226119622.2058,
+      "imports": [
+        "./map-manifest.js",
+        "./runtime-paths.js"
+      ],
+      "exports": [
+        "resolveMapRuntimePaths",
+        "resolveMapCachePath",
+        "resolveMapPaths",
+        "resolveMapById",
+        "resolveActiveMap"
+      ]
+    },
+    {
+      "path": "skill/lib/cache.js",
+      "relativePath": "skill/lib/cache.js",
+      "name": "cache.js",
+      "directory": "skill/lib",
+      "lineCount": 78,
+      "language": "javascript",
+      "mtimeMs": 1776226145770.9214,
+      "imports": [
+        "./runtime-paths.js"
+      ],
+      "exports": [
+        "getCachePath",
+        "writeCache",
+        "readCache",
+        "isCacheStale"
+      ]
+    },
+    {
+      "path": "skill/lib/differ.js",
+      "relativePath": "skill/lib/differ.js",
+      "name": "differ.js",
+      "directory": "skill/lib",
+      "lineCount": 92,
+      "language": "javascript",
+      "mtimeMs": 1776225237471.0105,
+      "imports": [],
+      "exports": [
+        "diffFiles",
+        "diffGraphs"
+      ]
+    },
+    {
+      "path": "skill/lib/enrichment.js",
+      "relativePath": "skill/lib/enrichment.js",
+      "name": "enrichment.js",
+      "directory": "skill/lib",
+      "lineCount": 461,
+      "language": "javascript",
+      "mtimeMs": 1776231802095.0325,
+      "imports": [
+        "fs",
+        "path",
+        "url"
+      ],
+      "exports": [
+        "getGraphSourcePriority",
+        "hasEnrichmentResponseOverride",
+        "shouldPreserveExistingGraph",
+        "selectPreferredGraph",
+        "enrichGraph",
+        "enrichSnapshot",
+        "getClaudeMapArchitectDefinition"
+      ]
+    },
+    {
+      "path": "skill/lib/file-walker.js",
+      "relativePath": "skill/lib/file-walker.js",
+      "name": "file-walker.js",
+      "directory": "skill/lib",
+      "lineCount": 313,
+      "language": "javascript",
+      "mtimeMs": 1776231802086.9197,
+      "imports": [
+        "fs",
+        "path",
+        "child_process"
+      ],
+      "exports": [
+        "collectProjectSnapshot"
+      ]
+    },
+    {
+      "path": "skill/lib/launcher.js",
+      "relativePath": "skill/lib/launcher.js",
+      "name": "launcher.js",
+      "directory": "skill/lib",
+      "lineCount": 107,
+      "language": "javascript",
+      "mtimeMs": 1776225237480.7573,
+      "imports": [
+        "http",
+        "path",
+        "child_process",
+        "url"
+      ],
+      "exports": [
+        "isClaudeMapAppRunning",
+        "launchClaudeMapWindow"
+      ]
+    },
+    {
+      "path": "skill/lib/map-manifest.js",
+      "relativePath": "skill/lib/map-manifest.js",
+      "name": "map-manifest.js",
+      "directory": "skill/lib",
+      "lineCount": 323,
+      "language": "javascript",
+      "mtimeMs": 1776227121498.552,
+      "imports": [
+        "fs",
+        "crypto",
+        "./runtime-paths.js"
+      ],
+      "exports": [
+        "computeScopeFingerprint",
+        "createScopeDescriptor",
+        "readManifest",
+        "writeManifest",
+        "ensureManifestForSetup",
+        "findMapById",
+        "getActiveMap",
+        "setActiveMapId",
+        "upsertMapEntry",
+        "resolveScopeAgainstGraph",
+        "DEFAULT_MAP_ID"
+      ]
+    },
+    {
+      "path": "skill/lib/mcp-client.js",
+      "relativePath": "skill/lib/mcp-client.js",
+      "name": "mcp-client.js",
+      "directory": "skill/lib",
+      "lineCount": 774,
+      "language": "javascript",
+      "mtimeMs": 1776231802134.3337,
+      "imports": [
+        "fs",
+        "path",
+        "url",
+        "./runtime-paths.js",
+        "@modelcontextprotocol/sdk/client/index.js",
+        "@modelcontextprotocol/sdk/client/stdio.js"
+      ],
+      "exports": [
+        "createMcpClient",
+        "connectMcpClient",
+        "closeMcpClient",
+        "getRuntimeGraphPath",
+        "getRuntimeStatePath",
+        "readRuntimeGraph",
+        "readRuntimeState",
+        "renderGraph",
+        "highlightNodes",
+        "clearHighlight",
+        "navigateTo",
+        "guidedFlow",
+        "setHealthOverlay",
+        "setPresentationMode",
+        "presentStep",
+        "showCaption",
+        "clearCaption",
+        "addNode",
+        "removeNode",
+        "updateNode",
+        "addEdge",
+        "removeEdge",
+        "applyGraphPatch"
+      ]
+    },
+    {
+      "path": "skill/lib/runtime-paths.js",
+      "relativePath": "skill/lib/runtime-paths.js",
+      "name": "runtime-paths.js",
+      "directory": "skill/lib",
+      "lineCount": 88,
+      "language": "javascript",
+      "mtimeMs": 1776225858078.8318,
+      "imports": [
+        "fs",
+        "path",
+        "url"
+      ],
+      "exports": [
+        "getRuntimeRoot",
+        "getRuntimePublicRoot",
+        "isInstalledRuntimeRoot",
+        "getDefaultProjectRoot",
+        "resolveProjectPath",
+        "resolveRuntimePublicPath",
+        "getProjectManifestPath",
+        "getRuntimeManifestPath",
+        "readJsonFile",
+        "writeJsonFileAtomic"
+      ]
+    },
+    {
+      "path": "skill/lib/scoped-map.js",
+      "relativePath": "skill/lib/scoped-map.js",
+      "name": "scoped-map.js",
+      "directory": "skill/lib",
+      "lineCount": 114,
+      "language": "javascript",
+      "mtimeMs": 1776226102126.9094,
+      "imports": [
+        "./map-manifest.js"
+      ],
+      "exports": [
+        "buildScopedGraphFromRoot",
+        "slugifyMapId",
+        "allocateMapId",
+        "createScopedMapFileSet"
+      ]
+    }
+  ],
+  "graph": {
+    "meta": {
+      "repoName": "claudemap",
+      "branch": "feat/support-multiple-maps",
+      "creditLabel": "ClaudeMap self-map",
+      "generatedAt": "2026-04-15T05:55:01.289Z",
+      "source": "scoped-map",
+      "scope": {
+        "rootSystemId": "runtime",
+        "rootSystemLabel": "Skill Runtime",
+        "layout": "promoted-children"
+      }
+    },
+    "nodes": [
+      {
+        "id": "runtime-commands",
+        "label": "Command Surface",
+        "type": "system",
+        "icon": "zap",
+        "parentId": null,
+        "health": "yellow",
+        "healthReason": "show.js has become a wide control surface for the live map",
+        "summary": "Setup, refresh, explain, and show",
+        "lineCount": 1417,
+        "filePath": "skill/commands/"
+      },
+      {
+        "id": "runtime-analysis",
+        "label": "Project Analysis",
+        "type": "system",
+        "icon": "database",
+        "parentId": null,
+        "health": "green",
+        "healthReason": null,
+        "summary": "Snapshotting, cache, and diffs",
+        "lineCount": 483,
+        "filePath": "skill/lib/"
+      },
+      {
+        "id": "runtime-model",
+        "label": "Map Model",
+        "type": "system",
+        "icon": "puzzle",
+        "parentId": null,
+        "health": "yellow",
+        "healthReason": "Multi-map scope resolution and manifest state now live in one bounded model layer",
+        "summary": "Manifest, scope, and path rules",
+        "lineCount": 578,
+        "filePath": "skill/lib/"
+      },
+      {
+        "id": "runtime-synthesis",
+        "label": "Graph Synthesis",
+        "type": "system",
+        "icon": "globe",
+        "parentId": null,
+        "health": "yellow",
+        "healthReason": "Enrichment still combines override parsing, prioritization, and heuristic graphing",
+        "summary": "Graph shaping and enrichment",
+        "lineCount": 461,
+        "filePath": "skill/lib/enrichment.js"
+      },
+      {
+        "id": "runtime-transport",
+        "label": "Runtime Transport",
+        "type": "system",
+        "icon": "route",
+        "parentId": null,
+        "health": "red",
+        "healthReason": "mcp-client.js still owns transport, runtime state, and file-shim mutation paths",
+        "summary": "MCP transport and app launch",
+        "lineCount": 881,
+        "filePath": "skill/lib/"
+      },
+      {
+        "id": "file-skill-commands-create-map-js",
+        "label": "create-map.js",
+        "type": "file",
+        "icon": "file",
+        "parentId": "runtime-commands",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Builds a scoped map from the active root graph",
+        "lineCount": 236,
+        "filePath": "skill/commands/create-map.js"
+      },
+      {
+        "id": "file-skill-commands-open-claudemap-js",
+        "label": "open-claudemap.js",
+        "type": "file",
+        "icon": "file",
+        "parentId": "runtime-commands",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Opens the current map without rebuilding",
+        "lineCount": 100,
+        "filePath": "skill/commands/open-claudemap.js"
+      },
+      {
+        "id": "file-skill-commands-setup-claudemap-js",
+        "label": "setup-claudemap.js",
+        "type": "file",
+        "icon": "file",
+        "parentId": "runtime-commands",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Builds the root map from a repo snapshot",
+        "lineCount": 187,
+        "filePath": "skill/commands/setup-claudemap.js"
+      },
+      {
+        "id": "file-skill-commands-show-js",
+        "label": "show.js",
+        "type": "file",
+        "icon": "file",
+        "parentId": "runtime-commands",
+        "health": "red",
+        "healthReason": "Large file at 562 lines",
+        "summary": "Drives highlights, focus, and presentation state",
+        "lineCount": 562,
+        "filePath": "skill/commands/show.js"
+      },
+      {
+        "id": "file-skill-commands-snapshot-js",
+        "label": "snapshot.js",
+        "type": "file",
+        "icon": "file",
+        "parentId": "runtime-commands",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Writes a repo snapshot JSON",
+        "lineCount": 68,
+        "filePath": "skill/commands/snapshot.js"
+      },
+      {
+        "id": "file-skill-commands-update-js",
+        "label": "update.js",
+        "type": "file",
+        "icon": "file",
+        "parentId": "runtime-commands",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Refreshes root and scoped maps after changes",
+        "lineCount": 264,
+        "filePath": "skill/commands/update.js"
+      },
+      {
+        "id": "file-skill-lib-cache-js",
+        "label": "cache.js",
+        "type": "file",
+        "icon": "file",
+        "parentId": "runtime-analysis",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Persists graph snapshots beside the repo",
+        "lineCount": 78,
+        "filePath": "skill/lib/cache.js"
+      },
+      {
+        "id": "file-skill-lib-differ-js",
+        "label": "differ.js",
+        "type": "file",
+        "icon": "file",
+        "parentId": "runtime-analysis",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Diffs file manifests and graph payloads",
+        "lineCount": 92,
+        "filePath": "skill/lib/differ.js"
+      },
+      {
+        "id": "file-skill-lib-file-walker-js",
+        "label": "file-walker.js",
+        "type": "file",
+        "icon": "file",
+        "parentId": "runtime-analysis",
+        "health": "yellow",
+        "healthReason": "File is 313 lines",
+        "summary": "Collects import/export-aware repo snapshots",
+        "lineCount": 313,
+        "filePath": "skill/lib/file-walker.js"
+      },
+      {
+        "id": "file-skill-lib-active-map-js",
+        "label": "active-map.js",
+        "type": "file",
+        "icon": "file",
+        "parentId": "runtime-model",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Resolves the current map entry and its paths",
+        "lineCount": 53,
+        "filePath": "skill/lib/active-map.js"
+      },
+      {
+        "id": "file-skill-lib-map-manifest-js",
+        "label": "map-manifest.js",
+        "type": "file",
+        "icon": "file",
+        "parentId": "runtime-model",
+        "health": "yellow",
+        "healthReason": "File is 323 lines",
+        "summary": "Stores map metadata and resolves scopes",
+        "lineCount": 323,
+        "filePath": "skill/lib/map-manifest.js"
+      },
+      {
+        "id": "file-skill-lib-runtime-paths-js",
+        "label": "runtime-paths.js",
+        "type": "file",
+        "icon": "file",
+        "parentId": "runtime-model",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Resolves project and runtime file targets",
+        "lineCount": 88,
+        "filePath": "skill/lib/runtime-paths.js"
+      },
+      {
+        "id": "file-skill-lib-scoped-map-js",
+        "label": "scoped-map.js",
+        "type": "file",
+        "icon": "file",
+        "parentId": "runtime-model",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Projects subsystem graphs from the root map",
+        "lineCount": 114,
+        "filePath": "skill/lib/scoped-map.js"
+      },
+      {
+        "id": "file-skill-lib-enrichment-js",
+        "label": "enrichment.js",
+        "type": "file",
+        "icon": "file",
+        "parentId": "runtime-synthesis",
+        "health": "yellow",
+        "healthReason": "File is 461 lines",
+        "summary": "Chooses Claude, override, or heuristic graphs",
+        "lineCount": 461,
+        "filePath": "skill/lib/enrichment.js"
+      },
+      {
+        "id": "file-skill-lib-launcher-js",
+        "label": "launcher.js",
+        "type": "file",
+        "icon": "file",
+        "parentId": "runtime-transport",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Starts or reuses the local ClaudeMap app",
+        "lineCount": 107,
+        "filePath": "skill/lib/launcher.js"
+      },
+      {
+        "id": "file-skill-lib-mcp-client-js",
+        "label": "mcp-client.js",
+        "type": "file",
+        "icon": "file",
+        "parentId": "runtime-transport",
+        "health": "red",
+        "healthReason": "Large file at 774 lines",
+        "summary": "Bridges commands into runtime graph state",
+        "lineCount": 774,
+        "filePath": "skill/lib/mcp-client.js"
+      },
+      {
+        "id": "function-skill-lib-cache-js-getcachepath",
+        "label": "getCachePath",
+        "type": "function",
+        "icon": "code",
+        "parentId": "file-skill-lib-cache-js",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Reads cache path",
+        "lineCount": 19,
+        "filePath": "skill/lib/cache.js"
+      },
+      {
+        "id": "function-skill-lib-cache-js-writecache",
+        "label": "writeCache",
+        "type": "function",
+        "icon": "code",
+        "parentId": "file-skill-lib-cache-js",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Writes cache",
+        "lineCount": 19,
+        "filePath": "skill/lib/cache.js"
+      },
+      {
+        "id": "function-skill-lib-cache-js-readcache",
+        "label": "readCache",
+        "type": "function",
+        "icon": "code",
+        "parentId": "file-skill-lib-cache-js",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Reads cache",
+        "lineCount": 19,
+        "filePath": "skill/lib/cache.js"
+      },
+      {
+        "id": "function-skill-lib-cache-js-iscachestale",
+        "label": "isCacheStale",
+        "type": "function",
+        "icon": "code",
+        "parentId": "file-skill-lib-cache-js",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Is cache stale in cache.js",
+        "lineCount": 19,
+        "filePath": "skill/lib/cache.js"
+      },
+      {
+        "id": "function-skill-lib-differ-js-difffiles",
+        "label": "diffFiles",
+        "type": "function",
+        "icon": "code",
+        "parentId": "file-skill-lib-differ-js",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Diff files in differ.js",
+        "lineCount": 46,
+        "filePath": "skill/lib/differ.js"
+      },
+      {
+        "id": "function-skill-lib-differ-js-diffgraphs",
+        "label": "diffGraphs",
+        "type": "function",
+        "icon": "code",
+        "parentId": "file-skill-lib-differ-js",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Diff graphs in differ.js",
+        "lineCount": 46,
+        "filePath": "skill/lib/differ.js"
+      },
+      {
+        "id": "function-skill-lib-file-walker-js-collectprojectsnapshot",
+        "label": "collectProjectSnapshot",
+        "type": "function",
+        "icon": "code",
+        "parentId": "file-skill-lib-file-walker-js",
+        "health": "yellow",
+        "healthReason": "File is 313 lines",
+        "summary": "Collects the repo snapshot used for graphing",
+        "lineCount": 313,
+        "filePath": "skill/lib/file-walker.js"
+      },
+      {
+        "id": "function-skill-lib-active-map-js-resolvemapruntimepaths",
+        "label": "resolveMapRuntimePaths",
+        "type": "function",
+        "icon": "code",
+        "parentId": "file-skill-lib-active-map-js",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Resolve map runtime paths in active-map.js",
+        "lineCount": 10,
+        "filePath": "skill/lib/active-map.js"
+      },
+      {
+        "id": "function-skill-lib-active-map-js-resolvemapcachepath",
+        "label": "resolveMapCachePath",
+        "type": "function",
+        "icon": "code",
+        "parentId": "file-skill-lib-active-map-js",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Resolve map cache path in active-map.js",
+        "lineCount": 10,
+        "filePath": "skill/lib/active-map.js"
+      },
+      {
+        "id": "function-skill-lib-active-map-js-resolvemappaths",
+        "label": "resolveMapPaths",
+        "type": "function",
+        "icon": "code",
+        "parentId": "file-skill-lib-active-map-js",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Resolves cache and runtime paths for a map",
+        "lineCount": 10,
+        "filePath": "skill/lib/active-map.js"
+      },
+      {
+        "id": "function-skill-lib-active-map-js-resolvemapbyid",
+        "label": "resolveMapById",
+        "type": "function",
+        "icon": "code",
+        "parentId": "file-skill-lib-active-map-js",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Resolve map by id in active-map.js",
+        "lineCount": 10,
+        "filePath": "skill/lib/active-map.js"
+      },
+      {
+        "id": "function-skill-lib-active-map-js-resolveactivemap",
+        "label": "resolveActiveMap",
+        "type": "function",
+        "icon": "code",
+        "parentId": "file-skill-lib-active-map-js",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Loads the active map from the manifest",
+        "lineCount": 10,
+        "filePath": "skill/lib/active-map.js"
+      },
+      {
+        "id": "function-skill-lib-map-manifest-js-computescopefingerprint",
+        "label": "computeScopeFingerprint",
+        "type": "function",
+        "icon": "code",
+        "parentId": "file-skill-lib-map-manifest-js",
+        "health": "yellow",
+        "healthReason": "File is 323 lines",
+        "summary": "Builds stable scope identity across refreshes",
+        "lineCount": 64,
+        "filePath": "skill/lib/map-manifest.js"
+      },
+      {
+        "id": "function-skill-lib-map-manifest-js-createscopedescriptor",
+        "label": "createScopeDescriptor",
+        "type": "function",
+        "icon": "code",
+        "parentId": "file-skill-lib-map-manifest-js",
+        "health": "yellow",
+        "healthReason": "File is 323 lines",
+        "summary": "Creates scope descriptor",
+        "lineCount": 64,
+        "filePath": "skill/lib/map-manifest.js"
+      },
+      {
+        "id": "function-skill-lib-map-manifest-js-readmanifest",
+        "label": "readManifest",
+        "type": "function",
+        "icon": "code",
+        "parentId": "file-skill-lib-map-manifest-js",
+        "health": "yellow",
+        "healthReason": "File is 323 lines",
+        "summary": "Reads or synthesizes the map manifest",
+        "lineCount": 64,
+        "filePath": "skill/lib/map-manifest.js"
+      },
+      {
+        "id": "function-skill-lib-map-manifest-js-writemanifest",
+        "label": "writeManifest",
+        "type": "function",
+        "icon": "code",
+        "parentId": "file-skill-lib-map-manifest-js",
+        "health": "yellow",
+        "healthReason": "File is 323 lines",
+        "summary": "Persists project and runtime manifests",
+        "lineCount": 64,
+        "filePath": "skill/lib/map-manifest.js"
+      },
+      {
+        "id": "function-skill-lib-map-manifest-js-ensuremanifestforsetup",
+        "label": "ensureManifestForSetup",
+        "type": "function",
+        "icon": "code",
+        "parentId": "file-skill-lib-map-manifest-js",
+        "health": "yellow",
+        "healthReason": "File is 323 lines",
+        "summary": "Ensure manifest for setup in map-manifest.js",
+        "lineCount": 64,
+        "filePath": "skill/lib/map-manifest.js"
+      },
+      {
+        "id": "function-skill-lib-runtime-paths-js-getruntimeroot",
+        "label": "getRuntimeRoot",
+        "type": "function",
+        "icon": "code",
+        "parentId": "file-skill-lib-runtime-paths-js",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Reads runtime root",
+        "lineCount": 17,
+        "filePath": "skill/lib/runtime-paths.js"
+      },
+      {
+        "id": "function-skill-lib-runtime-paths-js-getruntimepublicroot",
+        "label": "getRuntimePublicRoot",
+        "type": "function",
+        "icon": "code",
+        "parentId": "file-skill-lib-runtime-paths-js",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Reads runtime public root",
+        "lineCount": 17,
+        "filePath": "skill/lib/runtime-paths.js"
+      },
+      {
+        "id": "function-skill-lib-runtime-paths-js-isinstalledruntimeroot",
+        "label": "isInstalledRuntimeRoot",
+        "type": "function",
+        "icon": "code",
+        "parentId": "file-skill-lib-runtime-paths-js",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Is installed runtime root in runtime-paths.js",
+        "lineCount": 17,
+        "filePath": "skill/lib/runtime-paths.js"
+      },
+      {
+        "id": "function-skill-lib-runtime-paths-js-getdefaultprojectroot",
+        "label": "getDefaultProjectRoot",
+        "type": "function",
+        "icon": "code",
+        "parentId": "file-skill-lib-runtime-paths-js",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Reads default project root",
+        "lineCount": 17,
+        "filePath": "skill/lib/runtime-paths.js"
+      },
+      {
+        "id": "function-skill-lib-runtime-paths-js-resolveprojectpath",
+        "label": "resolveProjectPath",
+        "type": "function",
+        "icon": "code",
+        "parentId": "file-skill-lib-runtime-paths-js",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Resolve project path in runtime-paths.js",
+        "lineCount": 17,
+        "filePath": "skill/lib/runtime-paths.js"
+      },
+      {
+        "id": "function-skill-lib-scoped-map-js-buildscopedgraphfromroot",
+        "label": "buildScopedGraphFromRoot",
+        "type": "function",
+        "icon": "code",
+        "parentId": "file-skill-lib-scoped-map-js",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Cuts a subsystem graph out of the root map",
+        "lineCount": 28,
+        "filePath": "skill/lib/scoped-map.js"
+      },
+      {
+        "id": "function-skill-lib-scoped-map-js-slugifymapid",
+        "label": "slugifyMapId",
+        "type": "function",
+        "icon": "code",
+        "parentId": "file-skill-lib-scoped-map-js",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Slugify map id in scoped-map.js",
+        "lineCount": 28,
+        "filePath": "skill/lib/scoped-map.js"
+      },
+      {
+        "id": "function-skill-lib-scoped-map-js-allocatemapid",
+        "label": "allocateMapId",
+        "type": "function",
+        "icon": "code",
+        "parentId": "file-skill-lib-scoped-map-js",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Allocate map id in scoped-map.js",
+        "lineCount": 28,
+        "filePath": "skill/lib/scoped-map.js"
+      },
+      {
+        "id": "function-skill-lib-scoped-map-js-createscopedmapfileset",
+        "label": "createScopedMapFileSet",
+        "type": "function",
+        "icon": "code",
+        "parentId": "file-skill-lib-scoped-map-js",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Creates scoped map file set",
+        "lineCount": 28,
+        "filePath": "skill/lib/scoped-map.js"
+      },
+      {
+        "id": "function-skill-lib-enrichment-js-getgraphsourcepriority",
+        "label": "getGraphSourcePriority",
+        "type": "function",
+        "icon": "code",
+        "parentId": "file-skill-lib-enrichment-js",
+        "health": "yellow",
+        "healthReason": "File is 461 lines",
+        "summary": "Reads graph source priority",
+        "lineCount": 92,
+        "filePath": "skill/lib/enrichment.js"
+      },
+      {
+        "id": "function-skill-lib-enrichment-js-hasenrichmentresponseoverride",
+        "label": "hasEnrichmentResponseOverride",
+        "type": "function",
+        "icon": "code",
+        "parentId": "file-skill-lib-enrichment-js",
+        "health": "yellow",
+        "healthReason": "File is 461 lines",
+        "summary": "Has enrichment response override in enrichment.js",
+        "lineCount": 92,
+        "filePath": "skill/lib/enrichment.js"
+      },
+      {
+        "id": "function-skill-lib-enrichment-js-shouldpreserveexistinggraph",
+        "label": "shouldPreserveExistingGraph",
+        "type": "function",
+        "icon": "code",
+        "parentId": "file-skill-lib-enrichment-js",
+        "health": "yellow",
+        "healthReason": "File is 461 lines",
+        "summary": "Should preserve existing graph in enrichment.js",
+        "lineCount": 92,
+        "filePath": "skill/lib/enrichment.js"
+      },
+      {
+        "id": "function-skill-lib-enrichment-js-selectpreferredgraph",
+        "label": "selectPreferredGraph",
+        "type": "function",
+        "icon": "code",
+        "parentId": "file-skill-lib-enrichment-js",
+        "health": "yellow",
+        "healthReason": "File is 461 lines",
+        "summary": "Keeps higher-priority graphs during refresh",
+        "lineCount": 92,
+        "filePath": "skill/lib/enrichment.js"
+      },
+      {
+        "id": "function-skill-lib-enrichment-js-enrichgraph",
+        "label": "enrichGraph",
+        "type": "function",
+        "icon": "code",
+        "parentId": "file-skill-lib-enrichment-js",
+        "health": "yellow",
+        "healthReason": "File is 461 lines",
+        "summary": "Builds a graph from override or heuristics",
+        "lineCount": 92,
+        "filePath": "skill/lib/enrichment.js"
+      },
+      {
+        "id": "function-skill-lib-launcher-js-isclaudemapapprunning",
+        "label": "isClaudeMapAppRunning",
+        "type": "function",
+        "icon": "code",
+        "parentId": "file-skill-lib-launcher-js",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Is claude map app running in launcher.js",
+        "lineCount": 53,
+        "filePath": "skill/lib/launcher.js"
+      },
+      {
+        "id": "function-skill-lib-launcher-js-launchclaudemapwindow",
+        "label": "launchClaudeMapWindow",
+        "type": "function",
+        "icon": "code",
+        "parentId": "file-skill-lib-launcher-js",
+        "health": "green",
+        "healthReason": null,
+        "summary": "Starts or reuses the local ClaudeMap app",
+        "lineCount": 53,
+        "filePath": "skill/lib/launcher.js"
+      },
+      {
+        "id": "function-skill-lib-mcp-client-js-createmcpclient",
+        "label": "createMcpClient",
+        "type": "function",
+        "icon": "code",
+        "parentId": "file-skill-lib-mcp-client-js",
+        "health": "red",
+        "healthReason": "Large file at 774 lines",
+        "summary": "Builds a file-shim runtime client",
+        "lineCount": 154,
+        "filePath": "skill/lib/mcp-client.js"
+      },
+      {
+        "id": "function-skill-lib-mcp-client-js-connectmcpclient",
+        "label": "connectMcpClient",
+        "type": "function",
+        "icon": "code",
+        "parentId": "file-skill-lib-mcp-client-js",
+        "health": "red",
+        "healthReason": "Large file at 774 lines",
+        "summary": "Connects stdio MCP or falls back to file-shim",
+        "lineCount": 154,
+        "filePath": "skill/lib/mcp-client.js"
+      },
+      {
+        "id": "function-skill-lib-mcp-client-js-closemcpclient",
+        "label": "closeMcpClient",
+        "type": "function",
+        "icon": "code",
+        "parentId": "file-skill-lib-mcp-client-js",
+        "health": "red",
+        "healthReason": "Large file at 774 lines",
+        "summary": "Close mcp client in mcp-client.js",
+        "lineCount": 154,
+        "filePath": "skill/lib/mcp-client.js"
+      },
+      {
+        "id": "function-skill-lib-mcp-client-js-getruntimegraphpath",
+        "label": "getRuntimeGraphPath",
+        "type": "function",
+        "icon": "code",
+        "parentId": "file-skill-lib-mcp-client-js",
+        "health": "red",
+        "healthReason": "Large file at 774 lines",
+        "summary": "Reads runtime graph path",
+        "lineCount": 154,
+        "filePath": "skill/lib/mcp-client.js"
+      },
+      {
+        "id": "function-skill-lib-mcp-client-js-getruntimestatepath",
+        "label": "getRuntimeStatePath",
+        "type": "function",
+        "icon": "code",
+        "parentId": "file-skill-lib-mcp-client-js",
+        "health": "red",
+        "healthReason": "Large file at 774 lines",
+        "summary": "Reads runtime state path",
+        "lineCount": 154,
+        "filePath": "skill/lib/mcp-client.js"
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge-runtime-analysis-runtime-model",
+        "source": "runtime-analysis",
+        "target": "runtime-model",
+        "type": "imports"
+      },
+      {
+        "id": "edge-runtime-commands-runtime-analysis",
+        "source": "runtime-commands",
+        "target": "runtime-analysis",
+        "type": "imports"
+      },
+      {
+        "id": "edge-runtime-commands-runtime-model",
+        "source": "runtime-commands",
+        "target": "runtime-model",
+        "type": "imports"
+      },
+      {
+        "id": "edge-runtime-commands-runtime-synthesis",
+        "source": "runtime-commands",
+        "target": "runtime-synthesis",
+        "type": "imports"
+      },
+      {
+        "id": "edge-runtime-commands-runtime-transport",
+        "source": "runtime-commands",
+        "target": "runtime-transport",
+        "type": "imports"
+      },
+      {
+        "id": "edge-runtime-transport-runtime-model",
+        "source": "runtime-transport",
+        "target": "runtime-model",
+        "type": "imports"
+      }
+    ],
+    "files": [
+      {
+        "path": "skill/commands/create-map.js",
+        "relativePath": "skill/commands/create-map.js",
+        "name": "create-map.js",
+        "directory": "skill/commands",
+        "lineCount": 236,
+        "imports": [
+          "path",
+          "../lib/active-map.js",
+          "../lib/cache.js",
+          "../lib/map-manifest.js",
+          "../lib/mcp-client.js",
+          "../lib/scoped-map.js"
+        ],
+        "exports": [],
+        "language": "javascript",
+        "mtimeMs": 1776227143807.425
+      },
+      {
+        "path": "skill/commands/open-claudemap.js",
+        "relativePath": "skill/commands/open-claudemap.js",
+        "name": "open-claudemap.js",
+        "directory": "skill/commands",
+        "lineCount": 100,
+        "imports": [
+          "fs",
+          "path",
+          "../lib/launcher.js",
+          "../lib/active-map.js"
+        ],
+        "exports": [],
+        "language": "javascript",
+        "mtimeMs": 1776226449549.4167
+      },
+      {
+        "path": "skill/commands/setup-claudemap.js",
+        "relativePath": "skill/commands/setup-claudemap.js",
+        "name": "setup-claudemap.js",
+        "directory": "skill/commands",
+        "lineCount": 187,
+        "imports": [
+          "path",
+          "../lib/file-walker.js",
+          "../lib/enrichment.js",
+          "../lib/cache.js",
+          "../lib/launcher.js",
+          "../lib/active-map.js",
+          "../lib/map-manifest.js",
+          "../lib/mcp-client.js",
+          "fs/promises"
+        ],
+        "exports": [],
+        "language": "javascript",
+        "mtimeMs": 1776229559042.1855
+      },
+      {
+        "path": "skill/commands/show.js",
+        "relativePath": "skill/commands/show.js",
+        "name": "show.js",
+        "directory": "skill/commands",
+        "lineCount": 562,
+        "imports": [
+          "../lib/mcp-client.js",
+          "../lib/active-map.js"
+        ],
+        "exports": [],
+        "language": "javascript",
+        "mtimeMs": 1776229648361.8425
+      },
+      {
+        "path": "skill/commands/snapshot.js",
+        "relativePath": "skill/commands/snapshot.js",
+        "name": "snapshot.js",
+        "directory": "skill/commands",
+        "lineCount": 68,
+        "imports": [
+          "fs",
+          "path",
+          "../lib/file-walker.js"
+        ],
+        "exports": [],
+        "language": "javascript",
+        "mtimeMs": 1776228710937.583
+      },
+      {
+        "path": "skill/commands/update.js",
+        "relativePath": "skill/commands/update.js",
+        "name": "update.js",
+        "directory": "skill/commands",
+        "lineCount": 264,
+        "imports": [
+          "path",
+          "../lib/active-map.js",
+          "../lib/cache.js",
+          "../lib/differ.js",
+          "../lib/enrichment.js",
+          "../lib/file-walker.js",
+          "../lib/map-manifest.js",
+          "../lib/mcp-client.js",
+          "../lib/scoped-map.js",
+          "fs/promises"
+        ],
+        "exports": [],
+        "language": "javascript",
+        "mtimeMs": 1776229572847.5146
+      },
+      {
+        "path": "skill/lib/active-map.js",
+        "relativePath": "skill/lib/active-map.js",
+        "name": "active-map.js",
+        "directory": "skill/lib",
+        "lineCount": 53,
+        "imports": [
+          "./map-manifest.js",
+          "./runtime-paths.js"
+        ],
+        "exports": [
+          "resolveMapRuntimePaths",
+          "resolveMapCachePath",
+          "resolveMapPaths",
+          "resolveMapById",
+          "resolveActiveMap"
+        ],
+        "language": "javascript",
+        "mtimeMs": 1776226119622.2058
+      },
+      {
+        "path": "skill/lib/cache.js",
+        "relativePath": "skill/lib/cache.js",
+        "name": "cache.js",
+        "directory": "skill/lib",
+        "lineCount": 78,
+        "imports": [
+          "./runtime-paths.js"
+        ],
+        "exports": [
+          "getCachePath",
+          "writeCache",
+          "readCache",
+          "isCacheStale"
+        ],
+        "language": "javascript",
+        "mtimeMs": 1776226145770.9214
+      },
+      {
+        "path": "skill/lib/differ.js",
+        "relativePath": "skill/lib/differ.js",
+        "name": "differ.js",
+        "directory": "skill/lib",
+        "lineCount": 92,
+        "imports": [],
+        "exports": [
+          "diffFiles",
+          "diffGraphs"
+        ],
+        "language": "javascript",
+        "mtimeMs": 1776225237471.0105
+      },
+      {
+        "path": "skill/lib/enrichment.js",
+        "relativePath": "skill/lib/enrichment.js",
+        "name": "enrichment.js",
+        "directory": "skill/lib",
+        "lineCount": 461,
+        "imports": [
+          "fs",
+          "path",
+          "url"
+        ],
+        "exports": [
+          "getGraphSourcePriority",
+          "hasEnrichmentResponseOverride",
+          "shouldPreserveExistingGraph",
+          "selectPreferredGraph",
+          "enrichGraph",
+          "enrichSnapshot",
+          "getClaudeMapArchitectDefinition"
+        ],
+        "language": "javascript",
+        "mtimeMs": 1776231802095.0325
+      },
+      {
+        "path": "skill/lib/file-walker.js",
+        "relativePath": "skill/lib/file-walker.js",
+        "name": "file-walker.js",
+        "directory": "skill/lib",
+        "lineCount": 313,
+        "imports": [
+          "fs",
+          "path",
+          "child_process"
+        ],
+        "exports": [
+          "collectProjectSnapshot"
+        ],
+        "language": "javascript",
+        "mtimeMs": 1776231802086.9197
+      },
+      {
+        "path": "skill/lib/launcher.js",
+        "relativePath": "skill/lib/launcher.js",
+        "name": "launcher.js",
+        "directory": "skill/lib",
+        "lineCount": 107,
+        "imports": [
+          "http",
+          "path",
+          "child_process",
+          "url"
+        ],
+        "exports": [
+          "isClaudeMapAppRunning",
+          "launchClaudeMapWindow"
+        ],
+        "language": "javascript",
+        "mtimeMs": 1776225237480.7573
+      },
+      {
+        "path": "skill/lib/map-manifest.js",
+        "relativePath": "skill/lib/map-manifest.js",
+        "name": "map-manifest.js",
+        "directory": "skill/lib",
+        "lineCount": 323,
+        "imports": [
+          "fs",
+          "crypto",
+          "./runtime-paths.js"
+        ],
+        "exports": [
+          "computeScopeFingerprint",
+          "createScopeDescriptor",
+          "readManifest",
+          "writeManifest",
+          "ensureManifestForSetup",
+          "findMapById",
+          "getActiveMap",
+          "setActiveMapId",
+          "upsertMapEntry",
+          "resolveScopeAgainstGraph",
+          "DEFAULT_MAP_ID"
+        ],
+        "language": "javascript",
+        "mtimeMs": 1776227121498.552
+      },
+      {
+        "path": "skill/lib/mcp-client.js",
+        "relativePath": "skill/lib/mcp-client.js",
+        "name": "mcp-client.js",
+        "directory": "skill/lib",
+        "lineCount": 774,
+        "imports": [
+          "fs",
+          "path",
+          "url",
+          "./runtime-paths.js",
+          "@modelcontextprotocol/sdk/client/index.js",
+          "@modelcontextprotocol/sdk/client/stdio.js"
+        ],
+        "exports": [
+          "createMcpClient",
+          "connectMcpClient",
+          "closeMcpClient",
+          "getRuntimeGraphPath",
+          "getRuntimeStatePath",
+          "readRuntimeGraph",
+          "readRuntimeState",
+          "renderGraph",
+          "highlightNodes",
+          "clearHighlight",
+          "navigateTo",
+          "guidedFlow",
+          "setHealthOverlay",
+          "setPresentationMode",
+          "presentStep",
+          "showCaption",
+          "clearCaption",
+          "addNode",
+          "removeNode",
+          "updateNode",
+          "addEdge",
+          "removeEdge",
+          "applyGraphPatch"
+        ],
+        "language": "javascript",
+        "mtimeMs": 1776231802134.3337
+      },
+      {
+        "path": "skill/lib/runtime-paths.js",
+        "relativePath": "skill/lib/runtime-paths.js",
+        "name": "runtime-paths.js",
+        "directory": "skill/lib",
+        "lineCount": 88,
+        "imports": [
+          "fs",
+          "path",
+          "url"
+        ],
+        "exports": [
+          "getRuntimeRoot",
+          "getRuntimePublicRoot",
+          "isInstalledRuntimeRoot",
+          "getDefaultProjectRoot",
+          "resolveProjectPath",
+          "resolveRuntimePublicPath",
+          "getProjectManifestPath",
+          "getRuntimeManifestPath",
+          "readJsonFile",
+          "writeJsonFileAtomic"
+        ],
+        "language": "javascript",
+        "mtimeMs": 1776225858078.8318
+      },
+      {
+        "path": "skill/lib/scoped-map.js",
+        "relativePath": "skill/lib/scoped-map.js",
+        "name": "scoped-map.js",
+        "directory": "skill/lib",
+        "lineCount": 114,
+        "imports": [
+          "./map-manifest.js"
+        ],
+        "exports": [
+          "buildScopedGraphFromRoot",
+          "slugifyMapId",
+          "allocateMapId",
+          "createScopedMapFileSet"
+        ],
+        "language": "javascript",
+        "mtimeMs": 1776226102126.9094
+      }
+    ]
+  }
+}

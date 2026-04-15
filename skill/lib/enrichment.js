@@ -5,14 +5,13 @@ import { fileURLToPath } from 'url'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const PROMPT_PATH = path.join(__dirname, '../prompts/enrichment.txt')
 const ARCHITECT_AGENT_PATH = path.join(__dirname, '../../agents/claudemap-architect.md')
-const DEMO_CACHE_PATH = path.join(__dirname, '../../demo/expressjs-cache.json')
 const POSIX_PATH = path.posix
 const IMPORTABLE_EXTENSIONS = ['.js', '.jsx', '.ts', '.tsx', '.mjs', '.cjs', '.mts', '.cts', '.py']
 const GRAPH_SOURCE_PRIORITY = {
   sample: 0,
+  seed: 0,
   'file-shim': 0,
   heuristic: 10,
-  'demo-cache': 20,
   claude: 30,
   imported: 40,
   manual: 50,
@@ -77,7 +76,7 @@ function normalizeGraphMeta(snapshot, graph, source) {
     meta: {
       ...(graph.meta || {}),
       repoName: snapshot.repoName,
-      branch: graph.meta?.branch || 'current',
+      branch: graph.meta?.branch || snapshot.branch || 'workspace',
       creditLabel: graph.meta?.creditLabel || 'ClaudeMap skill',
       generatedAt: snapshot.generatedAt,
       source,
@@ -131,18 +130,6 @@ function parseGraphResponse(responseText) {
   }
 
   throw lastError || new Error('Unable to parse graph response')
-}
-
-function loadDemoGraph(snapshot) {
-  const cache = JSON.parse(fs.readFileSync(DEMO_CACHE_PATH, 'utf8'))
-  const graph = cache.graph || cache
-  const validatedGraph = validateGraph(graph)
-
-  if (validatedGraph.nodes.length === 0) {
-    throw new Error('Demo cache is still placeholder-only')
-  }
-
-  return normalizeGraphMeta(snapshot, validatedGraph, 'demo-cache')
 }
 
 function iconForSystem(key, files) {
@@ -373,7 +360,7 @@ function createHeuristicGraph(snapshot) {
   return validateGraph({
     meta: {
       repoName: snapshot.repoName,
-      branch: 'current',
+      branch: snapshot.branch || 'workspace',
       creditLabel: 'ClaudeMap skill',
       generatedAt: snapshot.generatedAt,
       source: 'heuristic',
@@ -445,14 +432,6 @@ export function selectPreferredGraph(existingGraph, candidateGraph, options = {}
   }
 }
 
-function shouldPreferDemoCache(snapshot, options) {
-  if (options.useDemoFallback) {
-    return true
-  }
-
-  return snapshot.repoName.toLowerCase().includes('express')
-}
-
 export async function enrichGraph(snapshot, options = {}) {
   const fullPrompt = buildPrompt(snapshot)
   void fullPrompt
@@ -465,16 +444,6 @@ export async function enrichGraph(snapshot, options = {}) {
     } catch (error) {
       if (!options.silent) {
         console.warn(`ClaudeMap enrichment override failed: ${error.message}`)
-      }
-    }
-  }
-
-  if (shouldPreferDemoCache(snapshot, options)) {
-    try {
-      return loadDemoGraph(snapshot)
-    } catch (error) {
-      if (!options.silent) {
-        console.warn(`ClaudeMap demo cache fallback failed: ${error.message}`)
       }
     }
   }

@@ -136,7 +136,7 @@ function buildArtifactIfNeeded(options) {
   }
 
   const packageScriptPath = path.join(REPO_ROOT, 'scripts', 'package-claudemap-skill.js')
-  runCommand(getNodeCommand(), [packageScriptPath, '--output', DEFAULT_OUTPUT_ROOT, '--no-demo-sync'], REPO_ROOT)
+  runCommand(getNodeCommand(), [packageScriptPath, '--output', DEFAULT_OUTPUT_ROOT], REPO_ROOT)
 }
 
 function loadArtifactManifest(artifactRoot) {

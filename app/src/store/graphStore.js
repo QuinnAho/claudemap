@@ -11,9 +11,12 @@ function arePathsEqual(left = [], right = []) {
 export const useGraphStore = create((set) => ({
   nodes: [],
   edges: [],
+  mapsManifest: null,
+  activeMapId: 'root',
+  activeMap: null,
   meta: {
     repoName: 'claudemap',
-    branch: 'current',
+    branch: 'workspace',
     creditLabel: 'ClaudeMap graph',
     source: 'runtime',
     lastSyncedAt: Date.now(),
@@ -30,6 +33,14 @@ export const useGraphStore = create((set) => ({
   presentationCaption: null,
 
   setGraph: (nodes, edges) => set({ nodes, edges }),
+
+  setMapsManifest: (manifest) =>
+    set({
+      mapsManifest: manifest,
+      activeMapId: manifest?.activeMapId || 'root',
+      activeMap:
+        manifest?.maps?.find((entry) => entry.id === manifest.activeMapId) || null,
+    }),
 
   addNode: (node) =>
     set((state) => ({
@@ -128,6 +139,20 @@ export const useGraphStore = create((set) => ({
       focusRequest: state.focusRequest ? null : state.focusRequest,
       guidedFlowRequest: state.guidedFlowRequest ? null : state.guidedFlowRequest,
     })),
+
+  resetForMapChange: () =>
+    set({
+      selectedNode: null,
+      highlightedNodes: [],
+      highlightColor: 'accent',
+      healthOverlay: false,
+      hoveredPathIds: [],
+      focusRequest: null,
+      guidedFlowRequest: null,
+      presentationMode: 'free',
+      presentationLockInput: false,
+      presentationCaption: null,
+    }),
 
   setHoveredPathIds: (nodeIds) =>
     set((state) =>

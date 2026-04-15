@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "activeMapId": "skill-runtime",
+  "maps": [
+    {
+      "id": "root",
+      "label": "ClaudeMap",
+      "summary": "Full repo overview",
+      "scope": null,
+      "cachePath": "claudemap-cache.json",
+      "graphPath": "claudemap-runtime.json",
+      "statePath": "claudemap-runtime-state.json"
+    },
+    {
+      "id": "skill-runtime",
+      "label": "Skill Runtime",
+      "summary": "CLI runtime focused subsystem map",
+      "scope": {
+        "type": "subsystem",
+        "rootSystemId": "runtime",
+        "rootSystemLabel": "Skill Runtime",
+        "ancestorPath": [],
+        "filePathHint": "skill/",
+        "fingerprint": "sha1:d652dc603412c8f7ff15635c1707dd0912098a3d",
+        "stale": false
+      },
+      "cachePath": "claudemap-cache.skill-runtime.json",
+      "graphPath": "claudemap-runtime.skill-runtime.json",
+      "statePath": "claudemap-runtime-state.skill-runtime.json"
+    }
+  ]
+}

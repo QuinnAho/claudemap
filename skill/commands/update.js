@@ -1,19 +1,24 @@
 #!/usr/bin/env node
 import path from 'path'
-import { collectProjectSnapshot } from '../lib/file-walker.js'
+import { resolveMapPaths } from '../lib/active-map.js'
 import { readCache, writeCache } from '../lib/cache.js'
-import { diffFiles, diffGraphs } from '../lib/differ.js'
+import { diffFiles } from '../lib/differ.js'
 import {
   enrichGraph,
   hasEnrichmentResponseOverride,
   selectPreferredGraph,
 } from '../lib/enrichment.js'
+import { collectProjectSnapshot } from '../lib/file-walker.js'
 import {
-  applyGraphPatch,
-  closeMcpClient,
-  connectMcpClient,
-  renderGraph,
-} from '../lib/mcp-client.js'
+  DEFAULT_MAP_ID,
+  createScopeDescriptor,
+  findMapById,
+  readManifest,
+  resolveScopeAgainstGraph,
+  writeManifest,
+} from '../lib/map-manifest.js'
+import { closeMcpClient, connectMcpClient, renderGraph } from '../lib/mcp-client.js'
+import { buildScopedGraphFromRoot } from '../lib/scoped-map.js'
 
 function resolveProjectRoot(argv) {
   const optionsWithValues = new Set(['--enrichment-file'])
@@ -47,32 +52,80 @@ function getOptionValue(argv, optionName) {
 function printUsage() {
   console.log('ClaudeMap refresh')
   console.log(
-    '  claudemap-refresh [project-root] [--force-refresh] [--demo-cache] [--no-render] [--stdio-mcp] [--enrichment-file <file>]',
+    '  claudemap-refresh [project-root] [--force-refresh] [--no-render] [--stdio-mcp] [--enrichment-file <file>]',
   )
 }
 
-async function applyIncrementalGraphUpdate(mcpClient, previousGraph, nextGraph) {
-  const graphChanges = diffGraphs(previousGraph, nextGraph)
-  const operationCount =
-    graphChanges.addedNodes.length +
-    graphChanges.removedNodes.length +
-    graphChanges.updatedNodes.length +
-    graphChanges.addedEdges.length +
-    graphChanges.removedEdges.length
-
-  if (operationCount > 250) {
-    await renderGraph(mcpClient, nextGraph)
-    return { mode: 'full-render', graphChanges }
+function formatRenderMode(mcpClient, baseMode) {
+  if (mcpClient?.fallbackReason) {
+    return `${baseMode} (stdio fallback:file-shim)`
   }
 
-  await applyGraphPatch(mcpClient, {
-    changes: graphChanges,
-    meta: nextGraph.meta,
-    files: nextGraph.files,
-    runtime: nextGraph.runtime,
-  })
+  return baseMode
+}
 
-  return { mode: 'graph-patch', graphChanges }
+async function renderMapGraph(mcpClient, mapPaths, graphData) {
+  if (!mcpClient) {
+    return
+  }
+
+  mcpClient.graphPath = mapPaths.graphPath
+  mcpClient.statePath = mapPaths.statePath
+  await renderGraph(mcpClient, graphData)
+}
+
+async function refreshScopedMaps(projectRoot, manifest, rootGraph, mcpClient) {
+  let refreshedCount = 0
+  let staleCount = 0
+
+  for (const mapEntry of manifest.maps) {
+    if (mapEntry.id === DEFAULT_MAP_ID || !mapEntry.scope) {
+      continue
+    }
+
+    const resolvedScope = resolveScopeAgainstGraph(mapEntry.scope, rootGraph)
+
+    if (!resolvedScope) {
+      mapEntry.scope = {
+        ...mapEntry.scope,
+        stale: true,
+      }
+      staleCount += 1
+      continue
+    }
+
+    const nextScope = createScopeDescriptor(rootGraph, resolvedScope.systemId)
+    const scopedGraph = buildScopedGraphFromRoot(rootGraph, resolvedScope.systemId)
+
+    mapEntry.scope = nextScope
+    writeCache(projectRoot, scopedGraph, scopedGraph.files, { relativePath: mapEntry.cachePath })
+
+    if (mcpClient) {
+      await renderMapGraph(mcpClient, resolveMapPaths(projectRoot, mapEntry), scopedGraph)
+    }
+
+    refreshedCount += 1
+  }
+
+  return { refreshedCount, staleCount }
+}
+
+async function buildRootGraph(snapshot, cache, options) {
+  const nextGraph = await enrichGraph(snapshot, options)
+
+  if (!cache) {
+    return {
+      graph: nextGraph,
+      preservedExisting: false,
+      existingSource: null,
+      candidateSource: nextGraph.meta?.source || 'generated',
+    }
+  }
+
+  return selectPreferredGraph(cache.graph, nextGraph, {
+    forceRefresh: options.forceRefresh,
+    allowLowerPriorityOverwrite: options.allowLowerPriorityOverwrite,
+  })
 }
 
 async function main() {
@@ -84,89 +137,118 @@ async function main() {
   }
 
   const projectRoot = resolveProjectRoot(argv)
-  const useDemoFallback = hasFlag(argv, 'demo-cache')
   const forceRefresh = hasFlag(argv, 'force-refresh')
   const skipRender = hasFlag(argv, 'no-render')
   const useStdioMcp = hasFlag(argv, 'stdio-mcp')
   const enrichmentFile = getOptionValue(argv, 'enrichment-file')
   const responseText = enrichmentFile ? await readFileIfExists(enrichmentFile) : null
+  let manifest = writeManifest(projectRoot, readManifest(projectRoot))
+  const rootMapEntry = findMapById(manifest, DEFAULT_MAP_ID)
+  const rootMapPaths = resolveMapPaths(projectRoot, rootMapEntry)
   const snapshot = collectProjectSnapshot(projectRoot)
-  const cache = readCache(projectRoot)
+  const cache = readCache(projectRoot, { relativePath: rootMapEntry.cachePath })
   const hasExplicitEnrichmentInput = Boolean(responseText) || hasEnrichmentResponseOverride()
+  const mcpClient = skipRender
+    ? null
+    : await connectMcpClient({
+        mode: useStdioMcp ? 'stdio' : 'file-shim',
+        graphPath: rootMapPaths.graphPath,
+        statePath: rootMapPaths.statePath,
+      })
 
-  if (!cache || forceRefresh) {
-    const graphData = await enrichGraph(snapshot, { useDemoFallback, responseText })
-    writeCache(projectRoot, graphData, snapshot.files)
+  try {
+    if (!cache || forceRefresh) {
+      const rootGraphSelection = await buildRootGraph(snapshot, null, {
+        responseText,
+        forceRefresh,
+        allowLowerPriorityOverwrite: hasExplicitEnrichmentInput,
+      })
 
-    if (!skipRender) {
-      const mcpClient = await connectMcpClient({ mode: useStdioMcp ? 'stdio' : 'file-shim' })
-      await renderGraph(mcpClient, graphData)
-      await closeMcpClient(mcpClient)
+      writeCache(projectRoot, rootGraphSelection.graph, snapshot.files, {
+        relativePath: rootMapEntry.cachePath,
+      })
+
+      if (mcpClient) {
+        await renderMapGraph(mcpClient, rootMapPaths, rootGraphSelection.graph)
+      }
+
+      const scopedRefresh = await refreshScopedMaps(
+        projectRoot,
+        manifest,
+        rootGraphSelection.graph,
+        mcpClient,
+      )
+      manifest = writeManifest(projectRoot, manifest)
+
+      console.log(
+        forceRefresh
+          ? 'Forced refresh requested. Ran a full ClaudeMap analysis.'
+          : 'No existing cache found. Ran a full ClaudeMap analysis instead.',
+      )
+      console.log(`Updated - ${snapshot.totalFiles} files added, 0 removed, 0 changed`)
+      console.log(`Project root: ${projectRoot}`)
+      console.log(`Active map: ${manifest.activeMapId}`)
+      console.log(`Refresh mode: ${formatRenderMode(mcpClient, skipRender ? 'skipped' : 'full-render')}`)
+      console.log(
+        `Maps refreshed: root + ${scopedRefresh.refreshedCount} scoped (${scopedRefresh.staleCount} stale)`,
+      )
+      return
     }
 
-    console.log(forceRefresh ? 'Forced refresh requested. Ran a full ClaudeMap analysis.' : 'No existing cache found. Ran a full ClaudeMap analysis instead.')
-    console.log(`Updated - ${snapshot.totalFiles} files added, 0 removed, 0 changed`)
-    return
-  }
+    const diff = diffFiles(snapshot.files, cache)
+    const hasChanges = diff.added.length || diff.removed.length || diff.changed.length
 
-  const diff = diffFiles(snapshot.files, cache)
-  const hasChanges = diff.added.length || diff.removed.length || diff.changed.length
-
-  if (!hasChanges) {
-    console.log('No changes detected')
-    return
-  }
-
-  const graphData = await enrichGraph(snapshot, { useDemoFallback, responseText })
-  const preferredGraphSelection = selectPreferredGraph(cache.graph, graphData, {
-    forceRefresh,
-    allowLowerPriorityOverwrite: useDemoFallback || hasExplicitEnrichmentInput,
-  })
-
-  if (preferredGraphSelection.preservedExisting) {
-    if (!skipRender) {
-      const mcpClient = await connectMcpClient({ mode: useStdioMcp ? 'stdio' : 'file-shim' })
-      await renderGraph(mcpClient, preferredGraphSelection.graph)
-      await closeMcpClient(mcpClient)
+    if (!hasChanges) {
+      console.log('No changes detected')
+      console.log(`Project root: ${projectRoot}`)
+      console.log(`Active map: ${manifest.activeMapId}`)
+      return
     }
+
+    const preferredGraphSelection = await buildRootGraph(snapshot, cache, {
+      responseText,
+      forceRefresh,
+      allowLowerPriorityOverwrite: hasExplicitEnrichmentInput,
+    })
+    const nextRootGraph = preferredGraphSelection.graph
+
+    if (mcpClient) {
+      await renderMapGraph(mcpClient, rootMapPaths, nextRootGraph)
+    }
+
+    if (!preferredGraphSelection.preservedExisting) {
+      writeCache(projectRoot, nextRootGraph, snapshot.files, {
+        relativePath: rootMapEntry.cachePath,
+      })
+    }
+
+    const scopedRefresh = await refreshScopedMaps(projectRoot, manifest, nextRootGraph, mcpClient)
+    manifest = writeManifest(projectRoot, manifest)
 
     console.log(
       `Updated - ${diff.added.length} files added, ${diff.removed.length} removed, ${diff.changed.length} changed`,
     )
     console.log(`Project root: ${projectRoot}`)
-    console.log(
-      `Refresh mode: preserved existing ${preferredGraphSelection.existingSource} graph over ${preferredGraphSelection.candidateSource}`,
-    )
-    console.log('Graph cache was not replaced. Use --force-refresh to allow a lower-priority regeneration.')
-    return
-  }
+    console.log(`Active map: ${manifest.activeMapId}`)
 
-  let renderMode = 'skipped'
-  let graphChanges = null
-
-  if (!skipRender) {
-    const mcpClient = await connectMcpClient({ mode: useStdioMcp ? 'stdio' : 'file-shim' })
-    const result = await applyIncrementalGraphUpdate(mcpClient, cache.graph, preferredGraphSelection.graph)
-    renderMode = result.mode
-    graphChanges = result.graphChanges
-    if (mcpClient.fallbackReason) {
-      renderMode = `${renderMode} (stdio fallback:file-shim)`
+    if (preferredGraphSelection.preservedExisting) {
+      console.log(
+        `Refresh mode: preserved existing ${preferredGraphSelection.existingSource} graph over ${preferredGraphSelection.candidateSource}`,
+      )
+      console.log('Graph cache was not replaced. Use --force-refresh to allow a lower-priority regeneration.')
+    } else {
+      console.log(
+        `Refresh mode: ${formatRenderMode(mcpClient, skipRender ? 'skipped' : 'full-render')} (${nextRootGraph.meta?.source || 'generated'})`,
+      )
     }
-    await closeMcpClient(mcpClient)
-  }
 
-  writeCache(projectRoot, preferredGraphSelection.graph, snapshot.files)
-
-  console.log(
-    `Updated - ${diff.added.length} files added, ${diff.removed.length} removed, ${diff.changed.length} changed`,
-  )
-  console.log(`Project root: ${projectRoot}`)
-  console.log(`Refresh mode: ${renderMode} (${preferredGraphSelection.graph.meta?.source || 'generated'})`)
-
-  if (graphChanges) {
     console.log(
-      `Graph delta - ${graphChanges.addedNodes.length} nodes added, ${graphChanges.removedNodes.length} removed, ${graphChanges.updatedNodes.length} updated, ${graphChanges.addedEdges.length} edges added, ${graphChanges.removedEdges.length} removed`,
+      `Maps refreshed: root + ${scopedRefresh.refreshedCount} scoped (${scopedRefresh.staleCount} stale)`,
     )
+  } finally {
+    if (mcpClient) {
+      await closeMcpClient(mcpClient)
+    }
   }
 }
 

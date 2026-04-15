@@ -48,15 +48,17 @@ function textResponse(toolName, text) {
   }
 }
 
-function createRuntimeClient() {
-  return createMcpClient()
+function createRuntimeClient(runtimeTarget = null) {
+  return createMcpClient({
+    graphPath: runtimeTarget?.graphPath,
+    statePath: runtimeTarget?.statePath,
+  })
 }
 
 export function createToolHandlers() {
-  const client = createRuntimeClient()
-
   return {
-    render_graph: async ({ meta, nodes, edges, files, runtime } = {}) => {
+    render_graph: async ({ meta, nodes, edges, files, runtime, __runtimeTarget } = {}) => {
+      const client = createRuntimeClient(__runtimeTarget)
       await renderGraph(client, {
         meta,
         nodes: nodes || [],
@@ -66,7 +68,8 @@ export function createToolHandlers() {
       })
       return textResponse('render_graph', `Rendered ${nodes?.length || 0} nodes`)
     },
-    apply_graph_patch: async ({ changes, meta, files, runtime } = {}) => {
+    apply_graph_patch: async ({ changes, meta, files, runtime, __runtimeTarget } = {}) => {
+      const client = createRuntimeClient(__runtimeTarget)
       await applyGraphPatch(client, {
         changes,
         meta,
@@ -75,47 +78,66 @@ export function createToolHandlers() {
       })
       return textResponse('apply_graph_patch', 'Applied batched graph patch')
     },
-    add_node: async ({ node } = {}) => {
+    add_node: async ({ node, __runtimeTarget } = {}) => {
+      const client = createRuntimeClient(__runtimeTarget)
       await addNode(client, node)
       return textResponse('add_node', `Added node ${node?.id || 'unknown'}`)
     },
-    remove_node: async ({ nodeId } = {}) => {
+    remove_node: async ({ nodeId, __runtimeTarget } = {}) => {
+      const client = createRuntimeClient(__runtimeTarget)
       await removeNode(client, nodeId)
       return textResponse('remove_node', `Removed node ${nodeId || 'unknown'}`)
     },
-    update_node: async ({ nodeId, fields } = {}) => {
+    update_node: async ({ nodeId, fields, __runtimeTarget } = {}) => {
+      const client = createRuntimeClient(__runtimeTarget)
       await updateNode(client, nodeId, fields || {})
       return textResponse('update_node', `Updated node ${nodeId || 'unknown'}`)
     },
-    add_edge: async ({ edge } = {}) => {
+    add_edge: async ({ edge, __runtimeTarget } = {}) => {
+      const client = createRuntimeClient(__runtimeTarget)
       await addEdge(client, edge)
       return textResponse('add_edge', `Added edge ${edge?.id || 'unknown'}`)
     },
-    remove_edge: async ({ edgeId } = {}) => {
+    remove_edge: async ({ edgeId, __runtimeTarget } = {}) => {
+      const client = createRuntimeClient(__runtimeTarget)
       await removeEdge(client, edgeId)
       return textResponse('remove_edge', `Removed edge ${edgeId || 'unknown'}`)
     },
-    highlight_nodes: async ({ nodeIds, color } = {}) => {
+    highlight_nodes: async ({ nodeIds, color, __runtimeTarget } = {}) => {
+      const client = createRuntimeClient(__runtimeTarget)
       await highlightNodes(client, nodeIds || [], color)
       return textResponse('highlight_nodes', `Highlighted ${nodeIds?.length || 0} nodes`)
     },
-    clear_highlight: async () => {
+    clear_highlight: async ({ __runtimeTarget } = {}) => {
+      const client = createRuntimeClient(__runtimeTarget)
       await clearHighlight(client)
       return textResponse('clear_highlight', 'Cleared highlights')
     },
-    navigate_to: async ({ nodeId, zoom } = {}) => {
+    navigate_to: async ({ nodeId, zoom, __runtimeTarget } = {}) => {
+      const client = createRuntimeClient(__runtimeTarget)
       await navigateTo(client, nodeId, zoom)
       return textResponse('navigate_to', `Navigating to ${nodeId || 'unknown'}`)
     },
-    guided_flow: async ({ steps, delay } = {}) => {
+    guided_flow: async ({ steps, delay, __runtimeTarget } = {}) => {
+      const client = createRuntimeClient(__runtimeTarget)
       await guidedFlow(client, steps || [], delay)
       return textResponse('guided_flow', `Started guided flow with ${steps?.length || 0} steps`)
     },
-    set_health_overlay: async ({ enabled } = {}) => {
+    set_health_overlay: async ({ enabled, __runtimeTarget } = {}) => {
+      const client = createRuntimeClient(__runtimeTarget)
       await setHealthOverlay(client, !!enabled)
       return textResponse('set_health_overlay', `Health overlay ${enabled ? 'on' : 'off'}`)
     },
-    set_presentation_mode: async ({ mode, lockInput, title, stepLabel, explanation, resetScene } = {}) => {
+    set_presentation_mode: async ({
+      mode,
+      lockInput,
+      title,
+      stepLabel,
+      explanation,
+      resetScene,
+      __runtimeTarget,
+    } = {}) => {
+      const client = createRuntimeClient(__runtimeTarget)
       await setPresentationMode(client, mode || 'free', {
         lockInput,
         title,
@@ -135,7 +157,9 @@ export function createToolHandlers() {
       title,
       stepLabel,
       explanation,
+      __runtimeTarget,
     } = {}) => {
+      const client = createRuntimeClient(__runtimeTarget)
       await presentStep(client, {
         nodeId,
         nodeIds,
@@ -149,11 +173,13 @@ export function createToolHandlers() {
       })
       return textResponse('present_step', `Presented ${nodeId || nodeIds?.[0] || 'step'}`)
     },
-    show_caption: async ({ title, body, stepLabel } = {}) => {
+    show_caption: async ({ title, body, stepLabel, __runtimeTarget } = {}) => {
+      const client = createRuntimeClient(__runtimeTarget)
       await showCaption(client, body || '', { title, stepLabel })
       return textResponse('show_caption', `Caption: ${title || body || 'updated'}`)
     },
-    clear_caption: async () => {
+    clear_caption: async ({ __runtimeTarget } = {}) => {
+      const client = createRuntimeClient(__runtimeTarget)
       await clearCaption(client)
       return textResponse('clear_caption', 'Caption cleared')
     },

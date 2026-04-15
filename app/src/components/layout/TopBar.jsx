@@ -1,8 +1,8 @@
 import { Compass } from 'lucide-react'
 import { useGraphStore } from '../../store/graphStore'
+import MapSelector from './MapSelector'
 
 export default function TopBar() {
-  const repoName = useGraphStore((state) => state.meta.repoName)
   const presentationMode = useGraphStore((state) => state.presentationMode)
   const headerText =
     presentationMode !== 'free'
@@ -60,13 +60,10 @@ export default function TopBar() {
         style={{
           display: 'flex',
           alignItems: 'center',
-          backgroundColor: 'var(--bg-card)',
-          border: '1px solid var(--border)',
-          borderRadius: '16px',
-          padding: '6px 12px',
+          gap: '10px',
         }}
       >
-        <span style={{ fontSize: '13px', color: 'var(--text-primary)' }}>{repoName}</span>
+        <MapSelector />
       </div>
     </div>
   )

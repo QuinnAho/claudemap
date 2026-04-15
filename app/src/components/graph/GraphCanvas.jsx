@@ -25,6 +25,7 @@ import {
   isNodeInSelectedBranch,
   isNodeVisible,
 } from '../../lib/graphNodeUtils'
+import { setActiveMap } from '../../lib/mapApi'
 
 const nodeTypes = {
   system: SystemNode,
@@ -41,10 +42,20 @@ const OVERVIEW_FIT_VIEW_OPTIONS = {
   maxZoom: 0.65,
 }
 
+function areStringArraysEqual(left = [], right = []) {
+  if (left.length !== right.length) {
+    return false
+  }
+
+  return left.every((value, index) => value === right[index])
+}
+
 export default function GraphCanvas() {
   const { setCenter } = useReactFlow()
   const nodes = useGraphStore((state) => state.nodes)
   const edges = useGraphStore((state) => state.edges)
+  const mapsManifest = useGraphStore((state) => state.mapsManifest)
+  const activeMap = useGraphStore((state) => state.activeMap)
   const healthOverlay = useGraphStore((state) => state.healthOverlay)
   const meta = useGraphStore((state) => state.meta)
   const selectedNode = useGraphStore((state) => state.selectedNode)
@@ -140,6 +151,13 @@ export default function GraphCanvas() {
   }
 
   const showGraph = graphReady || hasMountedGraphRef.current
+  const isGraphTransitioning = !graphLoaded && hasMountedGraphRef.current
+  const loadingTitle = isGraphTransitioning
+    ? `Switching to ${activeMap?.label || 'selected map'}...`
+    : 'Loading graph...'
+  const loadingSubtitle = isGraphTransitioning
+    ? 'Reframing the scene for the newly active map.'
+    : 'Building the current graph view.'
 
   nodes.forEach((node) => {
     if (node.parentId) {
@@ -335,6 +353,76 @@ export default function GraphCanvas() {
   )
   const connectedSystemIds = new Set()
 
+  const getAncestorLabels = useCallback(
+    (nodeId) => {
+      const labels = []
+      let currentNode = nodeById.get(nodeId)
+
+      while (currentNode?.parentId) {
+        const parentNode = nodeById.get(currentNode.parentId)
+
+        if (!parentNode) {
+          break
+        }
+
+        labels.unshift(parentNode.data?.label || parentNode.id)
+        currentNode = parentNode
+      }
+
+      return labels
+    },
+    [nodeById],
+  )
+
+  const switchScopedMap = useCallback(async (mapId) => {
+    try {
+      await setActiveMap(mapId)
+    } catch (error) {
+      console.error('Failed to switch ClaudeMap map:', error)
+    }
+  }, [])
+
+  const findScopedMapEntry = useCallback(
+    (node) => {
+      const manifestMaps = mapsManifest?.maps || []
+      const ancestorPath = getAncestorLabels(node.id)
+
+      return (
+        manifestMaps.find((mapEntry) => {
+          if (mapEntry.id === 'root' || !mapEntry.scope || mapEntry.scope.stale === true) {
+            return false
+          }
+
+          if (mapEntry.scope.rootSystemId === node.id) {
+            return true
+          }
+
+          return (
+            mapEntry.scope.rootSystemLabel === (node.data?.label || node.id) &&
+            areStringArraysEqual(mapEntry.scope.ancestorPath || [], ancestorPath)
+          )
+        }) || null
+      )
+    },
+    [getAncestorLabels, mapsManifest],
+  )
+
+  const buildCreateMapCommand = useCallback(
+    (node) =>
+      `/create-map ${JSON.stringify({
+        scope: {
+          type: 'subsystem',
+          rootSystemId: node.id,
+          rootSystemLabel: node.data?.label || node.id,
+          ancestorPath: getAncestorLabels(node.id),
+          filePathHint: node.data?.filePath || null,
+        },
+        label: node.data?.label || node.id,
+        summary: node.data?.summary || null,
+      })}`,
+    [getAncestorLabels],
+  )
+
   if (selectedSystemId) {
     visibleEdges.forEach((edge) => {
       if (presentationMode !== 'free') {
@@ -386,6 +474,22 @@ export default function GraphCanvas() {
       !isSelected &&
       !isPresentationContext &&
       !isHighlighted
+    const qualifiesForScopedMap =
+      node.type === 'system' &&
+      node.data?.childType === 'system' &&
+      (node.data?.childCount || 0) > 2
+    const scopedMapEntry = qualifiesForScopedMap ? findScopedMapEntry(node) : null
+    const mapAffordance = qualifiesForScopedMap
+      ? scopedMapEntry
+        ? {
+            kind: 'open',
+            onClick: () => switchScopedMap(scopedMapEntry.id),
+          }
+        : {
+            kind: 'create',
+            command: buildCreateMapCommand(node),
+          }
+      : null
 
     return {
       ...node,
@@ -411,6 +515,7 @@ export default function GraphCanvas() {
         isPresentationContext,
         isPresentationAncestor,
         hideDescription: presentationMode !== 'free',
+        mapAffordance,
       },
     }
   })
@@ -568,11 +673,80 @@ export default function GraphCanvas() {
             onPaneMouseMove={onPaneMouseMove}
             onPaneClick={onPaneClick}
             proOptions={{ hideAttribution: true }}
-            style={{ backgroundColor: 'var(--bg-canvas)' }}
+            style={{
+              backgroundColor: 'var(--bg-canvas)',
+              opacity: isGraphTransitioning ? 0.22 : 1,
+              transition: 'opacity 0.18s ease',
+            }}
           >
             {presentationMode === 'free' ? <Background color="#1a1a1a" gap={40} size={1} /> : null}
           </ReactFlow>
           <ZoomControls />
+          {isGraphTransitioning ? (
+            <div
+              style={{
+                position: 'absolute',
+                inset: 0,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background:
+                  'radial-gradient(circle at 50% 40%, rgba(18, 18, 18, 0.72) 0%, rgba(10, 10, 10, 0.88) 68%, rgba(10, 10, 10, 0.94) 100%)',
+                backdropFilter: 'blur(3px)',
+                zIndex: 18,
+                pointerEvents: 'auto',
+              }}
+            >
+              <div
+                style={{
+                  minWidth: '280px',
+                  maxWidth: '360px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '12px',
+                  padding: '18px 20px',
+                  borderRadius: '14px',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  background:
+                    'linear-gradient(180deg, rgba(24, 24, 24, 0.94) 0%, rgba(15, 15, 15, 0.96) 100%)',
+                  boxShadow: '0 18px 42px rgba(0, 0, 0, 0.34)',
+                  textAlign: 'center',
+                }}
+              >
+                <div
+                  style={{
+                    width: '12px',
+                    height: '12px',
+                    borderRadius: '999px',
+                    backgroundColor: 'var(--accent)',
+                    boxShadow: '0 0 0 8px rgba(223, 113, 76, 0.08)',
+                    animation: 'healthPulse 1.2s ease-in-out infinite',
+                  }}
+                />
+                <div
+                  style={{
+                    fontSize: '15px',
+                    fontWeight: 600,
+                    color: '#fff4ef',
+                    letterSpacing: '-0.01em',
+                  }}
+                >
+                  {loadingTitle}
+                </div>
+                <div
+                  style={{
+                    fontSize: '12px',
+                    lineHeight: 1.5,
+                    color: 'var(--text-secondary)',
+                    maxWidth: '30ch',
+                  }}
+                >
+                  {loadingSubtitle}
+                </div>
+              </div>
+            </div>
+          ) : null}
         </>
       ) : (
         <div
@@ -582,12 +756,50 @@ export default function GraphCanvas() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: 'var(--text-secondary)',
-            fontSize: '13px',
-            letterSpacing: '0.01em',
+            background:
+              'radial-gradient(circle at 50% 40%, rgba(18, 18, 18, 0.66) 0%, rgba(10, 10, 10, 0.92) 100%)',
           }}
         >
-          Loading graph...
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '12px',
+              textAlign: 'center',
+            }}
+          >
+            <div
+              style={{
+                width: '12px',
+                height: '12px',
+                borderRadius: '999px',
+                backgroundColor: 'var(--accent)',
+                boxShadow: '0 0 0 8px rgba(223, 113, 76, 0.08)',
+                animation: 'healthPulse 1.2s ease-in-out infinite',
+              }}
+            />
+            <div
+              style={{
+                fontSize: '15px',
+                fontWeight: 600,
+                color: '#fff4ef',
+                letterSpacing: '-0.01em',
+              }}
+            >
+              {loadingTitle}
+            </div>
+            <div
+              style={{
+                color: 'var(--text-secondary)',
+                fontSize: '12px',
+                lineHeight: 1.5,
+                maxWidth: '28ch',
+              }}
+            >
+              {loadingSubtitle}
+            </div>
+          </div>
         </div>
       )}
     </div>

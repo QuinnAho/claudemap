@@ -1,11 +1,9 @@
 #!/usr/bin/env node
 import fs from 'fs'
 import path from 'path'
-import { fileURLToPath } from 'url'
 import { launchClaudeMapWindow } from '../lib/launcher.js'
+import { resolveActiveMap } from '../lib/active-map.js'
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const RUNTIME_GRAPH_PATH = path.resolve(__dirname, '../../app/public/claudemap-runtime.json')
 const DEFAULT_URL = 'http://127.0.0.1:5173'
 
 function hasFlag(argv, flagName) {
@@ -14,12 +12,19 @@ function hasFlag(argv, flagName) {
 
 function printUsage() {
   console.log('ClaudeMap open')
-  console.log('  open-claudemap [--open-browser] [--no-start-app]')
+  console.log('  open-claudemap [project-root] [--open-browser] [--no-start-app]')
 }
 
-function readRuntimeGraph() {
+function resolveProjectRoot(argv) {
+  const projectRootArg = argv.find((argument) => !argument.startsWith('--'))
+  return path.resolve(
+    projectRootArg || process.env.CLAUDEMAP_PROJECT_ROOT || process.env.INIT_CWD || process.cwd(),
+  )
+}
+
+function readRuntimeGraph(graphPath) {
   try {
-    const runtimeGraph = JSON.parse(fs.readFileSync(RUNTIME_GRAPH_PATH, 'utf8'))
+    const runtimeGraph = JSON.parse(fs.readFileSync(graphPath, 'utf8'))
     const nodes = Array.isArray(runtimeGraph?.nodes) ? runtimeGraph.nodes : []
     const systems = nodes.filter((node) => node.type === 'system').length
     const files = Array.isArray(runtimeGraph?.files) ? runtimeGraph.files.length : 0
@@ -52,9 +57,11 @@ async function main() {
     return
   }
 
+  const projectRoot = resolveProjectRoot(argv)
   const openBrowser = hasFlag(argv, 'open-browser')
   const startApp = !hasFlag(argv, 'no-start-app')
-  const runtimeGraph = readRuntimeGraph()
+  const activeMap = resolveActiveMap(projectRoot)
+  const runtimeGraph = readRuntimeGraph(activeMap.graphPath)
   const launchState = await launchClaudeMapWindow({
     startIfNeeded: startApp,
     openBrowser,
@@ -63,7 +70,7 @@ async function main() {
 
   if (runtimeGraph.exists) {
     console.log(
-      `ClaudeMap open - loaded existing graph for ${runtimeGraph.repoName} with ${runtimeGraph.systemCount} systems across ${runtimeGraph.fileCount} files`,
+      `ClaudeMap open - loaded existing ${activeMap.mapId} graph for ${runtimeGraph.repoName} with ${runtimeGraph.systemCount} systems across ${runtimeGraph.fileCount} files`,
     )
     console.log(`Graph source: ${runtimeGraph.source}`)
   } else {

@@ -1,8 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { Client } from '@modelcontextprotocol/sdk/client/index.js'
-import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js'
+import { writeJsonFileAtomic } from './runtime-paths.js'
 
 const DEFAULT_RUNTIME_GRAPH_PATH = path.resolve(
   fileURLToPath(new URL('../../app/public/claudemap-runtime.json', import.meta.url)),
@@ -46,11 +45,23 @@ function createDefaultRuntimeEnvelope() {
   }
 }
 
+function normalizePresentationMode(mode) {
+  if (mode === 'locked-demo') {
+    return 'locked'
+  }
+
+  if (mode === 'guided' || mode === 'locked') {
+    return mode
+  }
+
+  return 'free'
+}
+
 function createEmptyGraph() {
   return {
     meta: {
       repoName: 'claudemap',
-      branch: 'current',
+      branch: 'workspace',
       creditLabel: 'ClaudeMap skill',
       generatedAt: new Date().toISOString(),
       source: 'file-shim',
@@ -62,9 +73,11 @@ function createEmptyGraph() {
 }
 
 function normalizeRuntimeState(runtime) {
+  const normalizedMode = normalizePresentationMode(runtime?.presentation?.mode)
   const normalizedPresentation = {
     ...createDefaultRuntimeState().presentation,
     ...(runtime?.presentation || {}),
+    mode: normalizedMode,
   }
 
   const normalizedExplanation =
@@ -84,7 +97,7 @@ function normalizeRuntimeState(runtime) {
       lockInput:
         typeof normalizedPresentation.lockInput === 'boolean'
           ? normalizedPresentation.lockInput
-          : normalizedPresentation.mode === 'locked-demo',
+          : normalizedPresentation.mode === 'locked',
     },
   }
 }
@@ -121,8 +134,7 @@ function readRuntimeEnvelope(statePath) {
 }
 
 function writeJsonFile(filePath, data) {
-  fs.mkdirSync(path.dirname(filePath), { recursive: true })
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2))
+  writeJsonFileAtomic(filePath, data)
 }
 
 function writeGraph(graphPath, graphData) {
@@ -429,7 +441,7 @@ async function invokeFileShim(client, toolName, payload) {
     }
 
     case 'set_presentation_mode': {
-      const nextMode = payload.mode || 'free'
+      const nextMode = normalizePresentationMode(payload.mode)
       const shouldResetScene = payload.resetScene !== false
       const nextPresentation =
         nextMode === 'free'
@@ -448,7 +460,7 @@ async function invokeFileShim(client, toolName, payload) {
               lockInput:
                 typeof payload.lockInput === 'boolean'
                   ? payload.lockInput
-                  : nextMode === 'locked-demo',
+                  : nextMode === 'locked',
               explanation:
                 payload.explanation === undefined
                   ? shouldResetScene
@@ -490,7 +502,9 @@ async function invokeFileShim(client, toolName, payload) {
     }
 
     case 'present_step': {
-      const nextMode = payload.mode || runtimeEnvelope.runtime.presentation?.mode || 'guided'
+      const nextMode = normalizePresentationMode(
+        payload.mode || runtimeEnvelope.runtime.presentation?.mode || 'guided',
+      )
       const nextExplanation = payload.explanation || null
 
       writeRuntimeEnvelope(
@@ -511,7 +525,7 @@ async function invokeFileShim(client, toolName, payload) {
             lockInput:
               typeof payload.lockInput === 'boolean'
                 ? payload.lockInput
-                : nextMode === 'locked-demo',
+                : nextMode === 'locked',
             title: payload.title || null,
             explanation: nextExplanation,
             body: nextExplanation,
@@ -534,7 +548,7 @@ async function invokeFileShim(client, toolName, payload) {
             lockInput:
               typeof runtimeEnvelope.runtime.presentation?.lockInput === 'boolean'
                 ? runtimeEnvelope.runtime.presentation.lockInput
-                : runtimeEnvelope.runtime.presentation?.mode === 'locked-demo',
+                : normalizePresentationMode(runtimeEnvelope.runtime.presentation?.mode) === 'locked',
             title: payload.title || null,
             explanation: payload.body || '',
             body: payload.body || '',
@@ -571,7 +585,13 @@ async function invokeFileShim(client, toolName, payload) {
 
 async function invokeTool(client, toolName, payload) {
   if (typeof client?.callTool === 'function') {
-    return client.callTool(toolName, payload)
+    return client.callTool(toolName, {
+      ...(payload || {}),
+      __runtimeTarget: {
+        graphPath: client.graphPath || DEFAULT_RUNTIME_GRAPH_PATH,
+        statePath: client.statePath || DEFAULT_RUNTIME_STATE_PATH,
+      },
+    })
   }
 
   return invokeFileShim(client, toolName, payload)
@@ -596,6 +616,10 @@ export async function connectMcpClient(options = {}) {
   }
 
   try {
+    const [{ Client }, { StdioClientTransport }] = await Promise.all([
+      import('@modelcontextprotocol/sdk/client/index.js'),
+      import('@modelcontextprotocol/sdk/client/stdio.js'),
+    ])
     const repoRoot = path.resolve(fileURLToPath(new URL('../../', import.meta.url)))
     const transport = new StdioClientTransport({
       command: npmCommand(),
@@ -614,6 +638,8 @@ export async function connectMcpClient(options = {}) {
       mode: 'stdio',
       client,
       transport,
+      graphPath: options.graphPath || DEFAULT_RUNTIME_GRAPH_PATH,
+      statePath: options.statePath || DEFAULT_RUNTIME_STATE_PATH,
       callTool: (toolName, args) =>
         client.callTool({
           name: toolName,

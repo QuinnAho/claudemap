@@ -16,6 +16,7 @@ Public commands:
 
 - `/setup-claudemap`: build or rebuild the map for the current repository
 - `/open-claudemap`: reopen the existing UI without rebuilding
+- `/create-map`: create or refresh a scoped subsystem map from the current root graph
 - `/refresh`: update the graph after code changes
 - `/explain`: run a guided walkthrough through the live map
 - `/show`: direct the live map for highlights, focus, presentation, and flows

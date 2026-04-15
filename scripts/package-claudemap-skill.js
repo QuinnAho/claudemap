@@ -11,41 +11,17 @@ const CLAUDE_ROOT = '.claude'
 const SKILL_ROOT = path.join(CLAUDE_ROOT, 'skills', 'claudemap-runtime')
 const COMMANDS_ROOT = path.join(CLAUDE_ROOT, 'commands')
 const AGENTS_ROOT = path.join(CLAUDE_ROOT, 'agents')
-const DEMO_PACKAGES_ROOT = path.join('demo-packages')
-const DEFAULT_RUNTIME_GRAPH_PATH = path.join(REPO_ROOT, 'contracts', 'claudemap.sample.json')
-const CLAUDEMAP_DEMO_GRAPH_PATH = path.join(REPO_ROOT, 'contracts', 'claudemap-first-demo.json')
-const GENERATED_DEMO_NAMES = new Set(['ClaudeMapDemo'])
-const CLAUDEMAP_DEMO_SUPPORT_FILES = [
-  'README.md',
-  'CLAUDE.md',
-  'AGENTS.md',
-  'package.json',
-  'package-lock.json',
-  'app/package.json',
-  'skill/package.json',
-]
-
-const DEMO_DEFINITIONS = [
-  {
-    name: 'ClaudeMapDemo',
-    graphSourcePath: CLAUDEMAP_DEMO_GRAPH_PATH,
-    graphContract: 'contracts/claudemap-first-demo.json',
-    description: 'Curated walkthrough of the ClaudeMap codebase with nested systems, core files, and important functions.',
-    stageProject: stageClaudeMapDemoProject,
-  },
-]
+const DEFAULT_SEED_MAP_PATH = path.join(REPO_ROOT, 'contracts', 'claudemap-seed-map.json')
 
 function printUsage() {
   console.log('ClaudeMap skill packager')
-  console.log('  node scripts/package-claudemap-skill.js [--output <dir>] [--zip] [--no-demo-sync] [--no-demo-packages]')
+  console.log('  node scripts/package-claudemap-skill.js [--output <dir>] [--zip]')
 }
 
 function parseArgs(argv) {
   const options = {
     outputRoot: DEFAULT_OUTPUT_ROOT,
     zip: false,
-    demoSync: true,
-    demoPackages: true,
   }
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -58,17 +34,6 @@ function parseArgs(argv) {
 
     if (argument === '--zip') {
       options.zip = true
-      continue
-    }
-
-    if (argument === '--no-demo-sync') {
-      options.demoSync = false
-      continue
-    }
-
-    if (argument === '--no-demo-packages') {
-      options.demoPackages = false
-      options.demoSync = false
       continue
     }
 
@@ -102,35 +67,6 @@ function copyFile(relativeSourcePath, artifactRoot, relativeTargetPath = relativ
   fs.copyFileSync(sourcePath, targetPath)
 }
 
-function copyOptionalFile(relativeSourcePath, artifactRoot, relativeTargetPath = relativeSourcePath) {
-  const sourcePath = path.join(REPO_ROOT, relativeSourcePath)
-
-  if (!fs.existsSync(sourcePath)) {
-    return false
-  }
-
-  copyFile(relativeSourcePath, artifactRoot, relativeTargetPath)
-  return true
-}
-
-function copyDirectory(relativeSourcePath, artifactRoot, shouldExclude = () => false) {
-  const sourcePath = path.join(REPO_ROOT, relativeSourcePath)
-  const targetPath = path.join(artifactRoot, relativeSourcePath)
-
-  fs.cpSync(sourcePath, targetPath, {
-    recursive: true,
-    filter: (currentSourcePath) => {
-      const relativePath = toPosix(path.relative(sourcePath, currentSourcePath))
-
-      if (!relativePath) {
-        return true
-      }
-
-      return !shouldExclude(relativePath)
-    },
-  })
-}
-
 function writeJsonFile(filePath, data) {
   fs.mkdirSync(path.dirname(filePath), { recursive: true })
   fs.writeFileSync(filePath, JSON.stringify(data, null, 2))
@@ -140,7 +76,7 @@ function createEmptyRuntimeGraph() {
   return {
     meta: {
       repoName: 'claudemap',
-      branch: 'current',
+      branch: 'workspace',
       creditLabel: 'ClaudeMap skill',
       generatedAt: null,
       source: 'file-shim',
@@ -151,34 +87,21 @@ function createEmptyRuntimeGraph() {
   }
 }
 
-function createEmptyRuntimeState() {
+function createDefaultMapsManifest() {
   return {
-    graphRevision: 0,
-    updatedAt: new Date().toISOString(),
-    graphMeta: {
-      repoName: 'claudemap',
-      generatedAt: null,
-      source: 'file-shim',
-      nodeCount: 0,
-      edgeCount: 0,
-      fileCount: 0,
-    },
-    runtime: {
-      healthOverlay: false,
-      highlightedNodeIds: [],
-      highlightColor: 'accent',
-      focus: null,
-      guidedFlow: null,
-      presentation: {
-        mode: 'free',
-        lockInput: false,
-        title: null,
-        explanation: null,
-        body: null,
-        stepLabel: null,
-        updatedAt: null,
+    version: 1,
+    activeMapId: 'root',
+    maps: [
+      {
+        id: 'root',
+        label: 'ClaudeMap',
+        summary: 'Full repo overview',
+        scope: null,
+        cachePath: 'claudemap-cache.json',
+        graphPath: 'claudemap-runtime.json',
+        statePath: 'claudemap-runtime-state.json',
       },
-    },
+    ],
   }
 }
 
@@ -193,7 +116,7 @@ function createDefaultRuntimeStateFromGraph(graphData) {
     graphMeta: {
       repoName: normalizedGraph.meta?.repoName || 'claudemap',
       generatedAt: normalizedGraph.meta?.generatedAt || null,
-      source: normalizedGraph.meta?.source || 'sample',
+      source: normalizedGraph.meta?.source || 'seed',
       nodeCount: normalizedGraph.nodes.length,
       edgeCount: normalizedGraph.edges.length,
       fileCount: Array.isArray(normalizedGraph.files) ? normalizedGraph.files.length : 0,
@@ -225,7 +148,7 @@ function readJsonFileOrFallback(filePath, fallbackFactory) {
   }
 }
 
-function writeRuntimePlaceholders(projectRoot, graphSourcePath = DEFAULT_RUNTIME_GRAPH_PATH) {
+function writeRuntimePlaceholders(projectRoot, graphSourcePath = DEFAULT_SEED_MAP_PATH) {
   const packagedGraph = readJsonFileOrFallback(
     graphSourcePath,
     createEmptyRuntimeGraph,
@@ -238,6 +161,10 @@ function writeRuntimePlaceholders(projectRoot, graphSourcePath = DEFAULT_RUNTIME
   writeJsonFile(
     path.join(projectRoot, SKILL_ROOT, 'app', 'public', 'claudemap-runtime-state.json'),
     createDefaultRuntimeStateFromGraph(packagedGraph),
+  )
+  writeJsonFile(
+    path.join(projectRoot, SKILL_ROOT, 'app', 'public', 'claudemap-maps.json'),
+    createDefaultMapsManifest(),
   )
 }
 
@@ -306,6 +233,21 @@ Steps:
 4. If no graph is loaded yet, tell the user to run \`/setup-claudemap\` first.
 5. Report whether the app server was reused, started, or still unavailable.
 `,
+    'create-map.md': `---
+description: Create or refresh a scoped ClaudeMap for a major subsystem and switch to it.
+argument-hint: '{"scope":{"rootSystemId":"...","rootSystemLabel":"...","ancestorPath":["..."]},"label":"...","summary":"..."}'
+---
+
+Use the bundled ClaudeMap scoped-map command.
+
+Workflow:
+1. Treat the current working directory as the target project root unless the user gave a different path.
+2. Expect the arguments to be the JSON payload copied from ClaudeMap's "Create map?" affordance.
+3. Resolve the bundled command script at \`.claude/skills/claudemap-runtime/skill/commands/create-map.js\`.
+4. Run the create-map command with Node and pass the copied payload through \`--scope-json\`.
+5. Report the created or updated map id, label, scope root, and resulting active map id.
+6. If the payload is missing or invalid, ask the user to click "Create map?" in ClaudeMap again and paste the copied command.
+`,
     'show.md': `---
 description: Direct the live ClaudeMap session. Use it to focus the map, highlight architecture, present a step, compare regions, or show flow.
 argument-hint: '[intent]'
@@ -324,7 +266,7 @@ Principles:
 Workflow:
 1. Resolve the bundled command script at \`.claude/skills/claudemap-runtime/skill/commands/show.js\`.
 2. Read the user request as presentation intent, not just a literal command request.
-3. If needed, read the current runtime graph from \`.claude/skills/claudemap-runtime/app/public/claudemap-runtime.json\` to choose the right node names or path through the graph.
+3. If needed, inspect the currently active ClaudeMap runtime graph rather than assuming the root map. Prefer the bundled command's own active-map resolution over hardcoded runtime file paths.
 4. Translate the request into the smallest useful set of show commands.
 5. Run the show command or short command sequence with Node.
 6. Briefly report what changed in the UI.
@@ -335,7 +277,7 @@ Built-in show actions include:
 - \`present <query> [--title "..."] [--step "..."] [--explain "..."]\`
 - \`navigate <query> [--zoom <value>]\`
 - \`health <on|off>\`
-- \`mode <free|guided|locked-demo>\`
+- \`mode <free|guided|locked>\`
 - \`caption [--title <title>] [--step <step>] <body>\`
 - \`clear-caption\`
 - \`flow <query1> <query2> [query3 ...]\`
@@ -359,7 +301,7 @@ Workflow:
 1. If the user provided ClaudeMap click context, extract the label, path, and type from it.
 2. If the user provided a plain topic or node name, use that as the walkthrough anchor.
 3. If no usable topic is available, ask the user to click a node in ClaudeMap and paste the copied context, or provide a topic directly.
-4. Read the current runtime graph from \`.claude/skills/claudemap-runtime/app/public/claudemap-runtime.json\`.
+4. Read the currently active ClaudeMap runtime graph rather than assuming the root map.
 5. For broad or ambiguous requests, use the \`@claudemap-architect\` subagent to turn the request into a short walkthrough plan of 2-6 steps that follows intuitive architectural groupings.
 6. Start presentation mode by running \`node .claude/skills/claudemap-runtime/skill/commands/show.js mode guided\`.
 7. Drive the map in discrete steps. Prefer one present command per explanation beat so the highlight, navigation, and narration update atomically:
@@ -402,6 +344,7 @@ Use these first:
 
 - \`/setup-claudemap\`: build a detailed architecture map for the current project
 - \`/open-claudemap\`: reopen the existing map UI without rebuilding the graph
+- \`/create-map\`: create or refresh a scoped subsystem map from the current root graph
 - \`/refresh\`: refresh the current graph after code changes
 - \`/explain\`: run a guided walkthrough against the live graph
 - \`/show\`: direct the live map for focus, highlights, presentation, health, and flow
@@ -421,18 +364,18 @@ ClaudeMap works in three stages:
 - \`.claude/skills/claudemap-runtime/skill/lib/\`: shared runtime libraries
 - \`.claude/skills/claudemap-runtime/skill/prompts/\`: enrichment prompt assets
 - \`.claude/skills/claudemap-runtime/app/\`: bundled map app
-- \`.claude/skills/claudemap-runtime/demo/\`: demo sandboxes and fallback data
 - \`.claude/agents/claudemap-architect.md\`: bundled architecture-mapping subagent
 `,
   )
 }
 
-function writeArtifactManifest(artifactRoot, demoPackages) {
+function writeArtifactManifest(artifactRoot) {
   const managedPaths = [
     toPosix(SKILL_ROOT),
     toPosix(path.join(AGENTS_ROOT, 'claudemap-architect.md')),
     toPosix(path.join(COMMANDS_ROOT, 'setup-claudemap.md')),
     toPosix(path.join(COMMANDS_ROOT, 'open-claudemap.md')),
+    toPosix(path.join(COMMANDS_ROOT, 'create-map.md')),
     toPosix(path.join(COMMANDS_ROOT, 'refresh.md')),
     toPosix(path.join(COMMANDS_ROOT, 'show.md')),
     toPosix(path.join(COMMANDS_ROOT, 'explain.md')),
@@ -447,6 +390,7 @@ function writeArtifactManifest(artifactRoot, demoPackages) {
       skill: toPosix(path.join(SKILL_ROOT, 'SKILL.md')),
       'setup-claudemap': toPosix(path.join(SKILL_ROOT, 'skill', 'commands', 'setup-claudemap.js')),
       'open-claudemap': toPosix(path.join(SKILL_ROOT, 'skill', 'commands', 'open-claudemap.js')),
+      'create-map': toPosix(path.join(SKILL_ROOT, 'skill', 'commands', 'create-map.js')),
       refresh: toPosix(path.join(SKILL_ROOT, 'skill', 'commands', 'update.js')),
       show: toPosix(path.join(SKILL_ROOT, 'skill', 'commands', 'show.js')),
     },
@@ -456,6 +400,7 @@ function writeArtifactManifest(artifactRoot, demoPackages) {
     slashCommands: {
       'setup-claudemap': toPosix(path.join(COMMANDS_ROOT, 'setup-claudemap.md')),
       explain: toPosix(path.join(COMMANDS_ROOT, 'explain.md')),
+      'create-map': toPosix(path.join(COMMANDS_ROOT, 'create-map.md')),
       'open-claudemap': toPosix(path.join(COMMANDS_ROOT, 'open-claudemap.md')),
       refresh: toPosix(path.join(COMMANDS_ROOT, 'refresh.md')),
       show: toPosix(path.join(COMMANDS_ROOT, 'show.md')),
@@ -463,6 +408,7 @@ function writeArtifactManifest(artifactRoot, demoPackages) {
     publicCommands: [
       'setup-claudemap',
       'open-claudemap',
+      'create-map',
       'refresh',
       'explain',
       'show',
@@ -473,22 +419,10 @@ function writeArtifactManifest(artifactRoot, demoPackages) {
       navigationDoc: toPosix(path.join(SKILL_ROOT, 'NAVIGATION.md')),
       sharedSubagent: toPosix(path.join(AGENTS_ROOT, 'claudemap-architect.md')),
     },
-    demoPackages: Object.fromEntries(
-      demoPackages.map((demoPackage) => [
-        demoPackage.name,
-        {
-          path: toPosix(path.join(DEMO_PACKAGES_ROOT, demoPackage.name)),
-          graphContract: demoPackage.graphContract,
-          description: demoPackage.description,
-          sourceProject: demoPackage.sourceProject || null,
-        },
-      ]),
-    ),
     notes: [
       'Install the bundled .claude directory into your target project root with scripts/install-claudemap.js, or copy it manually.',
       'The public surface is .claude/commands/*.md. The skill bundle under .claude/skills/claudemap-runtime is shared runtime infrastructure for those commands.',
-      'The packaged runtime ships with the current seeded app/public graph so /open-claudemap can render immediately after install.',
-      'The packaged demo project is emitted under demo-packages/ClaudeMapDemo.',
+      'The packaged runtime ships with the current seeded ClaudeMap self-map so /open-claudemap can render immediately after install.',
       'The installer script automatically runs npm install inside .claude/skills/claudemap-runtime. Manual installs still need that step.',
       'Claude Code loads project subagents from .claude/agents at session start. Restart the session or use /agents after installing the artifact if needed.',
       'If ClaudeMap is later packaged as a plugin instead of a project drop-in, subagent files should live in the plugin agents/ directory rather than .claude/agents/.',
@@ -515,22 +449,9 @@ function shouldExcludeApp(relativePath) {
     relativePath === 'dist' ||
     relativePath.startsWith('dist/') ||
     relativePath === 'public/claudemap-runtime.json' ||
-    relativePath === 'public/claudemap-runtime-state.json'
+    relativePath === 'public/claudemap-runtime-state.json' ||
+    relativePath === 'public/claudemap-maps.json'
   )
-}
-
-function shouldExcludeDemo(relativePath) {
-  const segments = relativePath.split('/')
-
-  if (segments.some((segment) => ['.claude', 'node_modules', 'dist', 'build'].includes(segment))) {
-    return true
-  }
-
-  if (segments.some((segment) => GENERATED_DEMO_NAMES.has(segment))) {
-    return true
-  }
-
-  return segments[segments.length - 1] === 'claudemap-cache.json'
 }
 
 function copyArtifactFiles(artifactRoot) {
@@ -543,7 +464,6 @@ function copyArtifactFiles(artifactRoot) {
 
   copyDirectoryInto('skill', artifactRoot, path.join(SKILL_ROOT, 'skill'), shouldExcludeSkill)
   copyDirectoryInto('app', artifactRoot, path.join(SKILL_ROOT, 'app'), shouldExcludeApp)
-  copyDirectoryInto('demo', artifactRoot, path.join(SKILL_ROOT, 'demo'), shouldExcludeDemo)
   copyDirectoryInto('contracts', artifactRoot, path.join(SKILL_ROOT, 'contracts'))
 
   if (fs.existsSync(path.join(REPO_ROOT, 'agents'))) {
@@ -567,50 +487,6 @@ function copyDirectoryInto(relativeSourcePath, artifactRoot, relativeTargetPath,
       return !shouldExclude(relativePath)
     },
   })
-}
-
-function stageClaudeMapDemoProject(projectRoot) {
-  const firstDemoGraph = readJsonFileOrFallback(CLAUDEMAP_DEMO_GRAPH_PATH, createEmptyRuntimeGraph)
-  const mappedPaths = new Set(
-    Array.isArray(firstDemoGraph.files)
-      ? firstDemoGraph.files
-        .map((fileRecord) => fileRecord?.path)
-        .filter(Boolean)
-      : [],
-  )
-
-  for (const relativePath of mappedPaths) {
-    copyOptionalFile(relativePath, projectRoot, relativePath)
-  }
-
-  for (const relativePath of CLAUDEMAP_DEMO_SUPPORT_FILES) {
-    copyOptionalFile(relativePath, projectRoot, relativePath)
-  }
-}
-
-function createDemoPackage(artifactRoot, demoDefinition) {
-  const projectRoot = path.join(artifactRoot, DEMO_PACKAGES_ROOT, demoDefinition.name)
-  const artifactClaudeRoot = path.join(artifactRoot, CLAUDE_ROOT)
-  const projectClaudeRoot = path.join(projectRoot, CLAUDE_ROOT)
-
-  fs.rmSync(projectRoot, { recursive: true, force: true })
-  fs.mkdirSync(projectRoot, { recursive: true })
-
-  demoDefinition.stageProject(projectRoot)
-  fs.cpSync(artifactClaudeRoot, projectClaudeRoot, { recursive: true })
-  writeRuntimePlaceholders(projectRoot, demoDefinition.graphSourcePath)
-
-  return {
-    name: demoDefinition.name,
-    description: demoDefinition.description,
-    graphContract: demoDefinition.graphContract,
-    sourceProject: demoDefinition.sourceProject || null,
-    projectRoot,
-  }
-}
-
-function createDemoPackages(artifactRoot) {
-  return DEMO_DEFINITIONS.map((demoDefinition) => createDemoPackage(artifactRoot, demoDefinition))
 }
 
 function powershellQuote(value) {
@@ -659,18 +535,14 @@ function main() {
 
   const artifactRoot = ensureCleanArtifactLocation(options.outputRoot)
   copyArtifactFiles(artifactRoot)
-  writeRuntimePlaceholders(artifactRoot, DEFAULT_RUNTIME_GRAPH_PATH)
+  writeRuntimePlaceholders(artifactRoot)
   writeSlashCommands(artifactRoot)
   writeNavigationDocs(artifactRoot)
-  const demoPackages = options.demoPackages ? createDemoPackages(artifactRoot) : []
-  writeArtifactManifest(artifactRoot, demoPackages)
+  writeArtifactManifest(artifactRoot)
 
   const zipPath = maybeCreateZip(artifactRoot, options.outputRoot, options.zip)
 
   console.log(`ClaudeMap skill artifact ready at ${artifactRoot}`)
-  for (const demoPackage of demoPackages) {
-    console.log(`${demoPackage.name} ready at ${demoPackage.projectRoot}`)
-  }
   if (zipPath) {
     console.log(`Zip archive ready at ${zipPath}`)
   }

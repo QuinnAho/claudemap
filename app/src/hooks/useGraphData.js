@@ -223,7 +223,37 @@ function isRuntimeEnvelope(value) {
   return value && typeof value.graphRevision === 'number' && value.runtime
 }
 
-let sampleGraphPromise = null
+function createLegacyManifest() {
+  return {
+    version: 1,
+    activeMapId: 'root',
+    maps: [
+      {
+        id: 'root',
+        label: 'ClaudeMap',
+        summary: 'Full repo overview',
+        scope: null,
+        cachePath: 'claudemap-cache.json',
+        graphPath: 'claudemap-runtime.json',
+        statePath: 'claudemap-runtime-state.json',
+      },
+    ],
+  }
+}
+
+function isMapsManifest(value) {
+  return value && Array.isArray(value.maps)
+}
+
+function getActiveMapEntry(manifest) {
+  if (!isMapsManifest(manifest)) {
+    return createLegacyManifest().maps[0]
+  }
+
+  return manifest.maps.find((entry) => entry.id === manifest.activeMapId) || manifest.maps[0] || null
+}
+
+let seedGraphPromise = null
 
 function getRuntimeSignature(runtimeEnvelope) {
   return [
@@ -231,6 +261,10 @@ function getRuntimeSignature(runtimeEnvelope) {
     runtimeEnvelope.updatedAt || '',
     JSON.stringify(runtimeEnvelope.runtime || {}),
   ].join(':')
+}
+
+function getManifestSignature(manifest) {
+  return JSON.stringify(manifest || {})
 }
 
 function createPublicAssetUrl(relativePath) {
@@ -242,19 +276,19 @@ function createPublicAssetUrl(relativePath) {
   return new URL(relativePath, baseOrigin)
 }
 
-async function loadSampleGraph() {
-  if (!sampleGraphPromise) {
-    sampleGraphPromise = import('../../../contracts/claudemap.sample.json')
+async function loadSeedGraph() {
+  if (!seedGraphPromise) {
+    seedGraphPromise = import('../../../contracts/claudemap-seed-map.json')
       .then((module) => module.default || module)
       .catch(() => null)
   }
 
-  return sampleGraphPromise
+  return seedGraphPromise
 }
 
-async function fetchRuntimeGraph() {
+async function fetchGraphAsset(relativePath) {
   try {
-    const runtimeGraphUrl = createPublicAssetUrl('claudemap-runtime.json')
+    const runtimeGraphUrl = createPublicAssetUrl(relativePath)
     runtimeGraphUrl.searchParams.set('t', String(Date.now()))
 
     const response = await window.fetch(runtimeGraphUrl, {
@@ -272,9 +306,9 @@ async function fetchRuntimeGraph() {
   }
 }
 
-async function fetchRuntimeEnvelope() {
+async function fetchRuntimeEnvelopeAsset(relativePath) {
   try {
-    const runtimeStateUrl = createPublicAssetUrl('claudemap-runtime-state.json')
+    const runtimeStateUrl = createPublicAssetUrl(relativePath)
     runtimeStateUrl.searchParams.set('t', String(Date.now()))
 
     const response = await window.fetch(runtimeStateUrl, {
@@ -292,13 +326,37 @@ async function fetchRuntimeEnvelope() {
   }
 }
 
+async function fetchMapsManifest() {
+  try {
+    const manifestUrl = createPublicAssetUrl('claudemap-maps.json')
+    manifestUrl.searchParams.set('t', String(Date.now()))
+
+    const response = await window.fetch(manifestUrl, {
+      cache: 'no-store',
+    })
+
+    if (!response.ok) {
+      return createLegacyManifest()
+    }
+
+    const manifest = await response.json()
+    return isMapsManifest(manifest) ? manifest : createLegacyManifest()
+  } catch {
+    return createLegacyManifest()
+  }
+}
+
 export function useGraphData() {
   const setGraph = useGraphStore((state) => state.setGraph)
   const setMeta = useGraphStore((state) => state.setMeta)
+  const setMapsManifest = useGraphStore((state) => state.setMapsManifest)
   const setRuntimeControls = useGraphStore((state) => state.setRuntimeControls)
+  const resetForMapChange = useGraphStore((state) => state.resetForMapChange)
   const [graphLoaded, setGraphLoaded] = useState(false)
   const latestGraphRevisionRef = useRef(null)
   const latestRuntimeSignatureRef = useRef('')
+  const latestManifestSignatureRef = useRef('')
+  const latestActiveMapIdRef = useRef('')
 
   useEffect(() => {
     let isMounted = true
@@ -313,9 +371,9 @@ export function useGraphData() {
       setGraph(nodes, edges)
       setMeta({
         repoName: graphData.meta?.repoName || 'claudemap',
-        branch: graphData.meta?.branch || 'current',
+        branch: graphData.meta?.branch || 'workspace',
         creditLabel: graphData.meta?.creditLabel || 'ClaudeMap graph',
-        source: graphData.meta?.source || 'sample',
+        source: graphData.meta?.source || 'seed',
         lastSyncedAt: Date.now(),
       })
       setGraphLoaded(true)
@@ -337,23 +395,54 @@ export function useGraphData() {
         return
       }
 
-      const runtimeEnvelope = await fetchRuntimeEnvelope()
+      const manifest = await fetchMapsManifest()
+      const activeMapEntry = getActiveMapEntry(manifest)
+
+      if (!isMounted || !activeMapEntry) {
+        return
+      }
+
+      const manifestSignature = getManifestSignature(manifest)
+
+      if (manifestSignature !== latestManifestSignatureRef.current) {
+        latestManifestSignatureRef.current = manifestSignature
+        setMapsManifest(manifest)
+      }
+
+      const activeMapChanged = activeMapEntry.id !== latestActiveMapIdRef.current
+
+      if (activeMapChanged) {
+        latestActiveMapIdRef.current = activeMapEntry.id
+        latestGraphRevisionRef.current = null
+        latestRuntimeSignatureRef.current = ''
+        resetForMapChange()
+        setGraphLoaded(false)
+      }
+
+      const runtimeEnvelope = await fetchRuntimeEnvelopeAsset(activeMapEntry.statePath)
 
       if (!runtimeEnvelope) {
-        applyGraphData(await loadSampleGraph())
+        const runtimeGraph = await fetchGraphAsset(activeMapEntry.graphPath)
+
+        if (runtimeGraph) {
+          applyGraphData(runtimeGraph)
+        } else {
+          applyGraphData(await loadSeedGraph())
+        }
+
         applyRuntimeEnvelope(null)
-        latestGraphRevisionRef.current = -1
+        latestGraphRevisionRef.current = null
         return
       }
 
       applyRuntimeEnvelope(runtimeEnvelope)
 
-      if (runtimeEnvelope.graphRevision === latestGraphRevisionRef.current) {
+      if (!activeMapChanged && runtimeEnvelope.graphRevision === latestGraphRevisionRef.current) {
         setGraphLoaded(true)
         return
       }
 
-      const runtimeGraph = await fetchRuntimeGraph()
+      const runtimeGraph = await fetchGraphAsset(activeMapEntry.graphPath)
 
       if (runtimeGraph) {
         applyGraphData(runtimeGraph)
@@ -361,7 +450,7 @@ export function useGraphData() {
         return
       }
 
-      applyGraphData(await loadSampleGraph())
+      applyGraphData(await loadSeedGraph())
       applyRuntimeEnvelope(null)
       latestGraphRevisionRef.current = -1
     }
@@ -376,7 +465,7 @@ export function useGraphData() {
       window.clearInterval(intervalId)
       window.removeEventListener('focus', loadRuntimeData)
     }
-  }, [setGraph, setMeta, setRuntimeControls])
+  }, [resetForMapChange, setGraph, setMapsManifest, setMeta, setRuntimeControls])
 
   return graphLoaded
 }

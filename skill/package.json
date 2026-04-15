@@ -6,6 +6,7 @@
   "bin": {
     "setup-claudemap": "./commands/setup-claudemap.js",
     "open-claudemap": "./commands/open-claudemap.js",
+    "claudemap-create-map": "./commands/create-map.js",
     "claudemap-refresh": "./commands/update.js",
     "claudemap-show": "./commands/show.js",
     "claudemap-snapshot": "./commands/snapshot.js"
@@ -13,6 +14,7 @@
   "scripts": {
     "setup-claudemap": "node ./commands/setup-claudemap.js",
     "open-claudemap": "node ./commands/open-claudemap.js",
+    "create-map": "node ./commands/create-map.js",
     "refresh": "node ./commands/update.js",
     "show": "node ./commands/show.js",
     "snapshot": "node ./commands/snapshot.js"

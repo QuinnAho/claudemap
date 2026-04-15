@@ -8,6 +8,14 @@ import {
 } from '../lib/enrichment.js'
 import { isCacheStale, readCache, writeCache } from '../lib/cache.js'
 import { launchClaudeMapWindow } from '../lib/launcher.js'
+import { resolveMapPaths } from '../lib/active-map.js'
+import {
+  DEFAULT_MAP_ID,
+  ensureManifestForSetup,
+  findMapById,
+  setActiveMapId,
+  writeManifest,
+} from '../lib/map-manifest.js'
 import { closeMcpClient, connectMcpClient, renderGraph } from '../lib/mcp-client.js'
 
 function resolveProjectRoot(argv) {
@@ -41,7 +49,7 @@ function getOptionValue(argv, optionName) {
 
 function printUsage() {
   console.log('ClaudeMap setup')
-  console.log('  setup-claudemap [project-root] [--force-refresh] [--demo-cache] [--no-render]')
+  console.log('  setup-claudemap [project-root] [--force-refresh] [--no-render]')
   console.log('             [--no-start-app] [--open-browser] [--stdio-mcp]')
   console.log('             [--enrichment-file <file>]')
 }
@@ -67,7 +75,6 @@ async function main() {
   }
 
   const projectRoot = resolveProjectRoot(argv)
-  const useDemoFallback = hasFlag(argv, 'demo-cache')
   const forceRefresh = hasFlag(argv, 'force-refresh')
   const skipRender = hasFlag(argv, 'no-render')
   const startApp = shouldStartApp(argv)
@@ -75,8 +82,13 @@ async function main() {
   const useStdioMcp = hasFlag(argv, 'stdio-mcp')
   const enrichmentFile = getOptionValue(argv, 'enrichment-file')
   const responseText = enrichmentFile ? await readFileIfExists(enrichmentFile) : null
+  let manifest = ensureManifestForSetup(projectRoot)
+  setActiveMapId(manifest, DEFAULT_MAP_ID)
+  manifest = writeManifest(projectRoot, manifest)
+  const rootMapEntry = findMapById(manifest, DEFAULT_MAP_ID)
+  const rootMapPaths = resolveMapPaths(projectRoot, rootMapEntry)
   const snapshot = collectProjectSnapshot(projectRoot)
-  const existingCache = readCache(projectRoot)
+  const existingCache = readCache(projectRoot, { relativePath: rootMapEntry.cachePath })
   const useCache =
     !forceRefresh && existingCache && !isCacheStale(projectRoot, snapshot.files, existingCache)
   const hasExplicitEnrichmentInput = Boolean(responseText) || hasEnrichmentResponseOverride()
@@ -88,15 +100,15 @@ async function main() {
   if (useCache) {
     graphData = existingCache.graph
   } else {
-    const nextGraph = await enrichGraph(snapshot, { useDemoFallback, responseText })
+    const nextGraph = await enrichGraph(snapshot, { responseText })
     preservedGraphSelection = selectPreferredGraph(existingCache?.graph, nextGraph, {
       forceRefresh,
-      allowLowerPriorityOverwrite: useDemoFallback || hasExplicitEnrichmentInput,
+      allowLowerPriorityOverwrite: hasExplicitEnrichmentInput,
     })
     graphData = preservedGraphSelection.graph
 
     if (!preservedGraphSelection.preservedExisting) {
-      writeCache(projectRoot, graphData, snapshot.files)
+      writeCache(projectRoot, graphData, snapshot.files, { relativePath: rootMapEntry.cachePath })
       cacheMode = forceRefresh ? 'forced refresh' : 'regenerated'
     } else {
       cacheMode = `preserved existing ${preservedGraphSelection.existingSource} graph`
@@ -106,7 +118,11 @@ async function main() {
   let renderResult = null
 
   if (!skipRender) {
-    const mcpClient = await connectMcpClient({ mode: useStdioMcp ? 'stdio' : 'file-shim' })
+    const mcpClient = await connectMcpClient({
+      mode: useStdioMcp ? 'stdio' : 'file-shim',
+      graphPath: rootMapPaths.graphPath,
+      statePath: rootMapPaths.statePath,
+    })
     renderResult = await renderGraph(mcpClient, graphData)
     await closeMcpClient(mcpClient)
   }
@@ -120,6 +136,7 @@ async function main() {
     `ClaudeMap ready - analyzed ${snapshot.totalFiles} files across ${countSystems(graphData)} systems`,
   )
   console.log(`Project root: ${projectRoot}`)
+  console.log(`Active map: ${DEFAULT_MAP_ID}`)
   console.log(`Graph source: ${graphData.meta?.source || (useCache ? 'cache' : 'generated')}`)
   console.log(`Cache mode: ${useCache ? 'reused' : cacheMode}`)
 

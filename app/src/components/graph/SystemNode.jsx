@@ -1,6 +1,8 @@
+import { useState } from 'react'
 import { Handle, Position } from '@xyflow/react'
 import { ChevronDown } from 'lucide-react'
 import { getNodeIcon } from './nodeIcons'
+import MapAffordance from './MapAffordance'
 import { SYSTEM_NODE_HEADER_HEIGHT, SYSTEM_NODE_MIN_HEIGHT } from './systemNodeSizing'
 import FloatingDescription from './FloatingDescription'
 
@@ -21,6 +23,7 @@ const hiddenHandleStyle = {
 }
 
 export default function SystemNode({ data }) {
+  const [isHovered, setIsHovered] = useState(false)
   const Icon = getNodeIcon(data.icon)
   const isExpanded = data.isExpanded
   const hasChildren = data.hasChildren
@@ -81,11 +84,31 @@ export default function SystemNode({ data }) {
   }
 
   return (
-    <div style={{ width: '100%', height: '100%', position: 'relative', overflow: 'visible' }}>
+    <div
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      style={{ width: '100%', height: '100%', position: 'relative', overflow: 'visible' }}
+    >
       <Handle type="target" position={Position.Top} style={hiddenHandleStyle} />
       <Handle type="source" position={Position.Bottom} style={hiddenHandleStyle} />
 
       <FloatingDescription text={data.summary} visible={showDescription} position="above" />
+      {data.mapAffordance ? (
+        <div
+          style={{
+            position: 'absolute',
+            top: '10px',
+            right: '12px',
+            zIndex: 4,
+            opacity: isHovered ? 1 : 0,
+            transform: isHovered ? 'translateY(0)' : 'translateY(-2px)',
+            transition: 'opacity 0.18s ease, transform 0.18s ease',
+            pointerEvents: isHovered ? 'auto' : 'none',
+          }}
+        >
+          <MapAffordance affordance={data.mapAffordance} />
+        </div>
+      ) : null}
 
       <div style={baseStyle}>
         <div

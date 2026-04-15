@@ -11,7 +11,8 @@ const OUTPUT_ROOT = path.join(REPO_ROOT, 'docs')
 const TEMP_BUILD_CONFIG_PATH = path.join(APP_ROOT, '.claudemap-build.json')
 const RUNTIME_GRAPH_PATH = path.join(APP_ROOT, 'public', 'claudemap-runtime.json')
 const RUNTIME_STATE_PATH = path.join(APP_ROOT, 'public', 'claudemap-runtime-state.json')
-const SELF_DEMO_GRAPH_PATH = path.join(REPO_ROOT, 'contracts', 'claudemap-first-demo.json')
+const RUNTIME_MANIFEST_PATH = path.join(APP_ROOT, 'public', 'claudemap-maps.json')
+const SEEDED_SELF_MAP_PATH = path.join(REPO_ROOT, 'contracts', 'claudemap-seed-map.json')
 
 function readRepositoryUrl() {
   const packageJson = JSON.parse(fs.readFileSync(PACKAGE_JSON_PATH, 'utf8'))
@@ -83,6 +84,24 @@ function createRuntimeStateFromGraph(graphData) {
   }
 }
 
+function createDefaultMapsManifest() {
+  return {
+    version: 1,
+    activeMapId: 'root',
+    maps: [
+      {
+        id: 'root',
+        label: 'ClaudeMap',
+        summary: 'Full repo overview',
+        scope: null,
+        cachePath: 'claudemap-cache.json',
+        graphPath: 'claudemap-runtime.json',
+        statePath: 'claudemap-runtime-state.json',
+      },
+    ],
+  }
+}
+
 function buildApp() {
   const npmExecPath = process.env.npm_execpath
 
@@ -105,9 +124,16 @@ function buildApp() {
 
 function main() {
   const pagesConfig = getGitHubPagesConfig()
-  const selfDemoGraph = readJsonFile(SELF_DEMO_GRAPH_PATH)
-  const originalGraph = fs.readFileSync(RUNTIME_GRAPH_PATH, 'utf8')
-  const originalRuntimeState = fs.readFileSync(RUNTIME_STATE_PATH, 'utf8')
+  const seededSelfMap = readJsonFile(SEEDED_SELF_MAP_PATH)
+  const originalGraph = fs.existsSync(RUNTIME_GRAPH_PATH)
+    ? fs.readFileSync(RUNTIME_GRAPH_PATH, 'utf8')
+    : null
+  const originalRuntimeState = fs.existsSync(RUNTIME_STATE_PATH)
+    ? fs.readFileSync(RUNTIME_STATE_PATH, 'utf8')
+    : null
+  const originalRuntimeManifest = fs.existsSync(RUNTIME_MANIFEST_PATH)
+    ? fs.readFileSync(RUNTIME_MANIFEST_PATH, 'utf8')
+    : null
 
   try {
     writeJsonFile(TEMP_BUILD_CONFIG_PATH, {
@@ -115,8 +141,9 @@ function main() {
       outDir: OUTPUT_ROOT,
       emptyOutDir: true,
     })
-    writeJsonFile(RUNTIME_GRAPH_PATH, selfDemoGraph)
-    writeJsonFile(RUNTIME_STATE_PATH, createRuntimeStateFromGraph(selfDemoGraph))
+    writeJsonFile(RUNTIME_GRAPH_PATH, seededSelfMap)
+    writeJsonFile(RUNTIME_STATE_PATH, createRuntimeStateFromGraph(seededSelfMap))
+    writeJsonFile(RUNTIME_MANIFEST_PATH, createDefaultMapsManifest())
 
     const result = buildApp()
 
@@ -125,11 +152,25 @@ function main() {
     }
 
     if (result.status !== 0) {
-      throw new Error('Failed to build the ClaudeMap demo site')
+      throw new Error('Failed to build the ClaudeMap site')
     }
   } finally {
-    fs.writeFileSync(RUNTIME_GRAPH_PATH, originalGraph)
-    fs.writeFileSync(RUNTIME_STATE_PATH, originalRuntimeState)
+    if (originalGraph === null) {
+      fs.rmSync(RUNTIME_GRAPH_PATH, { force: true })
+    } else {
+      fs.writeFileSync(RUNTIME_GRAPH_PATH, originalGraph)
+    }
+
+    if (originalRuntimeState === null) {
+      fs.rmSync(RUNTIME_STATE_PATH, { force: true })
+    } else {
+      fs.writeFileSync(RUNTIME_STATE_PATH, originalRuntimeState)
+    }
+    if (originalRuntimeManifest === null) {
+      fs.rmSync(RUNTIME_MANIFEST_PATH, { force: true })
+    } else {
+      fs.writeFileSync(RUNTIME_MANIFEST_PATH, originalRuntimeManifest)
+    }
 
     if (fs.existsSync(TEMP_BUILD_CONFIG_PATH)) {
       fs.rmSync(TEMP_BUILD_CONFIG_PATH, { force: true })
@@ -137,7 +178,7 @@ function main() {
   }
 
   fs.writeFileSync(path.join(OUTPUT_ROOT, '.nojekyll'), '')
-  console.log(`ClaudeMap demo site ready at ${OUTPUT_ROOT}`)
+  console.log(`ClaudeMap site ready at ${OUTPUT_ROOT}`)
 
   if (pagesConfig.publicUrl) {
     console.log(`Expected GitHub Pages URL: ${pagesConfig.publicUrl}`)
@@ -147,6 +188,6 @@ function main() {
 try {
   main()
 } catch (error) {
-  console.error(`ClaudeMap demo site build failed: ${error.message}`)
+  console.error(`ClaudeMap site build failed: ${error.message}`)
   process.exitCode = 1
 }

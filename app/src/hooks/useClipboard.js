@@ -40,12 +40,10 @@ function copyTextWithExecCommand(text) {
   return copied
 }
 
-export async function copyNodeToClipboard(nodeData, meta = {}) {
-  if (!nodeData) {
+export async function copyTextToClipboard(text) {
+  if (!text) {
     return false
   }
-
-  const text = buildNodeContextText(nodeData, meta)
 
   if (navigator?.clipboard?.writeText) {
     try {
@@ -57,4 +55,12 @@ export async function copyNodeToClipboard(nodeData, meta = {}) {
   }
 
   return copyTextWithExecCommand(text)
+}
+
+export async function copyNodeToClipboard(nodeData, meta = {}) {
+  if (!nodeData) {
+    return false
+  }
+
+  return copyTextToClipboard(buildNodeContextText(nodeData, meta))
 }

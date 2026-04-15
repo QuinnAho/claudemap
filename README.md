@@ -64,8 +64,7 @@ After code changes, `/refresh` detects what changed and updates the map without 
 app/        -> Visual map interface
 skill/      -> Claude Code skill and architecture subagent
 scripts/    -> Install and packaging scripts
-contracts/  -> Graph schema and sample data
-demo/       -> Demo sandboxes and cached payloads
+contracts/  -> Graph schema and seeded ClaudeMap self-map
 ```
 
 ## Development

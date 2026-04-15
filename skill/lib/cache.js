@@ -1,5 +1,4 @@
-import fs from 'fs'
-import path from 'path'
+import { readJsonFile, resolveProjectPath, writeJsonFileAtomic } from './runtime-paths.js'
 
 const CACHE_FILE_NAME = 'claudemap-cache.json'
 const CACHE_SCHEMA_VERSION = 1
@@ -18,12 +17,12 @@ function normalizeFileList(files) {
   }))
 }
 
-export function getCachePath(projectRoot) {
-  return path.join(projectRoot, CACHE_FILE_NAME)
+export function getCachePath(projectRoot, relativePath = CACHE_FILE_NAME) {
+  return resolveProjectPath(projectRoot, relativePath, CACHE_FILE_NAME)
 }
 
-export function writeCache(projectRoot, graphData, currentFiles = []) {
-  const cachePath = getCachePath(projectRoot)
+export function writeCache(projectRoot, graphData, currentFiles = [], options = {}) {
+  const cachePath = getCachePath(projectRoot, options.relativePath)
   const cachePayload = {
     schemaVersion: CACHE_SCHEMA_VERSION,
     generatedAt: new Date().toISOString(),
@@ -32,22 +31,13 @@ export function writeCache(projectRoot, graphData, currentFiles = []) {
     graph: graphData,
   }
 
-  fs.writeFileSync(cachePath, JSON.stringify(cachePayload, null, 2))
+  writeJsonFileAtomic(cachePath, cachePayload)
   return cachePayload
 }
 
-export function readCache(projectRoot) {
-  const cachePath = getCachePath(projectRoot)
-
-  if (!fs.existsSync(cachePath)) {
-    return null
-  }
-
-  try {
-    return JSON.parse(fs.readFileSync(cachePath, 'utf8'))
-  } catch {
-    return null
-  }
+export function readCache(projectRoot, options = {}) {
+  const cachePath = getCachePath(projectRoot, options.relativePath)
+  return readJsonFile(cachePath, () => null)
 }
 
 export function isCacheStale(projectRoot, currentFileList, cache = readCache(projectRoot)) {
