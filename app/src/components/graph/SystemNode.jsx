@@ -80,7 +80,7 @@ export default function SystemNode({ data }) {
     transform:
       data.isPresentationLead ? 'translateY(0) scale(1.02)' : 'translateY(0) scale(1)',
     transition:
-      'opacity 0.26s ease, transform 0.28s ease, box-shadow 0.25s ease, background-color 0.3s ease, border-color 0.25s ease',
+      'opacity var(--motion-surface-duration) var(--motion-ease-soft), transform var(--motion-layout-duration) var(--motion-ease-smooth), box-shadow var(--motion-surface-duration) var(--motion-ease-soft), background-color var(--motion-surface-duration) var(--motion-ease-soft), border-color var(--motion-surface-duration) var(--motion-ease-soft)',
   }
 
   return (
@@ -102,7 +102,8 @@ export default function SystemNode({ data }) {
             zIndex: 4,
             opacity: isHovered ? 1 : 0,
             transform: isHovered ? 'translateY(0)' : 'translateY(-2px)',
-            transition: 'opacity 0.18s ease, transform 0.18s ease',
+            transition:
+              'opacity var(--motion-quick-duration) var(--motion-ease-soft), transform var(--motion-quick-duration) var(--motion-ease-soft)',
             pointerEvents: isHovered ? 'auto' : 'none',
           }}
         >
@@ -121,7 +122,8 @@ export default function SystemNode({ data }) {
             gap: '10px',
             backgroundColor: surfaceColor,
             borderBottom: isExpanded ? '1px solid var(--border)' : 'none',
-            transition: 'min-height 0.3s ease, border-bottom 0.3s ease',
+            transition:
+              'min-height var(--motion-surface-duration) var(--motion-ease-smooth), border-bottom var(--motion-surface-duration) var(--motion-ease-soft)',
           }}
         >
           <div
@@ -185,7 +187,8 @@ export default function SystemNode({ data }) {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    transition: 'transform 0.25s ease',
+                    transition:
+                      'transform var(--motion-surface-duration) var(--motion-ease-smooth)',
                     transform: isExpanded ? 'rotate(0deg)' : 'rotate(-90deg)',
                   }}
                 >
@@ -203,7 +206,8 @@ export default function SystemNode({ data }) {
               'linear-gradient(180deg, rgba(255, 255, 255, 0.025) 0%, rgba(255, 255, 255, 0.01) 100%)',
             borderTop: isExpanded ? '1px dashed rgba(255, 255, 255, 0.04)' : 'none',
             opacity: isExpanded ? 1 : 0,
-            transition: 'flex 0.3s ease, opacity 0.3s ease, border-top 0.3s ease',
+            transition:
+              'flex var(--motion-surface-duration) var(--motion-ease-smooth), opacity var(--motion-surface-duration) var(--motion-ease-soft), border-top var(--motion-surface-duration) var(--motion-ease-soft)',
             overflow: 'hidden',
           }}
         />

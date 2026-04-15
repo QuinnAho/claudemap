@@ -13,7 +13,7 @@ export default function FloatingDescription({ text, visible, position = 'above' 
     } else {
       setIsAnimating(false)
       // Wait for fade-out animation to complete
-      const timeout = setTimeout(() => setShouldRender(false), 200)
+      const timeout = setTimeout(() => setShouldRender(false), 320)
       return () => clearTimeout(timeout)
     }
   }, [visible])
@@ -48,7 +48,8 @@ export default function FloatingDescription({ text, visible, position = 'above' 
         whiteSpace: 'normal',
         boxShadow: '0 4px 12px rgba(0, 0, 0, 0.4)',
         opacity: isAnimating ? 1 : 0,
-        transition: 'opacity 0.24s ease, transform 0.24s cubic-bezier(0.22, 1, 0.36, 1)',
+        transition:
+          'opacity var(--motion-surface-duration) var(--motion-ease-soft), transform var(--motion-surface-duration) var(--motion-ease-smooth)',
         pointerEvents: 'none',
         zIndex: 10,
       }}

@@ -62,7 +62,7 @@ export default function FunctionNode({ data }) {
             ? '0 3px 8px rgba(0, 0, 0, 0.14)'
             : 'none',
         transition:
-          'opacity 0.28s cubic-bezier(0.22, 1, 0.36, 1), transform 0.34s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.22s ease',
+          'opacity var(--motion-surface-duration) var(--motion-ease-soft), transform var(--motion-surface-duration) var(--motion-ease-smooth), background-color var(--motion-quick-duration) var(--motion-ease-soft), border-color var(--motion-quick-duration) var(--motion-ease-soft), box-shadow var(--motion-surface-duration) var(--motion-ease-soft)',
       }}
     >
       <Handle type="target" position={Position.Top} style={hiddenHandleStyle} />

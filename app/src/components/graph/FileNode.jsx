@@ -63,7 +63,7 @@ export default function FileNode({ data }) {
         transform:
           data.isPresentationLead ? 'translateY(0) scale(1.03)' : 'translateY(0) scale(1)',
         transition:
-          'opacity 0.24s ease, transform 0.26s ease, box-shadow 0.2s ease, border-color 0.2s ease',
+          'opacity var(--motion-surface-duration) var(--motion-ease-soft), transform var(--motion-layout-duration) var(--motion-ease-smooth), box-shadow var(--motion-surface-duration) var(--motion-ease-soft), border-color var(--motion-surface-duration) var(--motion-ease-soft)',
         position: 'relative',
         overflow: 'hidden',
       }}
@@ -130,7 +130,7 @@ export default function FileNode({ data }) {
           marginTop: hasNestedFunctions ? '6px' : '0px',
           transform: hasNestedFunctions ? 'translateY(0)' : 'translateY(-6px)',
           transition:
-            'flex 0.28s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease, margin-top 0.28s cubic-bezier(0.22, 1, 0.36, 1), transform 0.28s cubic-bezier(0.22, 1, 0.36, 1)',
+            'flex var(--motion-surface-duration) var(--motion-ease-smooth), opacity var(--motion-surface-duration) var(--motion-ease-soft), margin-top var(--motion-surface-duration) var(--motion-ease-smooth), transform var(--motion-surface-duration) var(--motion-ease-smooth)',
         }}
       >
         <div

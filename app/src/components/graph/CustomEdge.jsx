@@ -46,7 +46,7 @@ export default function CustomEdge({
       strokeLinejoin="round"
       style={{
         transition:
-          'stroke 0.2s ease, stroke-opacity 0.2s ease, stroke-width 0.2s ease',
+          'stroke var(--motion-quick-duration) var(--motion-ease-soft), stroke-opacity var(--motion-quick-duration) var(--motion-ease-soft), stroke-width var(--motion-quick-duration) var(--motion-ease-soft)',
       }}
     />
   )

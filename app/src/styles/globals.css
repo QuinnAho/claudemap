@@ -14,6 +14,11 @@
   --health-green: #22c55e;
   --health-yellow: #eab308;
   --health-red: #ef4444;
+  --motion-layout-duration: 520ms;
+  --motion-surface-duration: 420ms;
+  --motion-quick-duration: 280ms;
+  --motion-ease-smooth: cubic-bezier(0.2, 0.82, 0.2, 1);
+  --motion-ease-soft: cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 * {
@@ -59,7 +64,11 @@ body,
 }
 
 .react-flow__node {
-  transition: transform 0.3s ease, width 0.3s ease, height 0.3s ease;
+  will-change: transform, width, height;
+  transition:
+    transform var(--motion-layout-duration) var(--motion-ease-smooth),
+    width var(--motion-layout-duration) var(--motion-ease-smooth),
+    height var(--motion-layout-duration) var(--motion-ease-smooth);
 }
 
 .map-affordance {

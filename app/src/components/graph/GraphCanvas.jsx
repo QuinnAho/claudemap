@@ -41,6 +41,9 @@ const OVERVIEW_FIT_VIEW_OPTIONS = {
   padding: 0.2,
   maxZoom: 0.65,
 }
+const HOVER_ENTER_DELAY_MS = 72
+const HOVER_ENTER_SETTLE_DELAY_MS = 48
+const HOVER_EXIT_DELAY_MS = 140
 
 function areStringArraysEqual(left = [], right = []) {
   if (left.length !== right.length) {
@@ -75,6 +78,8 @@ export default function GraphCanvas() {
   const sceneInteractionLocked = presentationMode !== 'free'
   const highlightMode = presentationMode === 'free' ? 'subtle' : 'presentation'
   const leaveTimeoutRef = useRef(null)
+  const hoverFrameRef = useRef(null)
+  const pendingHoverPathRef = useRef([])
   const lastFocusKeyRef = useRef('')
   const lastGuidedFlowKeyRef = useRef('')
   const hasAppliedRuntimeViewportRef = useRef(false)
@@ -164,10 +169,19 @@ export default function GraphCanvas() {
     }
   })
 
-  const cancelHoverClear = useCallback(() => {
+  const cancelHoverClear = useCallback((clearPendingPath = true) => {
     if (leaveTimeoutRef.current !== null) {
       window.clearTimeout(leaveTimeoutRef.current)
       leaveTimeoutRef.current = null
+    }
+
+    if (hoverFrameRef.current !== null) {
+      window.cancelAnimationFrame(hoverFrameRef.current)
+      hoverFrameRef.current = null
+    }
+
+    if (clearPendingPath) {
+      pendingHoverPathRef.current = []
     }
   }, [])
 
@@ -309,19 +323,33 @@ export default function GraphCanvas() {
   }, [focusNodeById, graphReady, guidedFlowRequest])
 
   const scheduleHoverPath = useCallback(
-    (nextPathIds) => {
-      cancelHoverClear()
-      leaveTimeoutRef.current = window.setTimeout(() => {
-        if (nextPathIds.length) {
-          setHoveredPathIds(nextPathIds)
-        } else {
-          clearHoveredPath()
-        }
+    (nextPathIds, options = {}) => {
+      const { delay = HOVER_ENTER_DELAY_MS } = options
 
+      if (
+        areStringArraysEqual(nextPathIds, pendingHoverPathRef.current) ||
+        areStringArraysEqual(nextPathIds, hoveredPathIds)
+      ) {
+        return
+      }
+
+      cancelHoverClear(false)
+      pendingHoverPathRef.current = [...nextPathIds]
+      leaveTimeoutRef.current = window.setTimeout(() => {
         leaveTimeoutRef.current = null
-      }, 70)
+        hoverFrameRef.current = window.requestAnimationFrame(() => {
+          hoverFrameRef.current = null
+
+          if (pendingHoverPathRef.current.length) {
+            setHoveredPathIds(pendingHoverPathRef.current)
+          } else {
+            clearHoveredPath()
+          }
+        })
+        leaveTimeoutRef.current = null
+      }, delay)
     },
-    [cancelHoverClear, clearHoveredPath, setHoveredPathIds],
+    [cancelHoverClear, clearHoveredPath, hoveredPathIds, setHoveredPathIds],
   )
 
   const visibleNodes = nodes.filter((node) =>
@@ -599,8 +627,6 @@ export default function GraphCanvas() {
 
   const onNodeMouseEnter = useCallback(
     (_event, node) => {
-      cancelHoverClear()
-
       if (sceneInteractionLocked) {
         return
       }
@@ -613,35 +639,27 @@ export default function GraphCanvas() {
         return
       }
 
-      setHoveredPathIds(getSystemPath(node.id, nodeById))
+      scheduleHoverPath(getSystemPath(node.id, nodeById), {
+        delay: hoveredPathIds.length ? HOVER_ENTER_SETTLE_DELAY_MS : HOVER_ENTER_DELAY_MS,
+      })
     },
-    [cancelHoverClear, childCountByParentId, nodeById, sceneInteractionLocked, setHoveredPathIds, zoomLevel],
-  )
-
-  const onNodeMouseLeave = useCallback(
-    (_event, node) => {
-      if (sceneInteractionLocked) {
-        return
-      }
-
-      if (zoomLevel === ZOOM_LEVELS.OVERVIEW) {
-        return
-      }
-
-      scheduleHoverPath(getSystemPath(node, nodeById, false))
-    },
-    [nodeById, sceneInteractionLocked, scheduleHoverPath, zoomLevel],
+    [
+      childCountByParentId,
+      hoveredPathIds.length,
+      nodeById,
+      sceneInteractionLocked,
+      scheduleHoverPath,
+      zoomLevel,
+    ],
   )
 
   const onPaneMouseMove = useCallback(
     (event) => {
-      cancelHoverClear()
-
       if (sceneInteractionLocked) {
         return
       }
 
-      if (!hoveredPathIds.length) {
+      if (!hoveredPathIds.length && !pendingHoverPathRef.current.length) {
         return
       }
 
@@ -649,10 +667,14 @@ export default function GraphCanvas() {
         event.target instanceof Element && !!event.target.closest('.react-flow__node')
 
       if (!isOverNode) {
-        clearHoveredPath()
+        scheduleHoverPath([], { delay: HOVER_EXIT_DELAY_MS })
       }
     },
-    [cancelHoverClear, clearHoveredPath, hoveredPathIds.length, sceneInteractionLocked],
+    [
+      hoveredPathIds.length,
+      sceneInteractionLocked,
+      scheduleHoverPath,
+    ],
   )
 
   const onPaneClick = useCallback(() => {
@@ -661,6 +683,7 @@ export default function GraphCanvas() {
     }
 
     cancelHoverClear()
+    pendingHoverPathRef.current = []
     clearHoveredPath()
     clearRuntimeEmphasis()
     setSelectedNode(null)
@@ -689,7 +712,6 @@ export default function GraphCanvas() {
             onViewportChange={onViewportChange}
             onNodeClick={onNodeClick}
             onNodeMouseEnter={onNodeMouseEnter}
-            onNodeMouseLeave={onNodeMouseLeave}
             onPaneMouseMove={onPaneMouseMove}
             onPaneClick={onPaneClick}
             proOptions={{ hideAttribution: true }}

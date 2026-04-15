@@ -6,8 +6,8 @@ import {
   SYSTEM_NODE_BODY_PADDING_BOTTOM,
   SYSTEM_NODE_BODY_PADDING_TOP,
   SYSTEM_NODE_BODY_PADDING_X,
-  SYSTEM_NODE_HEADER_HEIGHT,
   SYSTEM_NODE_LAYOUT_HEIGHT,
+  SYSTEM_NODE_HEADER_HEIGHT,
   getSystemNodeWidth,
 } from '../components/graph/systemNodeSizing'
 
@@ -119,6 +119,32 @@ function layoutChildren(children, getChildSize) {
     : layoutStackedChildren(children, getChildSize)
 }
 
+function normalizeCollapsedSystemSiblingWidths(children, childSizeById, sizeById) {
+  const collapsedSystemWidths = children
+    .filter((child) => child.type === 'system')
+    .map((child) => ({
+      id: child.id,
+      size: childSizeById.get(child.id),
+    }))
+    .filter(({ size }) => size && size.height === SYSTEM_NODE_LAYOUT_HEIGHT)
+
+  if (collapsedSystemWidths.length < 2) {
+    return
+  }
+
+  const normalizedWidth = Math.max(...collapsedSystemWidths.map(({ size }) => size.width))
+
+  collapsedSystemWidths.forEach(({ id, size }) => {
+    const normalizedSize = {
+      ...size,
+      width: normalizedWidth,
+    }
+
+    childSizeById.set(id, normalizedSize)
+    sizeById.set(id, normalizedSize)
+  })
+}
+
 export function buildSystemTreeLayout(nodes, expandedSystemIds, leafSizeById = new Map()) {
   const nodeById = new Map(nodes.map((node) => [node.id, node]))
   const childrenByParentId = new Map()
@@ -164,6 +190,7 @@ export function buildSystemTreeLayout(nodes, expandedSystemIds, leafSizeById = n
         child.type === 'system' ? measureSystem(child.id) : getLeafNodeSize(child, leafSizeById),
       )
     })
+    normalizeCollapsedSystemSiblingWidths(directChildren, childSizeById, sizeById)
 
     const { positions, maxRight, maxBottom } = layoutChildren(
       directChildren,
