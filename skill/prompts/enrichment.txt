@@ -1,96 +1,103 @@
-You are analyzing a codebase to produce a visual architecture graph.
-You will receive a JSON object containing a flat files array with paths, line counts, imports, exports, and language metadata.
+You will receive a JSON snapshot of a codebase with a flat `files` array. Each file has `path`, `relativePath`, `directory`, `name`, `lineCount`, `imports`, `exports`, and `language`.
 
-Your job is to:
+Return a single JSON object with `nodes` and `edges`. No prose, no markdown, no code fences, no commentary before or after. Your entire response must parse as valid JSON.
 
-1. Group files into conceptual systems. A system is a logical unit such as Authentication, Database, Routing, API Layer, UI Components, or Build Tooling. Group by what the code does, not by folder names. Each file must belong to exactly one system.
-2. Keep systems intuitive for the size of the repository:
-   - 1-20 files: prefer 3-6 systems
-   - 21-80 files: prefer 5-10 systems
-   - 81-250 files: prefer 8-16 systems
-   - 250+ files: keep the top-level map legible and split by bounded responsibility, not folder count
-   If a system would be too large, split it into smaller conceptual systems.
-3. Optimize for human intuition:
-   - choose system names a new engineer would naturally say out loud
-   - make entrypoints, domain logic, shared infrastructure, and external boundaries easy to spot
-   - avoid labels like Misc, Helpers, Utils, Lib, or Src unless that is truly the clearest boundary
-   - prefer meaningful conceptual groupings over folder mirroring
-4. Build a detailed graph, not just a top-level outline:
-   - include every code file as a file node
-   - include function nodes for meaningful exported entrypoints, handlers, controllers, commands, and public APIs
-   - when a repository has an obvious multi-level structure, nested systems are allowed if they improve comprehension
-   - the final graph should support zooming from systems to files to major exported functions
-5. Assign each system one icon from this list only:
-   shield, database, globe, gear, puzzle, route, lock, envelope, clock, layers, code, file, server, zap
-6. Write a short summary for each system under 60 characters.
-7. Assess system health:
-   - green for well-structured systems
-   - yellow for moderate concerns such as high coupling, files over 300 lines, or too many imports
-   - red for serious concerns such as god modules over 500 lines, circular dependencies, or a single file doing too many things
-   Include healthReason for yellow and red. Use null for green.
-8. Create system edges when files in one system import files from another system. Deduplicate edges. Use only these edge types:
-   imports, calls, extends, uses
-9. Include every file as a child node of exactly one system.
-10. For files over 50 lines, include up to 5 exported functions or classes as child nodes of the file. Only use exports present in the input. Do not invent internal functions.
-11. Use deterministic IDs derived from file paths and labels. Do not generate random IDs.
-12. Preserve every incoming file exactly once in the output.
-13. Favor map readability over folder fidelity:
-   - highlight the main runtime path and the most important cross-system flows
-   - preserve stable system boundaries when revising an existing map
-   - do not explode the graph with tiny low-value systems just because folders exist
-   - if a file could fit in multiple places, assign it to the group that best matches how a human would explain the architecture
-14. Prefer a graph that feels like a useful architecture whiteboard:
-   - top level should explain the system at a glance
-   - mid level should make important files legible
-   - deepest level should expose the key exported behaviors
+# Output schema
 
-Return only valid JSON matching this exact schema:
-
+```
 {
   "nodes": [
     {
-      "id": "system-id",
-      "label": "System Name",
-      "type": "system",
-      "icon": "shield",
-      "parentId": null,
-      "health": "green",
-      "healthReason": null,
-      "summary": "What this system does",
-      "lineCount": 450,
-      "filePath": "src/auth/"
-    },
-    {
-      "id": "file-id",
-      "label": "auth.js",
-      "type": "file",
-      "icon": "file",
-      "parentId": "system-id",
-      "health": "green",
-      "healthReason": null,
-      "summary": "JWT validation and session management",
-      "lineCount": 247,
-      "filePath": "src/middleware/auth.js"
-    },
-    {
-      "id": "function-id",
-      "label": "authenticateToken",
-      "type": "function",
-      "icon": "code",
-      "parentId": "file-id",
-      "health": "green",
-      "healthReason": null,
-      "summary": "Validates JWT tokens from request headers",
-      "lineCount": 35,
-      "filePath": "src/middleware/auth.js"
+      "id": "string",
+      "label": "string",
+      "type": "system" | "file" | "function",
+      "icon": "shield|database|globe|gear|puzzle|route|lock|envelope|clock|layers|code|file|server|zap",
+      "parentId": "string | null",
+      "filePath": "string",
+      "lineCount": number,
+      "health": "green" | "yellow" | "red",
+      "healthReason": "string (only when health is yellow or red)",
+      "summary": "string (optional, see budgets below)"
     }
   ],
   "edges": [
-    {
-      "id": "e-system1-system2",
-      "source": "system1-id",
-      "target": "system2-id",
-      "type": "imports"
-    }
+    { "id": "string", "source": "string", "target": "string", "type": "imports" }
   ]
 }
+```
+
+# Required fields per node type
+
+Every node must have: `id`, `label`, `type`, `parentId`, `filePath`, `lineCount`, `health`.
+
+- **system**: `parentId` is `null` for top-level, or another system's id for nested. `filePath` is the primary directory (e.g. `"src/auth/"`) or `""` if none applies. `lineCount` is the sum of descendant file lines.
+- **file**: `parentId` is a system id. `filePath` is the snapshot's `relativePath`. `lineCount` is the snapshot's `lineCount`.
+- **function**: `parentId` is a file id. `filePath` matches the parent file. `lineCount` may be estimated but must be > 0. Icon is always `"code"`.
+
+# Token-efficiency rules
+
+These are not suggestions. Violating them wastes tokens.
+
+1. **Omit `healthReason` when health is `green`.** Only emit it for `yellow` or `red`.
+2. **Omit `summary` when it would be uninformative** or when the label already tells the full story (`button.jsx`, `index.ts`, `types.ts`).
+3. **Summary length caps** (hard limits, not guidelines):
+   - system summary: ≤ 60 chars
+   - file summary: ≤ 50 chars
+   - function summary: ≤ 40 chars
+4. **`healthReason` cap:** ≤ 60 chars.
+5. **Edge `type` is always `"imports"`.** Do not emit `calls`, `uses`, or `extends`.
+6. **Deduplicate edges** by `(source, target)`. Never emit self-loops or duplicate pairs.
+7. **Do not emit edges that live inside a single nested subtree.** Only emit edges where the endpoints cross top-level system boundaries.
+8. **Do not emit fields outside the schema.** No extra metadata, no comments, no thinking traces.
+
+# Nesting is mandatory above 80 files
+
+- 1–20 files: 3–5 top-level systems, nesting optional.
+- 21–80 files: 5–8 top-level systems, nesting encouraged where a domain has sub-responsibilities.
+- 81–250 files: 6–10 top-level systems. **At least one domain must use nested subsystems.**
+- 250+ files: 8–12 top-level systems. **Nesting is expected throughout.** A flat graph at this scale is a failure.
+
+If you catch yourself creating three siblings named `Foo API`, `Foo Store`, `Foo Jobs`, collapse them into a `Foo` parent with three nested children.
+
+# File coverage
+
+Every file in the snapshot must appear as exactly one `file` node under exactly one system (or nested subsystem). No file may be omitted, duplicated, or assigned to multiple parents.
+
+# Function nodes — opt-in, budgeted
+
+Function nodes are optional. Emit them only as navigation anchors. Use these rules:
+
+- **Eligible**: route/HTTP handlers, CLI subcommands, job/worker entrypoints, GraphQL resolvers, public service methods, store/reducer actions.
+- **Not eligible**: private helpers, types, constants, barrel re-exports, trivial getters, test utilities.
+- **Skip files under 50 lines entirely.** No function nodes.
+- **Max 3 function nodes per file.** Pick the most navigationally useful exports from the snapshot's `exports` array.
+- **Global budget**: total function node count ≤ 1.5× system count for repos with 250+ files, ≤ 2× system count otherwise.
+
+Err on the side of fewer function nodes. A function node that doesn't help navigation is pure token cost for no benefit.
+
+# IDs
+
+Derive deterministically from labels and paths. Never random. Suggested patterns:
+
+- system: `system-<slug>` (e.g. `system-auth`, `system-billing-refunds`)
+- file: `file-<slug-of-relativePath>`
+- function: `function-<slug-of-relativePath>-<slug-of-exportName>`
+- edge: `edge-<sourceId>-<targetId>`
+
+Slug = lowercase, alphanumeric, dashes for separators, no leading/trailing dashes.
+
+# Icons
+
+One per system, chosen from: `shield`, `database`, `globe`, `gear`, `puzzle`, `route`, `lock`, `envelope`, `clock`, `layers`, `code`, `file`, `server`, `zap`. Files always use `file`. Functions always use `code`. Do not burn reasoning cycles on icon choice — pick the closest match and move on.
+
+# Health grading
+
+- `green`: cohesive system, normal file sizes (< 300 lines), normal imports. Omit `healthReason`.
+- `yellow`: 300–500 line files, > 12 imports on a file, weak cohesion, or a system containing > 15 files without nesting. Include `healthReason`.
+- `red`: 500+ line files, circular dependencies, or a single file spanning handler + service + persistence. Include `healthReason`.
+
+Use data from the snapshot. Do not invent problems.
+
+# Output format
+
+Return a single JSON object. No wrapper text. No ```json fences. No "Here is the graph:" preamble. If the first character is not `{` or the last character is not `}`, the output is wrong.
