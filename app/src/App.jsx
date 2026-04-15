@@ -18,7 +18,7 @@ function GraphBootFallback() {
         letterSpacing: '0.01em',
       }}
     >
-      Loading graph runtime...
+      Loading...
     </div>
   )
 }

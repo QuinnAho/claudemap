@@ -55,7 +55,6 @@ export default function GraphCanvas() {
   const nodes = useGraphStore((state) => state.nodes)
   const edges = useGraphStore((state) => state.edges)
   const mapsManifest = useGraphStore((state) => state.mapsManifest)
-  const activeMap = useGraphStore((state) => state.activeMap)
   const healthOverlay = useGraphStore((state) => state.healthOverlay)
   const meta = useGraphStore((state) => state.meta)
   const selectedNode = useGraphStore((state) => state.selectedNode)
@@ -152,12 +151,6 @@ export default function GraphCanvas() {
 
   const showGraph = graphReady || hasMountedGraphRef.current
   const isGraphTransitioning = !graphLoaded && hasMountedGraphRef.current
-  const loadingTitle = isGraphTransitioning
-    ? `Switching to ${activeMap?.label || 'selected map'}...`
-    : 'Loading graph...'
-  const loadingSubtitle = isGraphTransitioning
-    ? 'Reframing the scene for the newly active map.'
-    : 'Building the current graph view.'
 
   nodes.forEach((node) => {
     if (node.parentId) {
@@ -348,9 +341,36 @@ export default function GraphCanvas() {
     !focusRequest?.nodeId &&
     !(Array.isArray(guidedFlowRequest?.steps) && guidedFlowRequest.steps.length)
   const selectedSystemId = getTopLevelSystemId(activeSelectedNode, nodeById)
-  const visibleEdges = edges.filter(
-    (edge) => visibleNodeIds.has(edge.source) && visibleNodeIds.has(edge.target),
-  )
+  // Edges only connect top-level systems. Any edge whose endpoint sits on a
+  // nested subsystem (or a descendant of one) is rewritten to that endpoint's
+  // top-level system ancestor. Edges that collapse to a self-loop after
+  // rewriting are dropped — intra-subsystem relationships belong in sub-maps,
+  // not the overview.
+  const rewrittenEdgesByKey = new Map()
+  edges.forEach((edge) => {
+    const sourceRoot = getTopLevelSystemId(nodeById.get(edge.source), nodeById)
+    const targetRoot = getTopLevelSystemId(nodeById.get(edge.target), nodeById)
+
+    if (!sourceRoot || !targetRoot || sourceRoot === targetRoot) {
+      return
+    }
+
+    if (!visibleNodeIds.has(sourceRoot) || !visibleNodeIds.has(targetRoot)) {
+      return
+    }
+
+    const key = `${sourceRoot}->${targetRoot}`
+    if (rewrittenEdgesByKey.has(key)) {
+      return
+    }
+
+    rewrittenEdgesByKey.set(key, {
+      ...edge,
+      source: sourceRoot,
+      target: targetRoot,
+    })
+  })
+  const visibleEdges = Array.from(rewrittenEdgesByKey.values())
   const connectedSystemIds = new Set()
 
   const getAncestorLabels = useCallback(
@@ -690,61 +710,14 @@ export default function GraphCanvas() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                background:
-                  'radial-gradient(circle at 50% 40%, rgba(18, 18, 18, 0.72) 0%, rgba(10, 10, 10, 0.88) 68%, rgba(10, 10, 10, 0.94) 100%)',
-                backdropFilter: 'blur(3px)',
+                color: 'var(--text-secondary)',
+                fontSize: '13px',
+                letterSpacing: '0.01em',
                 zIndex: 18,
                 pointerEvents: 'auto',
               }}
             >
-              <div
-                style={{
-                  minWidth: '280px',
-                  maxWidth: '360px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: '12px',
-                  padding: '18px 20px',
-                  borderRadius: '14px',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  background:
-                    'linear-gradient(180deg, rgba(24, 24, 24, 0.94) 0%, rgba(15, 15, 15, 0.96) 100%)',
-                  boxShadow: '0 18px 42px rgba(0, 0, 0, 0.34)',
-                  textAlign: 'center',
-                }}
-              >
-                <div
-                  style={{
-                    width: '12px',
-                    height: '12px',
-                    borderRadius: '999px',
-                    backgroundColor: 'var(--accent)',
-                    boxShadow: '0 0 0 8px rgba(223, 113, 76, 0.08)',
-                    animation: 'healthPulse 1.2s ease-in-out infinite',
-                  }}
-                />
-                <div
-                  style={{
-                    fontSize: '15px',
-                    fontWeight: 600,
-                    color: '#fff4ef',
-                    letterSpacing: '-0.01em',
-                  }}
-                >
-                  {loadingTitle}
-                </div>
-                <div
-                  style={{
-                    fontSize: '12px',
-                    lineHeight: 1.5,
-                    color: 'var(--text-secondary)',
-                    maxWidth: '30ch',
-                  }}
-                >
-                  {loadingSubtitle}
-                </div>
-              </div>
+              Loading...
             </div>
           ) : null}
         </>
@@ -756,50 +729,12 @@ export default function GraphCanvas() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            background:
-              'radial-gradient(circle at 50% 40%, rgba(18, 18, 18, 0.66) 0%, rgba(10, 10, 10, 0.92) 100%)',
+            color: 'var(--text-secondary)',
+            fontSize: '13px',
+            letterSpacing: '0.01em',
           }}
         >
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: '12px',
-              textAlign: 'center',
-            }}
-          >
-            <div
-              style={{
-                width: '12px',
-                height: '12px',
-                borderRadius: '999px',
-                backgroundColor: 'var(--accent)',
-                boxShadow: '0 0 0 8px rgba(223, 113, 76, 0.08)',
-                animation: 'healthPulse 1.2s ease-in-out infinite',
-              }}
-            />
-            <div
-              style={{
-                fontSize: '15px',
-                fontWeight: 600,
-                color: '#fff4ef',
-                letterSpacing: '-0.01em',
-              }}
-            >
-              {loadingTitle}
-            </div>
-            <div
-              style={{
-                color: 'var(--text-secondary)',
-                fontSize: '12px',
-                lineHeight: 1.5,
-                maxWidth: '28ch',
-              }}
-            >
-              {loadingSubtitle}
-            </div>
-          </div>
+          Loading...
         </div>
       )}
     </div>
