@@ -31,6 +31,7 @@ export default function TopBar() {
             fontWeight: 600,
             color: 'var(--accent)',
             letterSpacing: '-0.01em',
+            fontFamily: "'SF Mono', 'Fira Code', 'Consolas', monospace",
           }}
         >
           ClaudeMap

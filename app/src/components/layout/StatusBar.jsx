@@ -4,7 +4,6 @@ import { useGraphStore } from '../../store/graphStore'
 
 export default function StatusBar() {
   const branch = useGraphStore((state) => state.meta.branch)
-  const repoName = useGraphStore((state) => state.meta.repoName)
   const lastSyncedAt = useGraphStore((state) => state.meta.lastSyncedAt)
   const presentationMode = useGraphStore((state) => state.presentationMode)
   const [currentTime, setCurrentTime] = useState(() => Date.now())
@@ -81,7 +80,7 @@ export default function StatusBar() {
       </div>
 
       <div style={creditStyle}>
-        <span>{repoName}</span>
+        <span>A Project by Quinn Aho</span>
       </div>
     </div>
   )
