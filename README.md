@@ -86,7 +86,23 @@ If you specifically need the raw tarball for manual testing in another repo:
 
 ```bash
 npm run pack:test
-npm exec --package="<absolute-path-to-artifacts/npm/quinnaho-claudemap-<version>.tgz>" -- claudemap install
+npm exec --cache artifacts/.npm-cache --package="<absolute-path-to-artifacts/npm/quinnaho-claudemap-<version>.tgz>" -- claudemap install
+```
+
+Or use the wrapper command and point it at a real target repo:
+
+```bash
+npm run test:project -- <absolute-path-to-other-repo>
+```
+
+That command builds or reuses the latest local tarball, prints the exact `npm exec`
+command it used, and installs the packaged ClaudeMap into the target repo.
+
+When you want to wipe ClaudeMap back out of that repo and remove the generated
+map caches too:
+
+```bash
+npm run test:project:clean -- <absolute-path-to-other-repo>
 ```
 
 > ClaudeMap started as a hackathon project and is now open source. If you want to use it, improve it, or help shape where it goes: jump in.

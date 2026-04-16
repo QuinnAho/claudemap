@@ -32,6 +32,12 @@ Highlights:
   explicitly asked for the enriched one
 - added a local `npm run pack:test` flow for building an installable tarball and
   smoke-testing the package in other repositories before publishing
+- added `npm run test:project -- <repo>` as a first-class wrapper around the
+  local tarball install path so packaged ClaudeMap can be tested in arbitrary
+  repos without hand-writing the `npm exec --package=...` command
+- added `claudemap clean` plus `npm run test:project:clean -- <repo>` so test
+  repos can be reset by removing ClaudeMap-managed `.claude` files, generated
+  root caches/manifests, and stale refresh locks
 
 ## 0.1.0 - 2026-04-12
 

@@ -11,6 +11,7 @@ function printUsage() {
   console.log('ClaudeMap CLI')
   console.log('  claudemap [install] [target-repo] [--skip-install] [--dry-run]')
   console.log('  claudemap update [target-repo] [--skip-install] [--dry-run]')
+  console.log('  claudemap clean [target-repo] [--dry-run]')
 }
 
 function hasHelpFlag(argv) {
@@ -19,7 +20,7 @@ function hasHelpFlag(argv) {
 
 function hasPositionalTarget(argv) {
   return argv.some((argument, index) => {
-    if (index === 0 && ['install', 'update'].includes(argument)) {
+    if (index === 0 && ['install', 'update', 'clean'].includes(argument)) {
       return false
     }
 
@@ -35,6 +36,9 @@ function normalizeArgs(argv) {
     nextArgs.shift()
   } else if (nextArgs[0] === 'update') {
     forwardedArgs.push('--update')
+    nextArgs.shift()
+  } else if (nextArgs[0] === 'clean') {
+    forwardedArgs.push('--clean')
     nextArgs.shift()
   }
 

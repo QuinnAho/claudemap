@@ -12,11 +12,33 @@ const MANIFEST_NAME = 'claudemap-artifact.json'
 const CLAUDE_ROOT = '.claude'
 const INSTALL_RECORD_NAME = 'claudemap-install.json'
 const RUNTIME_ROOT = path.join(CLAUDE_ROOT, 'skills', 'claudemap-runtime')
+const DEFAULT_MANAGED_PATHS = [
+  path.join(CLAUDE_ROOT, 'skills', 'claudemap-runtime'),
+  path.join(CLAUDE_ROOT, 'agents', 'claudemap-architect.md'),
+  path.join(CLAUDE_ROOT, 'commands', 'setup-claudemap.md'),
+  path.join(CLAUDE_ROOT, 'commands', 'open-claudemap.md'),
+  path.join(CLAUDE_ROOT, 'commands', 'create-map.md'),
+  path.join(CLAUDE_ROOT, 'commands', 'refresh.md'),
+  path.join(CLAUDE_ROOT, 'commands', 'show.md'),
+  path.join(CLAUDE_ROOT, 'commands', 'explain.md'),
+  path.join(CLAUDE_ROOT, INSTALL_RECORD_NAME),
+]
+const PROJECT_GENERATED_FILE_PATTERNS = [
+  /^claudemap-cache(?:\.[^/\\]+)?\.json$/,
+  /^claudemap-maps\.json$/,
+  /^\.claudemap-refresh\.lock$/,
+]
+const EMPTY_DIRECTORY_CLEANUP_ORDER = [
+  path.join(CLAUDE_ROOT, 'commands'),
+  path.join(CLAUDE_ROOT, 'agents'),
+  path.join(CLAUDE_ROOT, 'skills'),
+  CLAUDE_ROOT,
+]
 
 function printUsage() {
   console.log('ClaudeMap installer')
   console.log(
-    '  node scripts/install-claudemap.js <target-repo> [--update] [--artifact <dir>] [--skip-package] [--skip-install] [--dry-run]',
+    '  node scripts/install-claudemap.js <target-repo> [--update|--clean] [--artifact <dir>] [--skip-package] [--skip-install] [--dry-run]',
   )
 }
 
@@ -40,6 +62,13 @@ function parseArgs(argv) {
 
     if (argument === '--update') {
       options.mode = 'update'
+      continue
+    }
+
+    if (argument === '--clean' || argument === '--uninstall') {
+      options.mode = 'clean'
+      options.buildArtifact = false
+      options.installDependencies = false
       continue
     }
 
@@ -131,6 +160,10 @@ function runCommand(command, args, workingDirectory, options = {}) {
 }
 
 function buildArtifactIfNeeded(options) {
+  if (options.mode === 'clean') {
+    return
+  }
+
   if (!options.buildArtifact || options.dryRun) {
     return
   }
@@ -271,6 +304,85 @@ function installDependencies(targetRoot, dryRun) {
   return runtimeInstallRoot
 }
 
+function normalizeManagedPathList(managedPaths) {
+  return (Array.isArray(managedPaths) ? managedPaths : DEFAULT_MANAGED_PATHS).map((managedPath) =>
+    String(managedPath || '').replace(/\\/g, '/'),
+  )
+}
+
+function loadArtifactManifestIfPresent(artifactRoot) {
+  if (!artifactRoot) {
+    return null
+  }
+
+  const manifestPath = path.join(artifactRoot, MANIFEST_NAME)
+
+  if (!fs.existsSync(manifestPath)) {
+    return null
+  }
+
+  return readJsonFile(manifestPath)
+}
+
+function collectGeneratedProjectPaths(targetRoot) {
+  const generatedPaths = new Set()
+  const manifestPath = path.join(targetRoot, 'claudemap-maps.json')
+
+  if (fs.existsSync(manifestPath)) {
+    generatedPaths.add('claudemap-maps.json')
+
+    try {
+      const manifest = readJsonFile(manifestPath)
+
+      if (Array.isArray(manifest?.maps)) {
+        for (const mapEntry of manifest.maps) {
+          if (typeof mapEntry?.cachePath === 'string' && mapEntry.cachePath.trim()) {
+            generatedPaths.add(mapEntry.cachePath.replace(/\\/g, '/'))
+          }
+        }
+      }
+    } catch {}
+  }
+
+  for (const entryName of fs.readdirSync(targetRoot)) {
+    if (PROJECT_GENERATED_FILE_PATTERNS.some((pattern) => pattern.test(entryName))) {
+      generatedPaths.add(entryName)
+    }
+  }
+
+  return [...generatedPaths]
+}
+
+function removeEmptyDirectories(targetRoot, dryRun) {
+  const removedPaths = []
+
+  for (const relativeDirectoryPath of EMPTY_DIRECTORY_CLEANUP_ORDER) {
+    const absoluteDirectoryPath = resolveManagedPath(targetRoot, relativeDirectoryPath)
+
+    if (!fs.existsSync(absoluteDirectoryPath)) {
+      continue
+    }
+
+    const stats = fs.statSync(absoluteDirectoryPath)
+
+    if (!stats.isDirectory()) {
+      continue
+    }
+
+    if (fs.readdirSync(absoluteDirectoryPath).length > 0) {
+      continue
+    }
+
+    removedPaths.push(relativeDirectoryPath.replace(/\\/g, '/'))
+
+    if (!dryRun) {
+      fs.rmdirSync(absoluteDirectoryPath)
+    }
+  }
+
+  return removedPaths
+}
+
 function installClaudeMap(options) {
   ensureTargetRepository(options.targetRoot)
   buildArtifactIfNeeded(options)
@@ -325,6 +437,51 @@ function installClaudeMap(options) {
   }
 }
 
+function cleanClaudeMap(options) {
+  ensureTargetRepository(options.targetRoot)
+
+  const previousInstallRecord = readInstallRecord(options.targetRoot)
+  const artifactManifest = loadArtifactManifestIfPresent(options.artifactRoot)
+  const managedPaths = normalizeManagedPathList(
+    previousInstallRecord?.managedPaths || artifactManifest?.managedPaths || DEFAULT_MANAGED_PATHS,
+  )
+  const generatedProjectPaths = collectGeneratedProjectPaths(options.targetRoot)
+  const removedManagedPaths = removeManagedPaths(
+    options.targetRoot,
+    managedPaths,
+    options.dryRun,
+  )
+  const removedGeneratedPaths = removeManagedPaths(
+    options.targetRoot,
+    generatedProjectPaths,
+    options.dryRun,
+  )
+  const removedEmptyDirectories = removeEmptyDirectories(options.targetRoot, options.dryRun)
+  const removedPaths = [
+    ...removedManagedPaths,
+    ...removedGeneratedPaths,
+    ...removedEmptyDirectories,
+  ]
+
+  console.log(`ClaudeMap cleaned from ${options.targetRoot}`)
+  if (removedPaths.length === 0) {
+    console.log('No ClaudeMap-managed files were found')
+  } else {
+    console.log(`Removed paths: ${removedPaths.join(', ')}`)
+  }
+
+  if (options.dryRun) {
+    console.log('Dry run only: no files were removed')
+  }
+
+  return {
+    removedManagedPaths,
+    removedGeneratedPaths,
+    removedEmptyDirectories,
+    removedPaths,
+  }
+}
+
 function main(argv = process.argv.slice(2)) {
   const options = parseArgs(argv)
 
@@ -333,10 +490,16 @@ function main(argv = process.argv.slice(2)) {
     return
   }
 
+  if (options.mode === 'clean') {
+    cleanClaudeMap(options)
+    return
+  }
+
   installClaudeMap(options)
 }
 
 module.exports = {
+  cleanClaudeMap,
   installClaudeMap,
 }
 

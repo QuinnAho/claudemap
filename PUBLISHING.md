@@ -53,8 +53,17 @@ This builds the local ClaudeMap artifact, installs it into a throwaway fixture r
 If you want an additional manual install in a separate target repository:
 
 ```bash
-npm run pack:test
-npm exec --package="<absolute-path-to-artifacts/npm/quinnaho-claudemap-<version>.tgz>" -- claudemap install
+npm run test:project -- <absolute-path-to-other-repo>
+```
+
+That wrapper builds or reuses the latest local tarball, prints the exact raw
+`npm exec --package=...` command, and installs the packaged CLI into the target
+repo.
+
+To reset that target repo back to a clean slate afterward:
+
+```bash
+npm run test:project:clean -- <absolute-path-to-other-repo>
 ```
 
 5. Verify the publish bundle.
@@ -89,6 +98,10 @@ https://www.npmjs.com/package/@quinnaho/claudemap
 - `prepack` already stages the bundled `.claude` artifact automatically.
 - `npm test` is the fastest repo-local end-to-end package validation path.
 - `npm run pack:test` creates a real tarball in `artifacts/npm/`.
+- `npm run test:project -- <path>` is the fastest way to try that tarball in a
+  different repository without hand-writing the `npm exec --package=...` call.
+- `npm run test:project:clean -- <path>` removes the ClaudeMap install plus the
+  generated repo-root cache and manifest files from that target project.
 - The published tarball currently contains only the installer CLI and bundled
   runtime artifact, not the demo packages.
 - The publish command does not run the app at publish time; it only packages
