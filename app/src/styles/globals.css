@@ -1,25 +1,5 @@
 @import "tailwindcss";
-
-:root {
-  --bg-canvas: #0a0a0a;
-  --bg-panel: #111111;
-  --bg-card: #1a1a1a;
-  --bg-topbar: #0f0f0f;
-  --border: rgba(255, 255, 255, 0.07);
-  --border-light: rgba(255, 255, 255, 0.1);
-  --text-primary: #e5e5e5;
-  --text-secondary: #737373;
-  --text-muted: #525252;
-  --accent: #df714c;
-  --health-green: #22c55e;
-  --health-yellow: #eab308;
-  --health-red: #ef4444;
-  --motion-layout-duration: 520ms;
-  --motion-surface-duration: 420ms;
-  --motion-quick-duration: 280ms;
-  --motion-ease-smooth: cubic-bezier(0.2, 0.82, 0.2, 1);
-  --motion-ease-soft: cubic-bezier(0.25, 0.1, 0.25, 1);
-}
+@import "./tokens.generated.css";
 
 * {
   margin: 0;

@@ -10,6 +10,7 @@ import {
   writeManifest,
 } from '../skill/lib/map-manifest.js';
 import { getDefaultProjectRoot } from '../skill/lib/runtime-paths.js';
+import { claudemapTokensPlugin } from './vite/tokens-plugin.js';
 
 const buildConfigPath = fileURLToPath(new URL('./.claudemap-build.json', import.meta.url));
 const buildOverrides = fs.existsSync(buildConfigPath)
@@ -73,7 +74,7 @@ function claudemapApiPlugin() {
 
 export default defineConfig({
   base: buildOverrides?.base || '/',
-  plugins: [claudemapApiPlugin(), react(), tailwindcss()],
+  plugins: [claudemapTokensPlugin(), claudemapApiPlugin(), react(), tailwindcss()],
   build: {
     outDir: buildOverrides?.outDir || 'dist',
     emptyOutDir: Boolean(buildOverrides?.emptyOutDir),
