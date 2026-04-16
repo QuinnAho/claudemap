@@ -16,6 +16,14 @@ All powered by the same AI you vibecode with.
 
 ## See It In Action
 
+## What's Coming in v0.2.0
+
+ClaudeMap is under active development. Here's what's landing next:
+
+- **Sub-map support** — break larger codebases into focused sub-maps you can create and explore independently
+- **Codex support** — use ClaudeMap with OpenAI Codex, not just Claude Code
+- **Stable map generation** — consistent layouts across rebuilds and refreshes
+
 Click Me ↓
 [![ClaudeMap Demo](resources/img/thumbnail.png)](https://www.loom.com/share/6a2ff0948ae64ae6994fb3817cb3607e)
 
