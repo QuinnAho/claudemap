@@ -183,6 +183,11 @@ function parseCommandOptions(args) {
       continue
     }
 
+    if (argument === '--keep-mode') {
+      options.keepMode = true
+      continue
+    }
+
     if (['--title', '--step', '--explain', '--mode', '--zoom'].includes(argument)) {
       const nextValue = args[index + 1]
 
@@ -223,6 +228,12 @@ function buildGuidedSteps(graph, node) {
   return [node.parentId, node.id].filter(Boolean)
 }
 
+async function revertToFreeMode(client) {
+  // Preserve the scene the command just painted (highlights, focus, guided flow)
+  // while dropping guided/locked mode so the user can interact with the graph again.
+  await setPresentationMode(client, 'free', { resetScene: false })
+}
+
 function readGraphOrExit(graphPath) {
   const graph = readRuntimeGraph(graphPath)
 
@@ -236,11 +247,11 @@ function readGraphOrExit(graphPath) {
 function printUsage() {
   console.log('ClaudeMap show commands:')
   console.log(
-    '  node skill/commands/show.js highlight <query[, query2 ...]> [--zoom <value>] [--explain "..."]',
+    '  node skill/commands/show.js highlight <query[, query2 ...]> [--zoom <value>] [--explain "..."] [--keep-mode]',
   )
   console.log('  node skill/commands/show.js clear-highlight')
   console.log(
-    '  node skill/commands/show.js present <query[, query2 ...]> [--title "..."] [--step "..."] [--explain "..."]',
+    '  node skill/commands/show.js present <query[, query2 ...]> [--title "..."] [--step "..."] [--explain "..."] [--keep-mode]',
   )
   console.log('  node skill/commands/show.js navigate <query> [--zoom <value>]')
   console.log('  node skill/commands/show.js health <on|off>')
@@ -376,6 +387,9 @@ async function main() {
         stepLabel: options.step || null,
         explanation: options.explain || null,
       })
+      if (!options.keepMode) {
+        await revertToFreeMode(client)
+      }
       console.log(`[${activeMap.mapId}] Presented ${resolvedNodes.map((node) => node.label).join(', ')}`)
       await closeMcpClient(client)
       return
@@ -415,6 +429,9 @@ async function main() {
       stepLabel: options.step || null,
       explanation: options.explain || null,
     })
+    if (!options.keepMode) {
+      await revertToFreeMode(client)
+    }
     console.log(`[${activeMap.mapId}] Presented ${resolvedNodes.map((node) => node.label).join(', ')}`)
     await closeMcpClient(client)
     return

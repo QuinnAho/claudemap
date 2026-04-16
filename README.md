@@ -2,7 +2,7 @@ Welcome to...
 
 ![ClaudeMap branding](resources/img/ClaudeMapBranding.png)
 
-![npm weekly downloads](https://img.shields.io/npm/dw/%40quinnaho%2Fclaudemap) ![GitHub Repo stars](https://img.shields.io/github/stars/QuinnAho/claudemap)
+[![Version v0.2.0](https://img.shields.io/badge/version-v0.2.0-blue)](CHANGELOG.md) [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE) ![npm weekly downloads](https://img.shields.io/npm/dw/%40quinnaho%2Fclaudemap) ![GitHub Repo stars](https://img.shields.io/github/stars/QuinnAho/claudemap)
 
 **Google Maps for vibecoders.**
 

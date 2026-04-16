@@ -3,7 +3,7 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import { resolveMapPaths } from '../lib/active-map.js'
 import { readCache, writeCache } from '../lib/cache.js'
-import { enrichGraph } from '../lib/enrichment.js'
+import { enrichScopedGraph } from '../lib/enrichment.js'
 import {
   DEFAULT_MAP_ID,
   createScopeDescriptor,
@@ -18,6 +18,7 @@ import { closeMcpClient, connectMcpClient, readRuntimeGraph, renderGraph } from 
 import {
   allocateMapId,
   buildScopedGraphFromRoot,
+  buildScopedSnapshot,
   createScopedMapFileSet,
   slugifyMapId,
 } from '../lib/scoped-map.js'
@@ -48,6 +49,7 @@ function resolveProjectRoot(argv) {
     '--file-path',
     '--map-id',
     '--enrichment-file',
+    '--instructions',
   ])
   const projectRootArg = argv.find((argument, index) => {
     if (argument.startsWith('--')) {
@@ -65,7 +67,7 @@ function resolveProjectRoot(argv) {
 function printUsage() {
   console.log('ClaudeMap create-map')
   console.log(
-    '  node skill/commands/create-map.js [project-root] --scope-json <json> [--map-id <id>] [--no-activate] [--stdio-mcp] [--enrichment-file <file>]',
+    '  node skill/commands/create-map.js [project-root] --scope-json <json> [--map-id <id>] [--no-activate] [--stdio-mcp] [--enrichment-file <file>] [--instructions <text>]',
   )
 }
 
@@ -105,6 +107,7 @@ function parseScopeInput(argv) {
       label: parsedValue.label || parsedValue.scope?.label || null,
       summary: parsedValue.summary || parsedValue.scope?.summary || null,
       mapId: parsedValue.mapId || null,
+      instructions: parsedValue.instructions || null,
     }
   }
 
@@ -119,6 +122,7 @@ function parseScopeInput(argv) {
     label: getOptionValue(argv, 'label'),
     summary: getOptionValue(argv, 'summary'),
     mapId: getOptionValue(argv, 'map-id'),
+    instructions: getOptionValue(argv, 'instructions'),
   }
 }
 
@@ -164,7 +168,7 @@ export async function main(argv = process.argv.slice(2)) {
   }
 
   const projectRoot = resolveProjectRoot(argv)
-  const { scope, label, summary, mapId } = parseScopeInput(argv)
+  const { scope, label, summary, mapId, instructions } = parseScopeInput(argv)
   const shouldActivate = !hasFlag(argv, 'no-activate')
   const useStdioMcp = hasFlag(argv, 'stdio-mcp')
   const enrichmentFile = getOptionValue(argv, 'enrichment-file')
@@ -184,13 +188,39 @@ export async function main(argv = process.argv.slice(2)) {
   }
 
   const resolvedSystemNode = rootGraph.nodes.find((node) => node.id === resolvedScope.systemId)
-  const baseScopedGraph = buildScopedGraphFromRoot(rootGraph, resolvedScope.systemId)
-  const scopedGraph = enrichmentResponseText
-    ? await applyScopedEnrichment(baseScopedGraph, rootGraph, enrichmentResponseText)
-    : baseScopedGraph
-  const enrichmentApplied = scopedGraph !== baseScopedGraph
-  const nextScope = createScopeDescriptor(rootGraph, resolvedScope.systemId)
   const existingMapEntry = findExistingMapForSystem(manifest, rootGraph, resolvedScope.systemId)
+  const priorGraph = existingMapEntry
+    ? readCache(projectRoot, { relativePath: existingMapEntry.cachePath })?.graph || null
+    : null
+
+  let scopedGraph
+  let graphSource
+
+  if (enrichmentResponseText) {
+    const scopedSnapshot = buildScopedSnapshot(rootGraph, resolvedScope.systemId, {
+      label: label || resolvedSystemNode?.label,
+      ancestorPath: scope.ancestorPath || [],
+      priorGraph,
+      instructions,
+    })
+    scopedGraph = await enrichScopedGraph(scopedSnapshot, {
+      responseText: enrichmentResponseText,
+      strict: true,
+    })
+
+    if (!Array.isArray(scopedGraph?.nodes) || scopedGraph.nodes.length === 0) {
+      throw new Error(
+        'Scoped enrichment parsed to an empty graph. Refusing to overwrite the scoped map with an empty result.',
+      )
+    }
+
+    graphSource = 'claude-scoped'
+  } else {
+    scopedGraph = buildScopedGraphFromRoot(rootGraph, resolvedScope.systemId)
+    graphSource = scopedGraph.meta?.source || 'scoped-map'
+  }
+
+  const nextScope = createScopeDescriptor(rootGraph, resolvedScope.systemId)
   const requestedMapId = mapId ? slugifyMapId(mapId) : null
   const requestedMapEntry = requestedMapId ? findMapById(manifest, requestedMapId) : null
 
@@ -235,48 +265,23 @@ export async function main(argv = process.argv.slice(2)) {
 
   manifest = writeManifest(projectRoot, manifest)
 
+  if (enrichmentFile) {
+    await cleanupEnrichmentFile(enrichmentFile)
+  }
+
   console.log(
     `${existingMapEntry ? 'Updated' : 'Created'} map ${nextMapEntry.id} (${nextMapEntry.label})`,
   )
   console.log(`Project root: ${projectRoot}`)
   console.log(`Scope: ${nextScope.rootSystemLabel}`)
   console.log(`Active map: ${manifest.activeMapId}`)
-  console.log(`Graph source: ${scopedGraph.meta?.source || 'scoped'}`)
+  console.log(`Graph source: ${graphSource}`)
 
-  if (enrichmentApplied) {
-    console.log('Applied scoped graph refinement from --enrichment-file.')
-  }
-}
-
-async function applyScopedEnrichment(baseScopedGraph, rootGraph, responseText) {
-  const scopedFiles = Array.isArray(baseScopedGraph.files) ? baseScopedGraph.files : []
-  const minimalSnapshot = {
-    repoName: rootGraph.meta?.repoName || baseScopedGraph.meta?.repoName || 'claudemap',
-    branch: rootGraph.meta?.branch || baseScopedGraph.meta?.branch || 'workspace',
-    generatedAt: new Date().toISOString(),
-    files: scopedFiles,
-  }
-
-  const refinedGraph = await enrichGraph(minimalSnapshot, {
-    responseText,
-    strict: true,
-  })
-
-  if (!Array.isArray(refinedGraph?.nodes) || refinedGraph.nodes.length === 0) {
-    throw new Error(
-      'Scoped enrichment parsed to an empty graph. Refusing to overwrite the scoped map with an empty result.',
+  if (graphSource !== 'claude-scoped') {
+    console.log(
+      'Note: graph built from root filter. For richer subsystem grouping, rerun with --enrichment-file after an @claudemap-architect pass.',
     )
   }
-
-  return {
-    ...refinedGraph,
-    files: scopedFiles,
-  }
-}
-
-async function readFileIfExists(filePath) {
-  const resolvedPath = path.resolve(filePath)
-  return (await import('fs/promises')).readFile(resolvedPath, 'utf8')
 }
 
 async function loadEnrichmentFileStrict(filePath) {
@@ -298,11 +303,20 @@ async function loadEnrichmentFileStrict(filePath) {
 
   if (typeof rawContent !== 'string' || rawContent.trim().length === 0) {
     throw new Error(
-      `Enrichment file is empty: ${resolvedPath}. The @claudemap-architect subagent must return valid graph JSON before create-map runs. Refusing to fall back to the auto-sliced scoped graph silently.`,
+      `Enrichment file is empty: ${resolvedPath}. The @claudemap-architect subagent must return valid graph JSON before create-map runs.`,
     )
   }
 
   return rawContent
+}
+
+async function cleanupEnrichmentFile(filePath) {
+  try {
+    const fs = await import('fs/promises')
+    await fs.unlink(path.resolve(filePath))
+  } catch {
+    // Best-effort cleanup; ignore failures.
+  }
 }
 
 if (isDirectExecution()) {

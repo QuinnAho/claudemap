@@ -245,6 +245,99 @@ function assertStrictEnrichmentFailure(setupCommandPath) {
     })
 }
 
+async function assertScopedPythonEdgeInference() {
+  const scopedMapModulePath = path.join(REPO_ROOT, 'skill', 'lib', 'scoped-map.js')
+  const scopedMapModuleUrl = `${pathToFileURL(scopedMapModulePath).href}?t=${Date.now()}-${Math.random()}`
+  const { buildScopedGraphFromRoot } = await import(scopedMapModuleUrl)
+  const rootGraph = {
+    meta: {
+      repoName: 'python-scope-fixture',
+      branch: 'main',
+      generatedAt: new Date().toISOString(),
+      source: 'claude',
+    },
+    nodes: [
+      {
+        id: 'system-data',
+        label: 'Data Pipeline',
+        type: 'system',
+        icon: 'database',
+        parentId: null,
+        filePath: 'src/data',
+      },
+      {
+        id: 'system-data-vocab',
+        label: 'Vocabulary',
+        type: 'system',
+        icon: 'code',
+        parentId: 'system-data',
+        filePath: 'src/data',
+      },
+      {
+        id: 'file-vocab',
+        label: 'vocab.py',
+        type: 'file',
+        icon: 'file',
+        parentId: 'system-data-vocab',
+        filePath: 'src/data/vocab.py',
+      },
+      {
+        id: 'system-data-loading',
+        label: 'Dataset Loading',
+        type: 'system',
+        icon: 'server',
+        parentId: 'system-data',
+        filePath: 'src/data',
+      },
+      {
+        id: 'file-dataset',
+        label: 'dataset.py',
+        type: 'file',
+        icon: 'file',
+        parentId: 'system-data-loading',
+        filePath: 'src/data/dataset.py',
+      },
+    ],
+    edges: [],
+    files: [
+      {
+        path: 'src/data/vocab.py',
+        relativePath: 'src/data/vocab.py',
+        name: 'vocab.py',
+        directory: 'src/data',
+        lineCount: 40,
+        language: 'python',
+        imports: [],
+        exports: [],
+      },
+      {
+        path: 'src/data/dataset.py',
+        relativePath: 'src/data/dataset.py',
+        name: 'dataset.py',
+        directory: 'src/data',
+        lineCount: 80,
+        language: 'python',
+        imports: ['src.data.vocab'],
+        exports: [],
+      },
+    ],
+  }
+
+  const scopedGraph = buildScopedGraphFromRoot(rootGraph, 'system-data')
+  const scopedEdge = scopedGraph.edges.find(
+    (edge) =>
+      edge.source === 'system-data-loading' &&
+      edge.target === 'system-data-vocab' &&
+      edge.type === 'imports',
+  )
+
+  assert(
+    scopedGraph.meta?.scope?.layout === 'promoted-children',
+    `Expected promoted scoped layout. Got: ${scopedGraph.meta?.scope?.layout || '(missing)'}`,
+  )
+  assert(scopedEdge, 'Scoped Python map should infer an edge from dataset loading to vocabulary.')
+}
+
 async function main() {
   createFixtureRepo()
   const artifactRoot = buildArtifact()
@@ -286,6 +379,7 @@ async function main() {
   assert(scopedEntry, 'Expected create-map to add a scoped map entry.')
   assertScopedManifest(manifestPath, scopedEntry.id)
   await assertStrictEnrichmentFailure(setupMain)
+  await assertScopedPythonEdgeInference()
 
   console.log(`ClaudeMap package smoke test passed`)
   console.log(`Artifact: ${artifactRoot}`)

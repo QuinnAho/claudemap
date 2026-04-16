@@ -7,6 +7,20 @@ function createApiUrl(relativePath) {
   return new URL(relativePath.replace(/^\//, ''), baseOrigin)
 }
 
+async function readApiError(response, fallbackMessage) {
+  try {
+    const payload = await response.json()
+    return payload?.error || payload?.reason || fallbackMessage
+  } catch {
+    try {
+      const responseText = await response.text()
+      return responseText || fallbackMessage
+    } catch {
+      return fallbackMessage
+    }
+  }
+}
+
 export async function setActiveMap(mapId) {
   const response = await window.fetch(createApiUrl('/__claudemap/active-map'), {
     method: 'POST',
@@ -17,16 +31,7 @@ export async function setActiveMap(mapId) {
   })
 
   if (!response.ok) {
-    let errorMessage = 'Failed to switch ClaudeMap'
-
-    try {
-      const payload = await response.json()
-      errorMessage = payload?.error || errorMessage
-    } catch {
-      errorMessage = await response.text()
-    }
-
-    throw new Error(errorMessage)
+    throw new Error(await readApiError(response, 'Failed to switch ClaudeMap'))
   }
 
   return response.json()

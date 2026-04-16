@@ -225,8 +225,9 @@ Steps:
 1. Treat the current working directory as the target project root unless the user gave a different path.
 2. Resolve the bundled command script at \`.claude/skills/claudemap-runtime/skill/commands/update.js\`.
 3. Run the refresh command with Node for the target project root.
-4. Report added, removed, and changed file counts plus the refresh mode.
+4. Report added, removed, and changed file counts plus the refresh mode and scoped map refresh summary.
 5. Preserve any cached Claude-authored graph unless the user explicitly asks for a force refresh.
+6. Scoped maps are refreshed change-aware: maps whose files did not change keep their architect-authored graph, maps whose files did change are rebuilt from the root graph filter and flagged \`needsRebuild\` so the next \`/create-map\` pass can rerun the architect for them.
 `,
     'open-claudemap.md': `---
 description: Open the bundled ClaudeMap app for the current project without rebuilding the graph.
@@ -244,22 +245,25 @@ Steps:
 `,
     'create-map.md': `---
 description: Create or refresh a scoped ClaudeMap for a major subsystem and switch to it.
-argument-hint: '{"scope":{"rootSystemId":"...","rootSystemLabel":"...","ancestorPath":["..."]},"label":"...","summary":"..."}'
+argument-hint: '{"scope":{"rootSystemId":"...","rootSystemLabel":"...","ancestorPath":["..."]},"label":"...","summary":"..."} | <natural language scope description>'
 ---
 
-Use the bundled ClaudeMap scoped-map command.
+Use the bundled ClaudeMap scoped-map command. Scoped maps are first-class architect views, not raw filters of the root graph.
 
 Workflow:
 1. Treat the current working directory as the target project root unless the user gave a different path.
-2. Expect the arguments to be the JSON payload copied from ClaudeMap's "Create map?" affordance.
-3. Resolve the bundled command script at \`.claude/skills/claudemap-runtime/skill/commands/create-map.js\`.
-4. Run the create-map command with Node and pass the copied payload through \`--scope-json\`.
-5. Report the created or updated map id, label, scope root, and resulting active map id.
-6. If the payload is missing or invalid, ask the user to click "Create map?" in ClaudeMap again and paste the copied command.
-7. End with a short feedback prompt after the scoped map renders, for example: \`Does this map look right, or should I refine it?\`
-8. If the user says the map is good, stop there.
-9. If the user asks for refinement, reuse the scoped map's cache graph (the \`cachePath\` for the new map in the target project's repo-root \`claudemap-maps.json\`) as context instead of starting from a blank prompt again. Send that graph plus the requested changes back through \`@claudemap-architect\`, save the refined JSON to \`.claude/skills/claudemap-runtime/tmp/claudemap-enrichment.json\`, and rerun \`.claude/skills/claudemap-runtime/skill/commands/create-map.js\` with the same \`--scope-json\` payload plus \`--enrichment-file\` so the scoped graph iterates in place for the same scoped map entry instead of being rebuilt from the root graph.
-10. After the refined graph renders, ask the same short feedback prompt again.
+2. Resolve the scope from the user's argument. If it is the JSON payload copied from ClaudeMap's "Create map?" affordance, use it as-is. If it is a natural language request (e.g. "map the auth system"), inspect the current root runtime graph at \`.claude/skills/claudemap-runtime/app/public/graph/claudemap-runtime.json\` and pick the best matching system node, then synthesize a scope payload with \`rootSystemId\`, \`rootSystemLabel\`, and \`ancestorPath\`.
+3. Read \`.claude/skills/claudemap-runtime/skill/prompts/scoped-enrichment.txt\`. This is the dedicated scoped prompt — do not reuse the root enrichment prompt.
+4. Build a scoped snapshot payload for \`@claudemap-architect\` containing: the repo/branch meta, the scope block, the filtered file list for that subsystem (pulled from the root graph), and — if the target map already has a cached scoped graph — include its graph as \`priorGraph\` so the architect can refine rather than rebuild. Include any user-provided refinement instructions under \`instructions\`.
+5. Call \`@claudemap-architect\` with the scoped prompt + payload. Tell it to return valid graph JSON only, to emit richer internal subsystems (2-6) and edges than the root graph, and to decide on its own whether to edit the prior graph in place or rebuild based on the intent of the request.
+6. **Wait for the \`@claudemap-architect\` Task call to fully return**, then save the returned JSON to \`.claude/skills/claudemap-runtime/tmp/claudemap-enrichment.json\`. Do not run create-map until that file contains valid graph JSON.
+7. Run \`.claude/skills/claudemap-runtime/skill/commands/create-map.js\` with Node and pass the scope payload through \`--scope-json\`, the refinement instructions (if any) through \`--instructions\`, and the enrichment file through \`--enrichment-file\`. The command deletes the tmp file after it reads it.
+8. Report the created or updated map id, label, scope root, graph source, and resulting active map id. If the graph source is not \`claude-scoped\`, warn the user that the scoped map is a filtered fallback view and suggest rerunning with architect enrichment.
+9. If the payload is missing or invalid, ask the user to click "Create map?" in ClaudeMap again and paste the copied command, or describe the subsystem they want scoped.
+10. End with a short feedback prompt after the scoped map renders, for example: \`Does this map look right, or should I refine it?\`
+11. If the user says the map is good, stop there.
+12. If the user asks for refinement, reuse the scoped map's cache graph (the \`cachePath\` for that map in the target project's repo-root \`claudemap-maps.json\`) as \`priorGraph\` in the architect payload, pass the refinement instructions through \`instructions\`, save the architect's response to \`.claude/skills/claudemap-runtime/tmp/claudemap-enrichment.json\`, and rerun \`create-map.js\` with the same \`--scope-json\` payload plus \`--enrichment-file\` and \`--instructions\` so the scoped graph iterates in place for the same map entry.
+13. After the refined graph renders, ask the same short feedback prompt again.
 `,
     'show.md': `---
 description: Direct the live ClaudeMap session. Use it to focus the map, highlight architecture, present a step, compare regions, or show flow.
@@ -285,9 +289,9 @@ Workflow:
 6. Briefly report what changed in the UI.
 
 Built-in show actions include:
-- \`highlight <query> [--zoom <value>] [--explain "..."]\`
+- \`highlight <query> [--zoom <value>] [--explain "..."] [--keep-mode]\`
 - \`clear-highlight\`
-- \`present <query> [--title "..."] [--step "..."] [--explain "..."]\`
+- \`present <query> [--title "..."] [--step "..."] [--explain "..."] [--keep-mode]\`
 - \`navigate <query> [--zoom <value>]\`
 - \`health <on|off>\`
 - \`mode <free|guided|locked>\`
@@ -295,6 +299,11 @@ Built-in show actions include:
 - \`clear-caption\`
 - \`flow <query1> <query2> [query3 ...]\`
 - \`ask "<phrase>"\`
+
+Mode handling:
+- \`present\` and \`highlight\` (with explain/title/step/mode/lock options) automatically revert the UI to free mode after the command runs, so one-shot \`/show\` requests never leave the user trapped in guided or locked mode.
+- Pass \`--keep-mode\` when you are running multiple presentation steps in sequence (for example inside \`/explain\`) and want the UI to remain in guided or locked mode between steps.
+- \`mode <x>\` still sets the mode explicitly and is not auto-reverted.
 
 Examples of intent translation:
 
@@ -317,9 +326,9 @@ Workflow:
 4. Read the currently active ClaudeMap runtime graph rather than assuming the root map.
 5. For broad or ambiguous requests, use the \`@claudemap-architect\` subagent to turn the request into a short walkthrough plan of 2-6 steps that follows intuitive architectural groupings.
 6. Start presentation mode by running \`node .claude/skills/claudemap-runtime/skill/commands/show.js mode guided\`.
-7. Drive the map in discrete steps. Prefer one present command per explanation beat so the highlight, navigation, and narration update atomically:
-   - \`node .claude/skills/claudemap-runtime/skill/commands/show.js present <query> --title "..." --step "Step 1" --explain "..."\`
-   - \`node .claude/skills/claudemap-runtime/skill/commands/show.js highlight <query>\`
+7. Drive the map in discrete steps. Prefer one present command per explanation beat so the highlight, navigation, and narration update atomically. Pass \`--keep-mode\` on every \`present\` and \`highlight\` step so the guided mode set in step 6 persists across steps instead of auto-reverting to free:
+   - \`node .claude/skills/claudemap-runtime/skill/commands/show.js present <query> --title "..." --step "Step 1" --explain "..." --keep-mode\`
+   - \`node .claude/skills/claudemap-runtime/skill/commands/show.js highlight <query> --keep-mode\`
    - \`node .claude/skills/claudemap-runtime/skill/commands/show.js health on\`
    - \`node .claude/skills/claudemap-runtime/skill/commands/show.js flow <query1> <query2> ...\`
 8. Treat each show command as the visual step boundary. Do not rely on plain chat text streaming alone for transitions.

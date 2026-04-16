@@ -194,6 +194,7 @@ function normalizeManifest(manifest) {
                       ? {
                           ...entry.scope,
                           stale: entry.scope.stale === true,
+                          needsRebuild: entry.scope.needsRebuild === true,
                         }
                       : null,
                   })
@@ -245,6 +246,7 @@ export function createScopeDescriptor(graph, systemId) {
     filePathHint: node.filePath || null,
     fingerprint: computeScopeFingerprint(graph, systemId),
     stale: false,
+    needsRebuild: false,
   }
 }
 

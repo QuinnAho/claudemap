@@ -1,4 +1,5 @@
 import { findMapById } from './map-manifest.js'
+import { createSystemImportEdges } from './import-resolution.js'
 
 function createChildrenByParentMap(nodes) {
   const childrenByParent = new Map()
@@ -56,6 +57,97 @@ function shouldPromoteScopedChildren(rootGraph, rootSystemId) {
   return directChildren.every((node) => node.type === 'system')
 }
 
+function getNearestSystemAncestor(nodeId, nodeById) {
+  let currentNode = nodeById.get(nodeId)
+
+  while (currentNode) {
+    if (currentNode.type === 'system') {
+      return currentNode.id
+    }
+
+    currentNode = currentNode.parentId ? nodeById.get(currentNode.parentId) : null
+  }
+
+  return null
+}
+
+function createScopedSystemIdByFilePath(scopedNodes) {
+  const nodeById = new Map((scopedNodes || []).map((node) => [node.id, node]))
+  const systemIdByFilePath = new Map()
+
+  for (const node of scopedNodes || []) {
+    if (node.type !== 'file' || !node.filePath) {
+      continue
+    }
+
+    const parentSystemId = getNearestSystemAncestor(node.parentId, nodeById)
+
+    if (!parentSystemId) {
+      continue
+    }
+
+    systemIdByFilePath.set(node.filePath, parentSystemId)
+  }
+
+  return systemIdByFilePath
+}
+
+function mergeScopedEdges(existingEdges, inferredEdges, scopedNodeIds) {
+  const mergedEdges = new Map()
+
+  for (const edge of existingEdges || []) {
+    if (!scopedNodeIds.has(edge.source) || !scopedNodeIds.has(edge.target)) {
+      continue
+    }
+
+    mergedEdges.set(`${edge.source}->${edge.target}:${edge.type}`, edge)
+  }
+
+  for (const edge of inferredEdges || []) {
+    const key = `${edge.source}->${edge.target}:${edge.type}`
+
+    if (!mergedEdges.has(key)) {
+      mergedEdges.set(key, edge)
+    }
+  }
+
+  return [...mergedEdges.values()].sort((left, right) => left.id.localeCompare(right.id))
+}
+
+export function buildScopedSnapshot(rootGraph, rootSystemId, options = {}) {
+  const rootNode = (rootGraph?.nodes || []).find(
+    (node) => node.id === rootSystemId && node.type === 'system',
+  )
+
+  if (!rootNode) {
+    throw new Error(`Unable to build scoped snapshot for missing system: ${rootSystemId}`)
+  }
+
+  const scopedNodeIds = collectScopedNodeIds(rootGraph.nodes, rootSystemId)
+  const scopedFileNodes = (rootGraph.nodes || []).filter(
+    (node) => scopedNodeIds.has(node.id) && node.type === 'file' && node.filePath,
+  )
+  const scopedFilePaths = new Set(scopedFileNodes.map((node) => node.filePath))
+  const scopedFiles = (rootGraph.files || []).filter((fileRecord) =>
+    scopedFilePaths.has(fileRecord.path || fileRecord.relativePath),
+  )
+
+  return {
+    repoName: rootGraph.meta?.repoName || 'claudemap',
+    branch: rootGraph.meta?.branch || 'workspace',
+    generatedAt: new Date().toISOString(),
+    scope: {
+      rootSystemId: rootNode.id,
+      label: options.label || rootNode.label || rootNode.id,
+      filePathHint: rootNode.filePath || null,
+      ancestorPath: options.ancestorPath || [],
+    },
+    files: scopedFiles,
+    priorGraph: options.priorGraph || null,
+    instructions: options.instructions || null,
+  }
+}
+
 export function buildScopedGraphFromRoot(rootGraph, rootSystemId) {
   const rootNode = (rootGraph?.nodes || []).find(
     (node) => node.id === rootSystemId && node.type === 'system',
@@ -84,9 +176,6 @@ export function buildScopedGraphFromRoot(rootGraph, rootSystemId) {
 
       return [{ ...node }]
     })
-  const scopedEdges = (rootGraph.edges || []).filter(
-    (edge) => scopedNodeIds.has(edge.source) && scopedNodeIds.has(edge.target),
-  )
   const referencedFilePaths = new Set(
     scopedNodes
       .filter((node) => node.type === 'file' && node.filePath)
@@ -95,6 +184,9 @@ export function buildScopedGraphFromRoot(rootGraph, rootSystemId) {
   const scopedFiles = (rootGraph.files || []).filter((fileRecord) =>
     referencedFilePaths.has(fileRecord.path || fileRecord.relativePath),
   )
+  const systemIdByFilePath = createScopedSystemIdByFilePath(scopedNodes)
+  const inferredScopedEdges = createSystemImportEdges(scopedFiles, systemIdByFilePath)
+  const scopedEdges = mergeScopedEdges(rootGraph.edges || [], inferredScopedEdges, scopedNodeIds)
 
   return {
     meta: {

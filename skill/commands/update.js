@@ -74,9 +74,30 @@ async function renderMapGraph(mcpClient, mapPaths, graphData) {
   await renderGraph(mcpClient, graphData)
 }
 
-async function refreshScopedMaps(projectRoot, manifest, rootGraph, mcpClient) {
+function scopeTouchedByChanges(priorScopedCache, changedPaths) {
+  if (!priorScopedCache || !changedPaths || changedPaths.size === 0) {
+    return false
+  }
+
+  const priorFiles = priorScopedCache.files || priorScopedCache.graph?.files || []
+
+  for (const file of priorFiles) {
+    const filePath = file.relativePath || file.path
+    if (filePath && changedPaths.has(filePath)) {
+      return true
+    }
+  }
+
+  return false
+}
+
+async function refreshScopedMaps(projectRoot, manifest, rootGraph, mcpClient, options = {}) {
+  const changedPaths = options.changedPaths || new Set()
+  const rootRestructured = options.rootRestructured === true
   let refreshedCount = 0
   let staleCount = 0
+  let needsRebuildCount = 0
+  let skippedCount = 0
 
   for (const mapEntry of manifest.maps) {
     if (mapEntry.id === DEFAULT_MAP_ID || !mapEntry.scope) {
@@ -89,25 +110,51 @@ async function refreshScopedMaps(projectRoot, manifest, rootGraph, mcpClient) {
       mapEntry.scope = {
         ...mapEntry.scope,
         stale: true,
+        needsRebuild: true,
       }
       staleCount += 1
+      continue
+    }
+
+    const priorCache = readCache(projectRoot, { relativePath: mapEntry.cachePath })
+    const scopeTouched = rootRestructured || scopeTouchedByChanges(priorCache, changedPaths)
+
+    if (!scopeTouched && priorCache?.graph?.meta?.source === 'claude-scoped') {
+      // Scope untouched and we previously had an architect-enriched graph.
+      // Preserve it. Just clear any stale flag and update the scope descriptor.
+      mapEntry.scope = {
+        ...createScopeDescriptor(rootGraph, resolvedScope.systemId),
+        stale: false,
+        needsRebuild: false,
+      }
+      skippedCount += 1
       continue
     }
 
     const nextScope = createScopeDescriptor(rootGraph, resolvedScope.systemId)
     const scopedGraph = buildScopedGraphFromRoot(rootGraph, resolvedScope.systemId)
 
-    mapEntry.scope = nextScope
+    mapEntry.scope = {
+      ...nextScope,
+      stale: false,
+      // Mark for architect rebuild on next open because we just rebuilt
+      // this scoped map from the root filter, which loses scoped-specific grouping.
+      needsRebuild: priorCache?.graph?.meta?.source === 'claude-scoped',
+    }
     writeCache(projectRoot, scopedGraph, scopedGraph.files, { relativePath: mapEntry.cachePath })
 
     if (mcpClient) {
       await renderMapGraph(mcpClient, resolveMapPaths(projectRoot, mapEntry), scopedGraph)
     }
 
+    if (mapEntry.scope.needsRebuild) {
+      needsRebuildCount += 1
+    }
+
     refreshedCount += 1
   }
 
-  return { refreshedCount, staleCount }
+  return { refreshedCount, staleCount, needsRebuildCount, skippedCount }
 }
 
 async function buildRootGraph(snapshot, cache, options) {
@@ -179,8 +226,13 @@ async function main() {
         manifest,
         rootGraphSelection.graph,
         mcpClient,
+        { rootRestructured: true },
       )
       manifest = writeManifest(projectRoot, manifest)
+
+      if (enrichmentFile) {
+        await cleanupEnrichmentFile(enrichmentFile)
+      }
 
       console.log(
         forceRefresh
@@ -208,6 +260,20 @@ async function main() {
       return
     }
 
+    const changedPaths = new Set()
+    for (const fileRecord of diff.added || []) {
+      const changedPath = fileRecord.relativePath || fileRecord.path
+      if (changedPath) changedPaths.add(changedPath)
+    }
+    for (const fileRecord of diff.removed || []) {
+      const changedPath = fileRecord.relativePath || fileRecord.path
+      if (changedPath) changedPaths.add(changedPath)
+    }
+    for (const fileRecord of diff.changed || []) {
+      const changedPath = fileRecord.relativePath || fileRecord.path
+      if (changedPath) changedPaths.add(changedPath)
+    }
+
     const preferredGraphSelection = await buildRootGraph(snapshot, cache, {
       responseText,
       forceRefresh,
@@ -226,8 +292,15 @@ async function main() {
       })
     }
 
-    const scopedRefresh = await refreshScopedMaps(projectRoot, manifest, nextRootGraph, mcpClient)
+    const scopedRefresh = await refreshScopedMaps(projectRoot, manifest, nextRootGraph, mcpClient, {
+      changedPaths,
+      rootRestructured: hasRefinementRequest && !preferredGraphSelection.preservedExisting,
+    })
     manifest = writeManifest(projectRoot, manifest)
+
+    if (enrichmentFile) {
+      await cleanupEnrichmentFile(enrichmentFile)
+    }
 
     if (hasChanges) {
       console.log(
@@ -294,4 +367,13 @@ async function loadEnrichmentFileStrict(filePath) {
   }
 
   return rawContent
+}
+
+async function cleanupEnrichmentFile(filePath) {
+  try {
+    const fs = await import('fs/promises')
+    await fs.unlink(path.resolve(filePath))
+  } catch {
+    // Best-effort cleanup; ignore failures.
+  }
 }

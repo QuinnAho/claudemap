@@ -16,7 +16,6 @@ export const useGraphStore = create((set) => ({
   activeMap: null,
   meta: {
     repoName: 'claudemap',
-    branch: 'workspace',
     creditLabel: 'ClaudeMap graph',
     source: 'runtime',
     lastSyncedAt: Date.now(),
@@ -129,7 +128,9 @@ export const useGraphStore = create((set) => ({
               }
             : null,
         selectedNode: shouldClearSelection ? null : state.selectedNode,
-        hoveredPathIds: shouldClearSelection ? [] : state.hoveredPathIds,
+        // Hover state is UI-local and must not be wiped by runtime-state polling.
+        // Clearing it here caused layout recalc every 1200ms, producing visible flicker.
+        hoveredPathIds: state.hoveredPathIds,
       }
     }),
 

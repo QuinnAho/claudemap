@@ -139,6 +139,10 @@ export async function main(argv = process.argv.slice(2)) {
     await closeMcpClient(mcpClient)
   }
 
+  if (enrichmentFile) {
+    await cleanupEnrichmentFile(enrichmentFile)
+  }
+
   const launchState = await launchClaudeMapWindow({
     startIfNeeded: startApp,
     openBrowser,
@@ -208,6 +212,15 @@ async function loadEnrichmentFileStrict(filePath) {
   }
 
   return rawContent
+}
+
+async function cleanupEnrichmentFile(filePath) {
+  try {
+    const fs = await import('fs/promises')
+    await fs.unlink(path.resolve(filePath))
+  } catch {
+    // Best-effort cleanup; ignore failures.
+  }
 }
 
 function mcpClientModeLabel(renderResult, preferredLabel) {

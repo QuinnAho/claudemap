@@ -371,7 +371,6 @@ export function useGraphData() {
       setGraph(nodes, edges)
       setMeta({
         repoName: graphData.meta?.repoName || 'claudemap',
-        branch: graphData.meta?.branch || 'workspace',
         creditLabel: graphData.meta?.creditLabel || 'ClaudeMap graph',
         source: graphData.meta?.source || 'seed',
         lastSyncedAt: Date.now(),

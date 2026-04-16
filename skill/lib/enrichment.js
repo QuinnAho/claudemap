@@ -1,12 +1,12 @@
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { createSystemImportEdges } from './import-resolution.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const PROMPT_PATH = path.join(__dirname, '../prompts/enrichment.txt')
+const SCOPED_PROMPT_PATH = path.join(__dirname, '../prompts/scoped-enrichment.txt')
 const ARCHITECT_AGENT_PATH = path.join(__dirname, '../../agents/claudemap-architect.md')
-const POSIX_PATH = path.posix
-const IMPORTABLE_EXTENSIONS = ['.js', '.jsx', '.ts', '.tsx', '.mjs', '.cjs', '.mts', '.cts', '.py']
 const GRAPH_SOURCE_PRIORITY = {
   sample: 0,
   seed: 0,
@@ -205,23 +205,6 @@ function estimateFunctionLineCount(file, exportCount) {
   return Math.max(8, Math.floor(file.lineCount / Math.min(exportCount, 5)))
 }
 
-function resolveRelativeImport(sourceFile, importPath, fileByPath) {
-  if (!importPath.startsWith('.')) {
-    return null
-  }
-
-  const sourceDirectory = sourceFile.directory || '.'
-  const baseCandidate = POSIX_PATH.normalize(POSIX_PATH.join(sourceDirectory, importPath))
-  const candidatePaths = [baseCandidate]
-
-  for (const extension of IMPORTABLE_EXTENSIONS) {
-    candidatePaths.push(`${baseCandidate}${extension}`)
-    candidatePaths.push(POSIX_PATH.join(baseCandidate, `index${extension}`))
-  }
-
-  return candidatePaths.find((candidate) => fileByPath.has(candidate)) || null
-}
-
 function getSystemGroupKey(file) {
   const directorySegments = file.directory.split('/').filter(Boolean)
 
@@ -256,10 +239,7 @@ function createHeuristicGraph(snapshot) {
   const systemNodes = []
   const fileNodes = []
   const functionNodes = []
-  const edges = []
-  const fileByPath = new Map(snapshot.files.map((file) => [file.relativePath, file]))
   const systemIdByFilePath = new Map()
-  const edgeKeys = new Set()
 
   for (const [systemKey, files] of [...filesBySystemKey.entries()].sort(([left], [right]) =>
     left.localeCompare(right),
@@ -325,37 +305,7 @@ function createHeuristicGraph(snapshot) {
     }
   }
 
-  for (const sourceFile of snapshot.files) {
-    const sourceSystemId = systemIdByFilePath.get(sourceFile.relativePath)
-
-    for (const importPath of sourceFile.imports) {
-      const targetPath = resolveRelativeImport(sourceFile, importPath, fileByPath)
-
-      if (!targetPath) {
-        continue
-      }
-
-      const targetSystemId = systemIdByFilePath.get(targetPath)
-
-      if (!sourceSystemId || !targetSystemId || sourceSystemId === targetSystemId) {
-        continue
-      }
-
-      const edgeId = `edge-${sourceSystemId}-${targetSystemId}`
-
-      if (edgeKeys.has(edgeId)) {
-        continue
-      }
-
-      edgeKeys.add(edgeId)
-      edges.push({
-        id: edgeId,
-        source: sourceSystemId,
-        target: targetSystemId,
-        type: 'imports',
-      })
-    }
-  }
+  const edges = createSystemImportEdges(snapshot.files, systemIdByFilePath)
 
   return validateGraph({
     meta: {
@@ -463,4 +413,42 @@ export async function enrichSnapshot(snapshot, options = {}) {
 
 export function getClaudeMapArchitectDefinition() {
   return fs.readFileSync(ARCHITECT_AGENT_PATH, 'utf8')
+}
+
+export function getScopedEnrichmentPrompt() {
+  return fs.readFileSync(SCOPED_PROMPT_PATH, 'utf8')
+}
+
+export function getRootEnrichmentPrompt() {
+  return fs.readFileSync(PROMPT_PATH, 'utf8')
+}
+
+export async function enrichScopedGraph(scopedSnapshot, options = {}) {
+  const responseText = options.responseText
+  const strict = options.strict !== false
+
+  if (!responseText) {
+    if (strict) {
+      throw new Error(
+        'Scoped enrichment requires @claudemap-architect output. Pass responseText or --enrichment-file.',
+      )
+    }
+
+    return null
+  }
+
+  const graph = parseGraphResponse(responseText)
+  return {
+    ...graph,
+    meta: {
+      ...(graph.meta || {}),
+      repoName: scopedSnapshot.repoName,
+      branch: graph.meta?.branch || scopedSnapshot.branch || 'workspace',
+      creditLabel: graph.meta?.creditLabel || 'ClaudeMap skill',
+      generatedAt: scopedSnapshot.generatedAt || new Date().toISOString(),
+      source: 'claude-scoped',
+      scope: scopedSnapshot.scope || null,
+    },
+    files: scopedSnapshot.files,
+  }
 }
