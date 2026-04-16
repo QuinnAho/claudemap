@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 import path from 'path'
+import { fileURLToPath } from 'url'
 import { resolveMapPaths } from '../lib/active-map.js'
 import { readCache, writeCache } from '../lib/cache.js'
+import { enrichGraph } from '../lib/enrichment.js'
 import {
   DEFAULT_MAP_ID,
   createScopeDescriptor,
@@ -19,6 +21,8 @@ import {
   createScopedMapFileSet,
   slugifyMapId,
 } from '../lib/scoped-map.js'
+
+const CURRENT_FILE_PATH = fileURLToPath(import.meta.url)
 
 function hasFlag(argv, flagName) {
   return argv.includes(`--${flagName}`)
@@ -43,6 +47,7 @@ function resolveProjectRoot(argv) {
     '--ancestors',
     '--file-path',
     '--map-id',
+    '--enrichment-file',
   ])
   const projectRootArg = argv.find((argument, index) => {
     if (argument.startsWith('--')) {
@@ -60,7 +65,7 @@ function resolveProjectRoot(argv) {
 function printUsage() {
   console.log('ClaudeMap create-map')
   console.log(
-    '  node skill/commands/create-map.js [project-root] --scope-json <json> [--map-id <id>] [--no-activate] [--stdio-mcp]',
+    '  node skill/commands/create-map.js [project-root] --scope-json <json> [--map-id <id>] [--no-activate] [--stdio-mcp] [--enrichment-file <file>]',
   )
 }
 
@@ -147,8 +152,11 @@ function findExistingMapForSystem(manifest, rootGraph, systemId) {
   )
 }
 
-async function main() {
-  const argv = process.argv.slice(2)
+function isDirectExecution() {
+  return process.argv[1] && path.resolve(process.argv[1]) === CURRENT_FILE_PATH
+}
+
+export async function main(argv = process.argv.slice(2)) {
 
   if (hasFlag(argv, 'help') || hasFlag(argv, 'h')) {
     printUsage()
@@ -159,6 +167,8 @@ async function main() {
   const { scope, label, summary, mapId } = parseScopeInput(argv)
   const shouldActivate = !hasFlag(argv, 'no-activate')
   const useStdioMcp = hasFlag(argv, 'stdio-mcp')
+  const enrichmentFile = getOptionValue(argv, 'enrichment-file')
+  const enrichmentResponseText = enrichmentFile ? await loadEnrichmentFileStrict(enrichmentFile) : null
 
   if (!scope?.rootSystemId && !scope?.rootSystemLabel && !scope?.filePathHint) {
     throw new Error('Missing scoped map target. Pass --scope-json or --root-system.')
@@ -174,7 +184,11 @@ async function main() {
   }
 
   const resolvedSystemNode = rootGraph.nodes.find((node) => node.id === resolvedScope.systemId)
-  const scopedGraph = buildScopedGraphFromRoot(rootGraph, resolvedScope.systemId)
+  const baseScopedGraph = buildScopedGraphFromRoot(rootGraph, resolvedScope.systemId)
+  const scopedGraph = enrichmentResponseText
+    ? await applyScopedEnrichment(baseScopedGraph, rootGraph, enrichmentResponseText)
+    : baseScopedGraph
+  const enrichmentApplied = scopedGraph !== baseScopedGraph
   const nextScope = createScopeDescriptor(rootGraph, resolvedScope.systemId)
   const existingMapEntry = findExistingMapForSystem(manifest, rootGraph, resolvedScope.systemId)
   const requestedMapId = mapId ? slugifyMapId(mapId) : null
@@ -227,9 +241,73 @@ async function main() {
   console.log(`Project root: ${projectRoot}`)
   console.log(`Scope: ${nextScope.rootSystemLabel}`)
   console.log(`Active map: ${manifest.activeMapId}`)
+  console.log(`Graph source: ${scopedGraph.meta?.source || 'scoped'}`)
+
+  if (enrichmentApplied) {
+    console.log('Applied scoped graph refinement from --enrichment-file.')
+  }
 }
 
-main().catch((error) => {
-  console.error(`ClaudeMap create-map failed: ${error.message}`)
-  process.exitCode = 1
-})
+async function applyScopedEnrichment(baseScopedGraph, rootGraph, responseText) {
+  const scopedFiles = Array.isArray(baseScopedGraph.files) ? baseScopedGraph.files : []
+  const minimalSnapshot = {
+    repoName: rootGraph.meta?.repoName || baseScopedGraph.meta?.repoName || 'claudemap',
+    branch: rootGraph.meta?.branch || baseScopedGraph.meta?.branch || 'workspace',
+    generatedAt: new Date().toISOString(),
+    files: scopedFiles,
+  }
+
+  const refinedGraph = await enrichGraph(minimalSnapshot, {
+    responseText,
+    strict: true,
+  })
+
+  if (!Array.isArray(refinedGraph?.nodes) || refinedGraph.nodes.length === 0) {
+    throw new Error(
+      'Scoped enrichment parsed to an empty graph. Refusing to overwrite the scoped map with an empty result.',
+    )
+  }
+
+  return {
+    ...refinedGraph,
+    files: scopedFiles,
+  }
+}
+
+async function readFileIfExists(filePath) {
+  const resolvedPath = path.resolve(filePath)
+  return (await import('fs/promises')).readFile(resolvedPath, 'utf8')
+}
+
+async function loadEnrichmentFileStrict(filePath) {
+  const fs = await import('fs/promises')
+  const resolvedPath = path.resolve(filePath)
+  let rawContent
+
+  try {
+    rawContent = await fs.readFile(resolvedPath, 'utf8')
+  } catch (error) {
+    if (error && error.code === 'ENOENT') {
+      throw new Error(
+        `Enrichment file not found: ${resolvedPath}. Save the @claudemap-architect subagent output to that file before running create-map.`,
+      )
+    }
+
+    throw error
+  }
+
+  if (typeof rawContent !== 'string' || rawContent.trim().length === 0) {
+    throw new Error(
+      `Enrichment file is empty: ${resolvedPath}. The @claudemap-architect subagent must return valid graph JSON before create-map runs. Refusing to fall back to the auto-sliced scoped graph silently.`,
+    )
+  }
+
+  return rawContent
+}
+
+if (isDirectExecution()) {
+  main().catch((error) => {
+    console.error(`ClaudeMap create-map failed: ${error.message}`)
+    process.exitCode = 1
+  })
+}

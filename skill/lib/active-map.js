@@ -2,8 +2,8 @@ import { DEFAULT_MAP_ID, findMapById, getActiveMap, readManifest } from './map-m
 import { resolveProjectPath, resolveRuntimePublicPath } from './runtime-paths.js'
 
 const DEFAULT_CACHE_PATH = 'claudemap-cache.json'
-const DEFAULT_RUNTIME_GRAPH_PATH = 'claudemap-runtime.json'
-const DEFAULT_RUNTIME_STATE_PATH = 'claudemap-runtime-state.json'
+const DEFAULT_RUNTIME_GRAPH_PATH = 'graph/claudemap-runtime.json'
+const DEFAULT_RUNTIME_STATE_PATH = 'graph/claudemap-runtime-state.json'
 
 export function resolveMapRuntimePaths(mapEntry) {
   return {

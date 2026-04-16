@@ -442,6 +442,12 @@ export async function enrichGraph(snapshot, options = {}) {
     try {
       return await parseProvidedResponse(snapshot, responseOverride)
     } catch (error) {
+      if (options.strict) {
+        throw new Error(
+          `ClaudeMap enrichment override failed to parse: ${error.message}. Refusing to fall back to the heuristic graph because an explicit enrichment input was provided.`,
+        )
+      }
+
       if (!options.silent) {
         console.warn(`ClaudeMap enrichment override failed: ${error.message}`)
       }

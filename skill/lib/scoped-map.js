@@ -139,7 +139,7 @@ export function allocateMapId(manifest, label) {
 export function createScopedMapFileSet(mapId) {
   return {
     cachePath: `claudemap-cache.${mapId}.json`,
-    graphPath: `claudemap-runtime.${mapId}.json`,
-    statePath: `claudemap-runtime-state.${mapId}.json`,
+    graphPath: `graph/claudemap-runtime.${mapId}.json`,
+    statePath: `graph/claudemap-runtime-state.${mapId}.json`,
   }
 }

@@ -4,10 +4,10 @@ import { fileURLToPath } from 'url'
 import { writeJsonFileAtomic } from './runtime-paths.js'
 
 const DEFAULT_RUNTIME_GRAPH_PATH = path.resolve(
-  fileURLToPath(new URL('../../app/public/claudemap-runtime.json', import.meta.url)),
+  fileURLToPath(new URL('../../app/public/graph/claudemap-runtime.json', import.meta.url)),
 )
 const DEFAULT_RUNTIME_STATE_PATH = path.resolve(
-  fileURLToPath(new URL('../../app/public/claudemap-runtime-state.json', import.meta.url)),
+  fileURLToPath(new URL('../../app/public/graph/claudemap-runtime-state.json', import.meta.url)),
 )
 
 function createDefaultRuntimeState() {

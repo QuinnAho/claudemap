@@ -9,8 +9,8 @@ const APP_ROOT = path.join(REPO_ROOT, 'app')
 const PACKAGE_JSON_PATH = path.join(REPO_ROOT, 'package.json')
 const OUTPUT_ROOT = path.join(REPO_ROOT, 'docs')
 const TEMP_BUILD_CONFIG_PATH = path.join(APP_ROOT, '.claudemap-build.json')
-const RUNTIME_GRAPH_PATH = path.join(APP_ROOT, 'public', 'claudemap-runtime.json')
-const RUNTIME_STATE_PATH = path.join(APP_ROOT, 'public', 'claudemap-runtime-state.json')
+const RUNTIME_GRAPH_PATH = path.join(APP_ROOT, 'public', 'graph', 'claudemap-runtime.json')
+const RUNTIME_STATE_PATH = path.join(APP_ROOT, 'public', 'graph', 'claudemap-runtime-state.json')
 const RUNTIME_MANIFEST_PATH = path.join(APP_ROOT, 'public', 'claudemap-maps.json')
 const SEEDED_SELF_MAP_PATH = path.join(REPO_ROOT, 'contracts', 'claudemap-seed-map.json')
 
@@ -95,8 +95,8 @@ function createDefaultMapsManifest() {
         summary: 'Full repo overview',
         scope: null,
         cachePath: 'claudemap-cache.json',
-        graphPath: 'claudemap-runtime.json',
-        statePath: 'claudemap-runtime-state.json',
+        graphPath: 'graph/claudemap-runtime.json',
+        statePath: 'graph/claudemap-runtime-state.json',
       },
     ],
   }

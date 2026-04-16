@@ -42,15 +42,18 @@ npm pkg get name version
 npm run build
 ```
 
-4. Build a local test package and smoke-test it in another repository.
+4. Run the package smoke test.
+
+```bash
+npm test
+```
+
+This builds the local ClaudeMap artifact, installs it into a throwaway fixture repository, runs the installed ClaudeMap commands, and verifies the packaged slash-command templates and runtime graph layout.
+
+If you want an additional manual install in a separate target repository:
 
 ```bash
 npm run pack:test
-```
-
-Then, in a separate target repository:
-
-```bash
 npm exec --package="<absolute-path-to-artifacts/npm/quinnaho-claudemap-<version>.tgz>" -- claudemap install
 ```
 
@@ -84,6 +87,7 @@ https://www.npmjs.com/package/@quinnaho/claudemap
 ## Notes
 
 - `prepack` already stages the bundled `.claude` artifact automatically.
+- `npm test` is the fastest repo-local end-to-end package validation path.
 - `npm run pack:test` creates a real tarball in `artifacts/npm/`.
 - The published tarball currently contains only the installer CLI and bundled
   runtime artifact, not the demo packages.

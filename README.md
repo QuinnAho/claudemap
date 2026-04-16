@@ -74,15 +74,18 @@ npm install
 npm run dev
 ```
 
-Build a local installable package before testing ClaudeMap in another repo:
+Run the package smoke test:
+
+```bash
+npm test
+```
+
+That one command builds the local ClaudeMap artifact, installs it into a throwaway fixture repo, runs the installed `setup-claudemap` and `create-map` flows, and verifies the packaged feedback-prompt templates plus the `graph/` runtime layout.
+
+If you specifically need the raw tarball for manual testing in another repo:
 
 ```bash
 npm run pack:test
-```
-
-Then, from the target repo:
-
-```bash
 npm exec --package="<absolute-path-to-artifacts/npm/quinnaho-claudemap-<version>.tgz>" -- claudemap install
 ```
 

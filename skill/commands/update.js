@@ -141,7 +141,8 @@ async function main() {
   const skipRender = hasFlag(argv, 'no-render')
   const useStdioMcp = hasFlag(argv, 'stdio-mcp')
   const enrichmentFile = getOptionValue(argv, 'enrichment-file')
-  const responseText = enrichmentFile ? await readFileIfExists(enrichmentFile) : null
+  const responseText = enrichmentFile ? await loadEnrichmentFileStrict(enrichmentFile) : null
+  const enrichmentStrict = Boolean(enrichmentFile)
   let manifest = writeManifest(projectRoot, readManifest(projectRoot))
   const rootMapEntry = findMapById(manifest, DEFAULT_MAP_ID)
   const rootMapPaths = resolveMapPaths(projectRoot, rootMapEntry)
@@ -162,6 +163,7 @@ async function main() {
         responseText,
         forceRefresh,
         allowLowerPriorityOverwrite: hasExplicitEnrichmentInput,
+        strict: enrichmentStrict,
       })
 
       writeCache(projectRoot, rootGraphSelection.graph, snapshot.files, {
@@ -197,8 +199,9 @@ async function main() {
 
     const diff = diffFiles(snapshot.files, cache)
     const hasChanges = diff.added.length || diff.removed.length || diff.changed.length
+    const hasRefinementRequest = hasExplicitEnrichmentInput
 
-    if (!hasChanges) {
+    if (!hasChanges && !hasRefinementRequest) {
       console.log('No changes detected')
       console.log(`Project root: ${projectRoot}`)
       console.log(`Active map: ${manifest.activeMapId}`)
@@ -209,6 +212,7 @@ async function main() {
       responseText,
       forceRefresh,
       allowLowerPriorityOverwrite: hasExplicitEnrichmentInput,
+      strict: enrichmentStrict,
     })
     const nextRootGraph = preferredGraphSelection.graph
 
@@ -225,9 +229,13 @@ async function main() {
     const scopedRefresh = await refreshScopedMaps(projectRoot, manifest, nextRootGraph, mcpClient)
     manifest = writeManifest(projectRoot, manifest)
 
-    console.log(
-      `Updated - ${diff.added.length} files added, ${diff.removed.length} removed, ${diff.changed.length} changed`,
-    )
+    if (hasChanges) {
+      console.log(
+        `Updated - ${diff.added.length} files added, ${diff.removed.length} removed, ${diff.changed.length} changed`,
+      )
+    } else {
+      console.log('No file changes detected. Applied graph refinement feedback.')
+    }
     console.log(`Project root: ${projectRoot}`)
     console.log(`Active map: ${manifest.activeMapId}`)
 
@@ -260,4 +268,30 @@ main().catch((error) => {
 async function readFileIfExists(filePath) {
   const resolvedPath = path.resolve(filePath)
   return (await import('fs/promises')).readFile(resolvedPath, 'utf8')
+}
+
+async function loadEnrichmentFileStrict(filePath) {
+  const fs = await import('fs/promises')
+  const resolvedPath = path.resolve(filePath)
+  let rawContent
+
+  try {
+    rawContent = await fs.readFile(resolvedPath, 'utf8')
+  } catch (error) {
+    if (error && error.code === 'ENOENT') {
+      throw new Error(
+        `Enrichment file not found: ${resolvedPath}. Save the @claudemap-architect subagent output to that file before running update.`,
+      )
+    }
+
+    throw error
+  }
+
+  if (typeof rawContent !== 'string' || rawContent.trim().length === 0) {
+    throw new Error(
+      `Enrichment file is empty: ${resolvedPath}. The @claudemap-architect subagent must return valid graph JSON before update runs. Refusing to fall back to the heuristic graph silently.`,
+    )
+  }
+
+  return rawContent
 }

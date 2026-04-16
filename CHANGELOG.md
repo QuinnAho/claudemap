@@ -12,6 +12,24 @@ Highlights:
   during exploration
 - hardened hover, expand, and collapse UX so graph motion stays smoother under
   rapid interaction and collapse transitions no longer bloat before shrinking
+- added a post-render feedback prompt plus an iterative graph-refinement path
+  for `/setup-claudemap` and `/create-map` that reuses the current ClaudeMap
+  graph context instead of forcing a full restart, including an
+  `--enrichment-file` override on `create-map.js` so scoped maps can iterate
+  in place instead of being rebuilt from the root graph
+- moved runtime graph outputs into a dedicated `app/public/graph/` subdirectory
+  inside the bundled claudemap-runtime skill so generated graphs have an
+  obvious canonical home instead of landing next to unrelated static assets.
+  Manifest entries with legacy bare filenames (`claudemap-runtime.json`,
+  `claudemap-runtime.<map-id>.json`, etc.) auto-migrate to the new `graph/`
+  paths on read, so existing installs upgrade transparently on the next
+  `/setup-claudemap` or `/refresh`
+- tightened enrichment validation in `setup-claudemap.js`, `update.js`, and
+  `create-map.js`: when `--enrichment-file` is passed the commands now exit
+  non-zero if the file is missing, empty, or unparseable instead of silently
+  falling back to the heuristic graph. This fixes the observed race where a
+  heuristic graph would render first and only get replaced after the user
+  explicitly asked for the enriched one
 - added a local `npm run pack:test` flow for building an installable tarball and
   smoke-testing the package in other repositories before publishing
 

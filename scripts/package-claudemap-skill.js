@@ -98,8 +98,8 @@ function createDefaultMapsManifest() {
         summary: 'Full repo overview',
         scope: null,
         cachePath: 'claudemap-cache.json',
-        graphPath: 'claudemap-runtime.json',
-        statePath: 'claudemap-runtime-state.json',
+        graphPath: 'graph/claudemap-runtime.json',
+        statePath: 'graph/claudemap-runtime-state.json',
       },
     ],
   }
@@ -154,12 +154,15 @@ function writeRuntimePlaceholders(projectRoot, graphSourcePath = DEFAULT_SEED_MA
     createEmptyRuntimeGraph,
   )
 
+  // Graphs live in a dedicated `graph/` subdirectory under `app/public/` so
+  // runtime graph outputs have an obvious home and are not mixed with
+  // unrelated static assets.
   writeJsonFile(
-    path.join(projectRoot, SKILL_ROOT, 'app', 'public', 'claudemap-runtime.json'),
+    path.join(projectRoot, SKILL_ROOT, 'app', 'public', 'graph', 'claudemap-runtime.json'),
     packagedGraph,
   )
   writeJsonFile(
-    path.join(projectRoot, SKILL_ROOT, 'app', 'public', 'claudemap-runtime-state.json'),
+    path.join(projectRoot, SKILL_ROOT, 'app', 'public', 'graph', 'claudemap-runtime-state.json'),
     createDefaultRuntimeStateFromGraph(packagedGraph),
   )
   writeJsonFile(
@@ -188,6 +191,8 @@ High-level goal:
 - ask the bundled \`@claudemap-architect\` subagent to build a detailed graph with intuitive human grouping
 - render that graph in the ClaudeMap UI
 
+Generated runtime graphs are written into \`.claude/skills/claudemap-runtime/app/public/graph/\` (served by the bundled app as \`/graph/*\`). Do not drop graph files anywhere else under \`claudemap-runtime/\` — the \`graph/\` subdirectory is the one canonical home for runtime graph outputs.
+
 Steps:
 1. Treat the current working directory as the target project root unless the user gave a different path.
 2. Resolve the bundled snapshot script at \`.claude/skills/claudemap-runtime/skill/commands/snapshot.js\`.
@@ -198,11 +203,15 @@ Steps:
    - the enrichment contract
    - instructions to return only valid graph JSON
    - instructions to optimize for detailed systems, useful file/function depth, and human-intuitive grouping
-6. Save the subagent result to \`.claude/skills/claudemap-runtime/tmp/claudemap-enrichment.json\`.
-7. Run \`.claude/skills/claudemap-runtime/skill/commands/setup-claudemap.js\` with \`--enrichment-file\` pointing to that JSON file.
+6. **Wait for the \`@claudemap-architect\` Task call to fully return**, then save the returned JSON to \`.claude/skills/claudemap-runtime/tmp/claudemap-enrichment.json\`. **Do not run the setup JS command until after this file exists with non-empty valid graph JSON.** Do not launch setup in parallel with the subagent call.
+7. Run \`.claude/skills/claudemap-runtime/skill/commands/setup-claudemap.js\` with \`--enrichment-file\` pointing to that JSON file. The setup command is strict: it will exit non-zero if the file is missing, empty, or unparseable, and it will not fall back to a heuristic graph. If that happens, fix the architect output first and rerun — do not rerun setup without \`--enrichment-file\`.
 8. Add \`--force-refresh\` only when the user explicitly asks for a full rebuild.
-9. If the subagent result is invalid, fall back to running the bundled setup command without the override.
+9. If the subagent cannot produce valid JSON after two attempts, stop and tell the user the architect pass failed. Do not silently retry setup without the enrichment file — that would render a heuristic graph and pollute the cache.
 10. Report the analyzed file count, system count, graph source, render transport, and app readiness.
+11. End with a short feedback prompt after the graph opens, for example: \`Does this map look right, or should I refine it?\`
+12. If the user says the map is good, stop there.
+13. If the user asks for refinement, reuse the current root cache graph from \`claudemap-cache.json\` as context, send that graph plus the requested changes back through \`@claudemap-architect\`, **wait for that Task call to fully return**, save the refined JSON to the same \`tmp/claudemap-enrichment.json\` path, and only then run \`.claude/skills/claudemap-runtime/skill/commands/update.js\` with \`--enrichment-file\` instead of telling the user to rerun setup from scratch. The update command applies the same strict enrichment validation as setup.
+14. After the refined graph renders, ask the same short feedback prompt again.
 `,
     'refresh.md': `---
 description: Refresh the bundled ClaudeMap graph for the current project after local code changes.
@@ -247,6 +256,10 @@ Workflow:
 4. Run the create-map command with Node and pass the copied payload through \`--scope-json\`.
 5. Report the created or updated map id, label, scope root, and resulting active map id.
 6. If the payload is missing or invalid, ask the user to click "Create map?" in ClaudeMap again and paste the copied command.
+7. End with a short feedback prompt after the scoped map renders, for example: \`Does this map look right, or should I refine it?\`
+8. If the user says the map is good, stop there.
+9. If the user asks for refinement, reuse the scoped map's cache graph (the \`cachePath\` for the new map in the target project's repo-root \`claudemap-maps.json\`) as context instead of starting from a blank prompt again. Send that graph plus the requested changes back through \`@claudemap-architect\`, save the refined JSON to \`.claude/skills/claudemap-runtime/tmp/claudemap-enrichment.json\`, and rerun \`.claude/skills/claudemap-runtime/skill/commands/create-map.js\` with the same \`--scope-json\` payload plus \`--enrichment-file\` so the scoped graph iterates in place for the same scoped map entry instead of being rebuilt from the root graph.
+10. After the refined graph renders, ask the same short feedback prompt again.
 `,
     'show.md': `---
 description: Direct the live ClaudeMap session. Use it to focus the map, highlight architecture, present a step, compare regions, or show flow.
@@ -448,9 +461,10 @@ function shouldExcludeApp(relativePath) {
     relativePath.startsWith('node_modules/') ||
     relativePath === 'dist' ||
     relativePath.startsWith('dist/') ||
-    relativePath === 'public/claudemap-runtime.json' ||
-    relativePath === 'public/claudemap-runtime-state.json' ||
-    relativePath === 'public/claudemap-maps.json'
+    relativePath === 'public/claudemap-maps.json' ||
+    /^public\/claudemap-runtime(-state)?(\.[^/]+)?\.json$/.test(relativePath) ||
+    relativePath === 'public/graph' ||
+    relativePath.startsWith('public/graph/')
   )
 }
 
@@ -525,22 +539,33 @@ function maybeCreateZip(artifactRoot, outputRoot, zipRequested) {
   return createWindowsZip(artifactRoot, outputRoot)
 }
 
-function main() {
-  const options = parseArgs(process.argv.slice(2))
-
-  if (options.help) {
-    printUsage()
-    return
+function buildClaudeMapArtifact(options = {}) {
+  const normalizedOptions = {
+    outputRoot: options.outputRoot || DEFAULT_OUTPUT_ROOT,
+    zip: options.zip === true,
   }
-
-  const artifactRoot = ensureCleanArtifactLocation(options.outputRoot)
+  const artifactRoot = ensureCleanArtifactLocation(normalizedOptions.outputRoot)
   copyArtifactFiles(artifactRoot)
   writeRuntimePlaceholders(artifactRoot)
   writeSlashCommands(artifactRoot)
   writeNavigationDocs(artifactRoot)
   writeArtifactManifest(artifactRoot)
 
-  const zipPath = maybeCreateZip(artifactRoot, options.outputRoot, options.zip)
+  return {
+    artifactRoot,
+    zipPath: maybeCreateZip(artifactRoot, normalizedOptions.outputRoot, normalizedOptions.zip),
+  }
+}
+
+function main(argv = process.argv.slice(2)) {
+  const options = parseArgs(argv)
+
+  if (options.help) {
+    printUsage()
+    return
+  }
+
+  const { artifactRoot, zipPath } = buildClaudeMapArtifact(options)
 
   console.log(`ClaudeMap skill artifact ready at ${artifactRoot}`)
   if (zipPath) {
@@ -548,9 +573,15 @@ function main() {
   }
 }
 
-try {
-  main()
-} catch (error) {
-  console.error(`ClaudeMap skill packaging failed: ${error.message}`)
-  process.exitCode = 1
+module.exports = {
+  buildClaudeMapArtifact,
+}
+
+if (require.main === module) {
+  try {
+    main()
+  } catch (error) {
+    console.error(`ClaudeMap skill packaging failed: ${error.message}`)
+    process.exitCode = 1
+  }
 }
