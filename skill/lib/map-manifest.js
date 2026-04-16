@@ -27,6 +27,8 @@ function uniqueSorted(values) {
   return [...new Set(values.filter(Boolean))].sort((left, right) => left.localeCompare(right))
 }
 
+const GRAPH_DIR_NAME = 'graph'
+
 function createRootMapEntry() {
   return {
     id: DEFAULT_MAP_ID,
@@ -34,8 +36,59 @@ function createRootMapEntry() {
     summary: 'Full repo overview',
     scope: null,
     cachePath: 'claudemap-cache.json',
-    graphPath: 'claudemap-runtime.json',
-    statePath: 'claudemap-runtime-state.json',
+    graphPath: `${GRAPH_DIR_NAME}/claudemap-runtime.json`,
+    statePath: `${GRAPH_DIR_NAME}/claudemap-runtime-state.json`,
+  }
+}
+
+function migrateLegacyRuntimePath(relativePath, fallbackPath) {
+  if (typeof relativePath !== 'string' || relativePath.trim().length === 0) {
+    return fallbackPath
+  }
+
+  const trimmedPath = relativePath.trim()
+  const normalizedPath = trimmedPath.replace(/\\/g, '/')
+
+  if (normalizedPath.includes('/')) {
+    return trimmedPath
+  }
+
+  if (
+    normalizedPath === 'claudemap-runtime.json' ||
+    normalizedPath === 'claudemap-runtime-state.json' ||
+    /^claudemap-runtime\.[^/]+\.json$/.test(normalizedPath) ||
+    /^claudemap-runtime-state\.[^/]+\.json$/.test(normalizedPath)
+  ) {
+    return `${GRAPH_DIR_NAME}/${normalizedPath}`
+  }
+
+  return trimmedPath
+}
+
+function migrateLegacyMapEntryPaths(mapEntry) {
+  if (!mapEntry || typeof mapEntry !== 'object') {
+    return mapEntry
+  }
+
+  const defaultGraphFileName =
+    mapEntry.id === DEFAULT_MAP_ID
+      ? 'claudemap-runtime.json'
+      : `claudemap-runtime.${mapEntry.id}.json`
+  const defaultStateFileName =
+    mapEntry.id === DEFAULT_MAP_ID
+      ? 'claudemap-runtime-state.json'
+      : `claudemap-runtime-state.${mapEntry.id}.json`
+
+  return {
+    ...mapEntry,
+    graphPath: migrateLegacyRuntimePath(
+      mapEntry.graphPath,
+      `${GRAPH_DIR_NAME}/${defaultGraphFileName}`,
+    ),
+    statePath: migrateLegacyRuntimePath(
+      mapEntry.statePath,
+      `${GRAPH_DIR_NAME}/${defaultStateFileName}`,
+    ),
   }
 }
 
@@ -54,8 +107,8 @@ function createScopedMapDefaults(mapId) {
     summary: '',
     scope: null,
     cachePath: `claudemap-cache.${mapId}.json`,
-    graphPath: `claudemap-runtime.${mapId}.json`,
-    statePath: `claudemap-runtime-state.${mapId}.json`,
+    graphPath: `${GRAPH_DIR_NAME}/claudemap-runtime.${mapId}.json`,
+    statePath: `${GRAPH_DIR_NAME}/claudemap-runtime-state.${mapId}.json`,
   }
 }
 
@@ -126,15 +179,15 @@ function normalizeManifest(manifest) {
                   }
 
                   if (entry.id === DEFAULT_MAP_ID) {
-                    return {
+                    return migrateLegacyMapEntryPaths({
                       ...createRootMapEntry(),
                       ...entry,
                       id: DEFAULT_MAP_ID,
                       scope: null,
-                    }
+                    })
                   }
 
-                  return {
+                  return migrateLegacyMapEntryPaths({
                     ...createScopedMapDefaults(entry.id),
                     ...entry,
                     scope: entry.scope
@@ -143,7 +196,7 @@ function normalizeManifest(manifest) {
                           stale: entry.scope.stale === true,
                         }
                       : null,
-                  }
+                  })
                 })
                 .filter(Boolean)
             : [],

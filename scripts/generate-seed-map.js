@@ -16,8 +16,8 @@ async function main() {
   const mapsManifest = createDefaultMapsManifest()
 
   writeJsonFile(path.join(repoRoot, 'contracts', 'claudemap-seed-map.json'), graph)
-  writeJsonFile(path.join(repoRoot, 'docs', 'claudemap-runtime.json'), graph)
-  writeJsonFile(path.join(repoRoot, 'docs', 'claudemap-runtime-state.json'), runtimeState)
+  writeJsonFile(path.join(repoRoot, 'docs', 'graph', 'claudemap-runtime.json'), graph)
+  writeJsonFile(path.join(repoRoot, 'docs', 'graph', 'claudemap-runtime-state.json'), runtimeState)
   writeJsonFile(path.join(repoRoot, 'docs', 'claudemap-maps.json'), mapsManifest)
 
   console.log(`Seed map ready at ${path.join(repoRoot, 'contracts', 'claudemap-seed-map.json')}`)
@@ -74,8 +74,8 @@ function createDefaultMapsManifest() {
         summary: 'Full repo overview',
         scope: null,
         cachePath: 'claudemap-cache.json',
-        graphPath: 'claudemap-runtime.json',
-        statePath: 'claudemap-runtime-state.json',
+        graphPath: 'graph/claudemap-runtime.json',
+        statePath: 'graph/claudemap-runtime-state.json',
       },
     ],
   }

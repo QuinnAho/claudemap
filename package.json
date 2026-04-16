@@ -38,6 +38,8 @@
     "skill"
   ],
   "scripts": {
+    "test": "node ./scripts/smoke-test-package.js",
+    "test:package": "node ./scripts/smoke-test-package.js",
     "dev": "npm --workspace app run dev",
     "build": "npm --workspace app run build",
     "pack:test": "npm pack --pack-destination artifacts/npm --cache artifacts/.npm-cache",

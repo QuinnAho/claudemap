@@ -8,8 +8,8 @@
       "summary": "Full repo overview",
       "scope": null,
       "cachePath": "claudemap-cache.json",
-      "graphPath": "claudemap-runtime.json",
-      "statePath": "claudemap-runtime-state.json"
+      "graphPath": "graph/claudemap-runtime.json",
+      "statePath": "graph/claudemap-runtime-state.json"
     },
     {
       "id": "skill-runtime",
@@ -25,8 +25,8 @@
         "stale": false
       },
       "cachePath": "claudemap-cache.skill-runtime.json",
-      "graphPath": "claudemap-runtime.skill-runtime.json",
-      "statePath": "claudemap-runtime-state.skill-runtime.json"
+      "graphPath": "graph/claudemap-runtime.skill-runtime.json",
+      "statePath": "graph/claudemap-runtime-state.skill-runtime.json"
     }
   ]
 }

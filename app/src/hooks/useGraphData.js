@@ -234,8 +234,8 @@ function createLegacyManifest() {
         summary: 'Full repo overview',
         scope: null,
         cachePath: 'claudemap-cache.json',
-        graphPath: 'claudemap-runtime.json',
-        statePath: 'claudemap-runtime-state.json',
+        graphPath: 'graph/claudemap-runtime.json',
+        statePath: 'graph/claudemap-runtime-state.json',
       },
     ],
   }

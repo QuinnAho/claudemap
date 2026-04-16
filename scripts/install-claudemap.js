@@ -271,14 +271,7 @@ function installDependencies(targetRoot, dryRun) {
   return runtimeInstallRoot
 }
 
-function main() {
-  const options = parseArgs(process.argv.slice(2))
-
-  if (options.help) {
-    printUsage()
-    return
-  }
-
+function installClaudeMap(options) {
   ensureTargetRepository(options.targetRoot)
   buildArtifactIfNeeded(options)
 
@@ -322,11 +315,36 @@ function main() {
   }
 
   console.log(`Public commands: ${(manifest.publicCommands || []).join(', ')}`)
+
+  return {
+    installState,
+    manifest,
+    recordPath,
+    removedManagedPaths,
+    runtimeInstallRoot,
+  }
 }
 
-try {
-  main()
-} catch (error) {
-  console.error(`ClaudeMap install failed: ${error.message}`)
-  process.exitCode = 1
+function main(argv = process.argv.slice(2)) {
+  const options = parseArgs(argv)
+
+  if (options.help) {
+    printUsage()
+    return
+  }
+
+  installClaudeMap(options)
+}
+
+module.exports = {
+  installClaudeMap,
+}
+
+if (require.main === module) {
+  try {
+    main()
+  } catch (error) {
+    console.error(`ClaudeMap install failed: ${error.message}`)
+    process.exitCode = 1
+  }
 }

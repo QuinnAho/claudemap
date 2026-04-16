@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import path from 'path'
+import { fileURLToPath } from 'url'
 import { collectProjectSnapshot } from '../lib/file-walker.js'
 import {
   enrichGraph,
@@ -17,6 +18,8 @@ import {
   writeManifest,
 } from '../lib/map-manifest.js'
 import { closeMcpClient, connectMcpClient, renderGraph } from '../lib/mcp-client.js'
+
+const CURRENT_FILE_PATH = fileURLToPath(import.meta.url)
 
 function resolveProjectRoot(argv) {
   const optionsWithValues = new Set(['--enrichment-file'])
@@ -66,8 +69,11 @@ function countSystems(graphData) {
   return graphData.nodes.filter((node) => node.type === 'system').length
 }
 
-async function main() {
-  const argv = process.argv.slice(2)
+function isDirectExecution() {
+  return process.argv[1] && path.resolve(process.argv[1]) === CURRENT_FILE_PATH
+}
+
+export async function main(argv = process.argv.slice(2)) {
 
   if (hasFlag(argv, 'help') || hasFlag(argv, 'h')) {
     printUsage()
@@ -81,7 +87,7 @@ async function main() {
   const openBrowser = hasFlag(argv, 'open-browser')
   const useStdioMcp = hasFlag(argv, 'stdio-mcp')
   const enrichmentFile = getOptionValue(argv, 'enrichment-file')
-  const responseText = enrichmentFile ? await readFileIfExists(enrichmentFile) : null
+  const responseText = enrichmentFile ? await loadEnrichmentFileStrict(enrichmentFile) : null
   let manifest = ensureManifestForSetup(projectRoot)
   setActiveMapId(manifest, DEFAULT_MAP_ID)
   manifest = writeManifest(projectRoot, manifest)
@@ -89,9 +95,12 @@ async function main() {
   const rootMapPaths = resolveMapPaths(projectRoot, rootMapEntry)
   const snapshot = collectProjectSnapshot(projectRoot)
   const existingCache = readCache(projectRoot, { relativePath: rootMapEntry.cachePath })
-  const useCache =
-    !forceRefresh && existingCache && !isCacheStale(projectRoot, snapshot.files, existingCache)
   const hasExplicitEnrichmentInput = Boolean(responseText) || hasEnrichmentResponseOverride()
+  const useCache =
+    !forceRefresh &&
+    !hasExplicitEnrichmentInput &&
+    existingCache &&
+    !isCacheStale(projectRoot, snapshot.files, existingCache)
 
   let graphData
   let cacheMode = 'reused'
@@ -100,7 +109,10 @@ async function main() {
   if (useCache) {
     graphData = existingCache.graph
   } else {
-    const nextGraph = await enrichGraph(snapshot, { responseText })
+    const nextGraph = await enrichGraph(snapshot, {
+      responseText,
+      strict: Boolean(enrichmentFile),
+    })
     preservedGraphSelection = selectPreferredGraph(existingCache?.graph, nextGraph, {
       forceRefresh,
       allowLowerPriorityOverwrite: hasExplicitEnrichmentInput,
@@ -167,14 +179,35 @@ async function main() {
   }
 }
 
-main().catch((error) => {
-  console.error(`ClaudeMap failed: ${error.message}`)
-  process.exitCode = 1
-})
-
 async function readFileIfExists(filePath) {
   const resolvedPath = path.resolve(filePath)
   return (await import('fs/promises')).readFile(resolvedPath, 'utf8')
+}
+
+async function loadEnrichmentFileStrict(filePath) {
+  const fs = await import('fs/promises')
+  const resolvedPath = path.resolve(filePath)
+  let rawContent
+
+  try {
+    rawContent = await fs.readFile(resolvedPath, 'utf8')
+  } catch (error) {
+    if (error && error.code === 'ENOENT') {
+      throw new Error(
+        `Enrichment file not found: ${resolvedPath}. Save the @claudemap-architect subagent output to that file before running setup-claudemap.`,
+      )
+    }
+
+    throw error
+  }
+
+  if (typeof rawContent !== 'string' || rawContent.trim().length === 0) {
+    throw new Error(
+      `Enrichment file is empty: ${resolvedPath}. The @claudemap-architect subagent must return valid graph JSON before setup-claudemap runs. Refusing to fall back to the heuristic graph silently.`,
+    )
+  }
+
+  return rawContent
 }
 
 function mcpClientModeLabel(renderResult, preferredLabel) {
@@ -183,4 +216,11 @@ function mcpClientModeLabel(renderResult, preferredLabel) {
   }
 
   return preferredLabel
+}
+
+if (isDirectExecution()) {
+  main().catch((error) => {
+    console.error(`ClaudeMap failed: ${error.message}`)
+    process.exitCode = 1
+  })
 }
