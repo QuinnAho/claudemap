@@ -17,6 +17,7 @@ import {
   showCaption,
   updateNode,
 } from '../../../skill/lib/mcp-client.js'
+import { PRESENTATION_MODES } from '../contracts/presentation.js'
 
 export const toolDefinitions = [
   { name: 'render_graph', description: 'Render a full ClaudeMap graph payload.' },
@@ -138,14 +139,14 @@ export function createToolHandlers() {
       __runtimeTarget,
     } = {}) => {
       const client = createRuntimeClient(__runtimeTarget)
-      await setPresentationMode(client, mode || 'free', {
+      await setPresentationMode(client, mode || PRESENTATION_MODES.FREE, {
         lockInput,
         title,
         stepLabel,
         explanation,
         resetScene,
       })
-      return textResponse('set_presentation_mode', `Presentation mode ${mode || 'free'}`)
+      return textResponse('set_presentation_mode', `Presentation mode ${mode || PRESENTATION_MODES.FREE}`)
     },
     present_step: async ({
       nodeId,

@@ -1,5 +1,6 @@
 import { Compass } from 'lucide-react'
 import { useState } from 'react'
+import { PRESENTATION_MODES } from '../../contracts/presentation'
 import { setActiveMap } from '../../lib/mapApi'
 import { useGraphStore } from '../../store/graphStore'
 import MapSelector from './MapSelector'
@@ -10,7 +11,7 @@ export default function TopBar() {
   const meta = useGraphStore((state) => state.meta)
   const [isReturningHome, setIsReturningHome] = useState(false)
   const headerText =
-    presentationMode !== 'free'
+    presentationMode !== PRESENTATION_MODES.FREE
       ? 'shhh... claude is presenting...'
       : ''
 

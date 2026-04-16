@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { PRESENTATION_MODES } from '../../contracts/presentation'
 import { useGraphStore } from '../../store/graphStore'
 
 const TYPE_INTERVAL_MS = 16
@@ -47,7 +48,7 @@ export default function PresentationOverlay() {
     return () => window.clearInterval(intervalId)
   }, [explanation, presentationCaption?.updatedAt])
 
-  if (presentationMode === 'free') {
+  if (presentationMode === PRESENTATION_MODES.FREE) {
     return null
   }
 

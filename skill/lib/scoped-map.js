@@ -1,5 +1,6 @@
 import { findMapById } from './map-manifest.js'
 import { createSystemImportEdges } from './import-resolution.js'
+import { GRAPH_SOURCES } from './contracts/graph-sources.js'
 
 function createChildrenByParentMap(nodes) {
   const childrenByParent = new Map()
@@ -192,7 +193,7 @@ export function buildScopedGraphFromRoot(rootGraph, rootSystemId) {
     meta: {
       ...rootGraph.meta,
       generatedAt: new Date().toISOString(),
-      source: 'scoped-map',
+      source: GRAPH_SOURCES.SCOPED_MAP,
       scope: {
         rootSystemId: rootNode.id,
         rootSystemLabel: rootNode.label || rootNode.id,
@@ -212,7 +213,7 @@ export function slugifyMapId(value) {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
 
-  return normalizedValue || 'scoped-map'
+  return normalizedValue || GRAPH_SOURCES.SCOPED_MAP
 }
 
 export function allocateMapId(manifest, label) {

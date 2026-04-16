@@ -393,7 +393,8 @@ const FUNCTION_SUMMARIES = {
   'skill/lib/scoped-map.js#buildScopedGraphFromRoot': 'Cuts a subsystem graph out of the root map',
 }
 
-function buildSeedMapGraph(snapshot) {
+function buildSeedMapGraph(snapshot, contracts) {
+  const { GRAPH_SOURCES } = contracts
   const filteredFiles = snapshot.files
     .filter((file) => !EXCLUDED_PREFIXES.some((prefix) => file.relativePath.startsWith(prefix)))
     .filter((file) => !EXCLUDED_PATHS.has(file.relativePath))
@@ -453,7 +454,7 @@ function buildSeedMapGraph(snapshot) {
         branch: nextSnapshot.branch || 'workspace',
         creditLabel: 'ClaudeMap self-map',
         generatedAt: nextSnapshot.generatedAt,
-        source: 'manual',
+        source: GRAPH_SOURCES.MANUAL,
       },
       nodes: [...systemNodes, ...fileNodes, ...functionNodes],
       edges,

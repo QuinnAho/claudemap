@@ -48,7 +48,8 @@ function writeJsonFile(filePath, data) {
   fs.writeFileSync(filePath, JSON.stringify(data, null, 2))
 }
 
-function createRuntimeStateFromGraph(graphData) {
+function createRuntimeStateFromGraph(graphData, contracts) {
+  const { GRAPH_SOURCES, PRESENTATION_MODES } = contracts
   const normalizedGraph =
     graphData && Array.isArray(graphData.nodes) && Array.isArray(graphData.edges)
       ? graphData
@@ -60,7 +61,7 @@ function createRuntimeStateFromGraph(graphData) {
     graphMeta: {
       repoName: normalizedGraph.meta?.repoName || 'claudemap',
       generatedAt: normalizedGraph.meta?.generatedAt || null,
-      source: normalizedGraph.meta?.source || 'manual',
+      source: normalizedGraph.meta?.source || GRAPH_SOURCES.MANUAL,
       nodeCount: normalizedGraph.nodes.length,
       edgeCount: normalizedGraph.edges.length,
       fileCount: Array.isArray(normalizedGraph.files) ? normalizedGraph.files.length : 0,
@@ -72,7 +73,7 @@ function createRuntimeStateFromGraph(graphData) {
       focus: null,
       guidedFlow: null,
       presentation: {
-        mode: 'free',
+        mode: PRESENTATION_MODES.FREE,
         lockInput: false,
         title: null,
         explanation: null,
@@ -122,7 +123,12 @@ function buildApp() {
   })
 }
 
-function main() {
+async function main() {
+  const [{ GRAPH_SOURCES }, { PRESENTATION_MODES }] = await Promise.all([
+    import('../skill/lib/contracts/graph-sources.js'),
+    import('../skill/lib/contracts/presentation.js'),
+  ])
+  const contracts = { GRAPH_SOURCES, PRESENTATION_MODES }
   const pagesConfig = getGitHubPagesConfig()
   const seededSelfMap = readJsonFile(SEEDED_SELF_MAP_PATH)
   const originalGraph = fs.existsSync(RUNTIME_GRAPH_PATH)
@@ -142,7 +148,7 @@ function main() {
       emptyOutDir: true,
     })
     writeJsonFile(RUNTIME_GRAPH_PATH, seededSelfMap)
-    writeJsonFile(RUNTIME_STATE_PATH, createRuntimeStateFromGraph(seededSelfMap))
+    writeJsonFile(RUNTIME_STATE_PATH, createRuntimeStateFromGraph(seededSelfMap, contracts))
     writeJsonFile(RUNTIME_MANIFEST_PATH, createDefaultMapsManifest())
 
     const result = buildApp()
@@ -185,9 +191,7 @@ function main() {
   }
 }
 
-try {
-  main()
-} catch (error) {
+main().catch((error) => {
   console.error(`ClaudeMap site build failed: ${error.message}`)
   process.exitCode = 1
-}
+})

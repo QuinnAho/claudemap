@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
+import { GRAPH_SOURCES } from '../contracts/graph-sources'
+import { PRESENTATION_MODES } from '../contracts/presentation'
 import { useGraphStore } from '../store/graphStore'
 import {
   FILE_NODE_HEIGHT,
@@ -207,7 +209,7 @@ function createDefaultRuntimeEnvelope() {
       focus: null,
       guidedFlow: null,
       presentation: {
-        mode: 'free',
+        mode: PRESENTATION_MODES.FREE,
         lockInput: false,
         title: null,
         explanation: null,
@@ -372,7 +374,7 @@ export function useGraphData() {
       setMeta({
         repoName: graphData.meta?.repoName || 'claudemap',
         creditLabel: graphData.meta?.creditLabel || 'ClaudeMap graph',
-        source: graphData.meta?.source || 'seed',
+        source: graphData.meta?.source || GRAPH_SOURCES.SEED,
         lastSyncedAt: Date.now(),
       })
       setGraphLoaded(true)

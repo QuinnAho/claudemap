@@ -72,14 +72,14 @@ function writeJsonFile(filePath, data) {
   fs.writeFileSync(filePath, JSON.stringify(data, null, 2))
 }
 
-function createEmptyRuntimeGraph() {
+function createEmptyRuntimeGraph(contracts) {
   return {
     meta: {
       repoName: 'claudemap',
       branch: 'workspace',
       creditLabel: 'ClaudeMap skill',
       generatedAt: null,
-      source: 'file-shim',
+      source: contracts.GRAPH_SOURCES.FILE_SHIM,
     },
     nodes: [],
     edges: [],
@@ -105,10 +105,11 @@ function createDefaultMapsManifest() {
   }
 }
 
-function createDefaultRuntimeStateFromGraph(graphData) {
+function createDefaultRuntimeStateFromGraph(graphData, contracts) {
+  const { GRAPH_SOURCES, PRESENTATION_MODES } = contracts
   const normalizedGraph = graphData && Array.isArray(graphData.nodes) && Array.isArray(graphData.edges)
     ? graphData
-    : createEmptyRuntimeGraph()
+    : createEmptyRuntimeGraph(contracts)
 
   return {
     graphRevision: 0,
@@ -116,7 +117,7 @@ function createDefaultRuntimeStateFromGraph(graphData) {
     graphMeta: {
       repoName: normalizedGraph.meta?.repoName || 'claudemap',
       generatedAt: normalizedGraph.meta?.generatedAt || null,
-      source: normalizedGraph.meta?.source || 'seed',
+      source: normalizedGraph.meta?.source || GRAPH_SOURCES.SEED,
       nodeCount: normalizedGraph.nodes.length,
       edgeCount: normalizedGraph.edges.length,
       fileCount: Array.isArray(normalizedGraph.files) ? normalizedGraph.files.length : 0,
@@ -128,7 +129,7 @@ function createDefaultRuntimeStateFromGraph(graphData) {
       focus: null,
       guidedFlow: null,
       presentation: {
-        mode: 'free',
+        mode: PRESENTATION_MODES.FREE,
         lockInput: false,
         title: null,
         explanation: null,
@@ -148,10 +149,10 @@ function readJsonFileOrFallback(filePath, fallbackFactory) {
   }
 }
 
-function writeRuntimePlaceholders(projectRoot, graphSourcePath = DEFAULT_SEED_MAP_PATH) {
+function writeRuntimePlaceholders(projectRoot, contracts, graphSourcePath = DEFAULT_SEED_MAP_PATH) {
   const packagedGraph = readJsonFileOrFallback(
     graphSourcePath,
-    createEmptyRuntimeGraph,
+    () => createEmptyRuntimeGraph(contracts),
   )
 
   // Graphs live in a dedicated `graph/` subdirectory under `app/public/` so
@@ -163,12 +164,20 @@ function writeRuntimePlaceholders(projectRoot, graphSourcePath = DEFAULT_SEED_MA
   )
   writeJsonFile(
     path.join(projectRoot, SKILL_ROOT, 'app', 'public', 'graph', 'claudemap-runtime-state.json'),
-    createDefaultRuntimeStateFromGraph(packagedGraph),
+    createDefaultRuntimeStateFromGraph(packagedGraph, contracts),
   )
   writeJsonFile(
     path.join(projectRoot, SKILL_ROOT, 'app', 'public', 'claudemap-maps.json'),
     createDefaultMapsManifest(),
   )
+}
+
+async function loadContracts() {
+  const [{ GRAPH_SOURCES }, { PRESENTATION_MODES }] = await Promise.all([
+    import('../skill/lib/contracts/graph-sources.js'),
+    import('../skill/lib/contracts/presentation.js'),
+  ])
+  return { GRAPH_SOURCES, PRESENTATION_MODES }
 }
 
 function writeTextFile(filePath, content) {
@@ -548,14 +557,15 @@ function maybeCreateZip(artifactRoot, outputRoot, zipRequested) {
   return createWindowsZip(artifactRoot, outputRoot)
 }
 
-function buildClaudeMapArtifact(options = {}) {
+async function buildClaudeMapArtifact(options = {}) {
   const normalizedOptions = {
     outputRoot: options.outputRoot || DEFAULT_OUTPUT_ROOT,
     zip: options.zip === true,
   }
+  const contracts = await loadContracts()
   const artifactRoot = ensureCleanArtifactLocation(normalizedOptions.outputRoot)
   copyArtifactFiles(artifactRoot)
-  writeRuntimePlaceholders(artifactRoot)
+  writeRuntimePlaceholders(artifactRoot, contracts)
   writeSlashCommands(artifactRoot)
   writeNavigationDocs(artifactRoot)
   writeArtifactManifest(artifactRoot)
@@ -566,7 +576,7 @@ function buildClaudeMapArtifact(options = {}) {
   }
 }
 
-function main(argv = process.argv.slice(2)) {
+async function main(argv = process.argv.slice(2)) {
   const options = parseArgs(argv)
 
   if (options.help) {
@@ -574,7 +584,7 @@ function main(argv = process.argv.slice(2)) {
     return
   }
 
-  const { artifactRoot, zipPath } = buildClaudeMapArtifact(options)
+  const { artifactRoot, zipPath } = await buildClaudeMapArtifact(options)
 
   console.log(`ClaudeMap skill artifact ready at ${artifactRoot}`)
   if (zipPath) {
@@ -587,10 +597,8 @@ module.exports = {
 }
 
 if (require.main === module) {
-  try {
-    main()
-  } catch (error) {
+  main().catch((error) => {
     console.error(`ClaudeMap skill packaging failed: ${error.message}`)
     process.exitCode = 1
-  }
+  })
 }

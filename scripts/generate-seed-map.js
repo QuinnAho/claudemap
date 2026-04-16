@@ -5,14 +5,17 @@ const path = require('path')
 const { buildSeedMapGraph } = require('./lib/seed-map-builder.js')
 
 async function main() {
-  const [{ collectProjectSnapshot }] = await Promise.all([
+  const [{ collectProjectSnapshot }, { GRAPH_SOURCES }, { PRESENTATION_MODES }] = await Promise.all([
     import('../skill/lib/file-walker.js'),
+    import('../skill/lib/contracts/graph-sources.js'),
+    import('../skill/lib/contracts/presentation.js'),
   ])
+  const contracts = { GRAPH_SOURCES, PRESENTATION_MODES }
 
   const repoRoot = path.resolve(__dirname, '..')
   const snapshot = collectProjectSnapshot(repoRoot)
-  const { graph, filteredSnapshot, excludedPaths } = buildSeedMapGraph(snapshot)
-  const runtimeState = createRuntimeStateFromGraph(graph)
+  const { graph, filteredSnapshot, excludedPaths } = buildSeedMapGraph(snapshot, contracts)
+  const runtimeState = createRuntimeStateFromGraph(graph, contracts)
   const mapsManifest = createDefaultMapsManifest()
 
   writeJsonFile(path.join(repoRoot, 'contracts', 'claudemap-seed-map.json'), graph)
@@ -23,11 +26,12 @@ async function main() {
   console.log(`Seed map ready at ${path.join(repoRoot, 'contracts', 'claudemap-seed-map.json')}`)
   console.log(`Included files: ${filteredSnapshot.totalFiles}`)
   console.log(`Excluded paths: ${excludedPaths.join(', ')}`)
-  console.log(`Graph source: ${graph.meta?.source || 'heuristic'}`)
+  console.log(`Graph source: ${graph.meta?.source || GRAPH_SOURCES.HEURISTIC}`)
   console.log(`Graph size: ${graph.nodes.length} nodes, ${graph.edges.length} edges`)
 }
 
-function createRuntimeStateFromGraph(graph) {
+function createRuntimeStateFromGraph(graph, contracts) {
+  const { GRAPH_SOURCES, PRESENTATION_MODES } = contracts
   const normalizedGraph =
     graph && Array.isArray(graph.nodes) && Array.isArray(graph.edges)
       ? graph
@@ -39,7 +43,7 @@ function createRuntimeStateFromGraph(graph) {
     graphMeta: {
       repoName: normalizedGraph.meta?.repoName || 'claudemap',
       generatedAt: normalizedGraph.meta?.generatedAt || null,
-      source: normalizedGraph.meta?.source || 'heuristic',
+      source: normalizedGraph.meta?.source || GRAPH_SOURCES.HEURISTIC,
       nodeCount: normalizedGraph.nodes.length,
       edgeCount: normalizedGraph.edges.length,
       fileCount: Array.isArray(normalizedGraph.files) ? normalizedGraph.files.length : 0,
@@ -51,7 +55,7 @@ function createRuntimeStateFromGraph(graph) {
       focus: null,
       guidedFlow: null,
       presentation: {
-        mode: 'free',
+        mode: PRESENTATION_MODES.FREE,
         lockInput: false,
         title: null,
         explanation: null,

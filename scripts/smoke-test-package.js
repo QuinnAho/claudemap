@@ -47,9 +47,9 @@ function removeAndRecreate(directoryPath) {
   fs.mkdirSync(directoryPath, { recursive: true })
 }
 
-function buildArtifact() {
+async function buildArtifact() {
   removeAndRecreate(ARTIFACT_OUTPUT_ROOT)
-  const { artifactRoot } = buildClaudeMapArtifact({
+  const { artifactRoot } = await buildClaudeMapArtifact({
     outputRoot: ARTIFACT_OUTPUT_ROOT,
     zip: false,
   })
@@ -249,12 +249,13 @@ async function assertScopedPythonEdgeInference() {
   const scopedMapModulePath = path.join(REPO_ROOT, 'skill', 'lib', 'scoped-map.js')
   const scopedMapModuleUrl = `${pathToFileURL(scopedMapModulePath).href}?t=${Date.now()}-${Math.random()}`
   const { buildScopedGraphFromRoot } = await import(scopedMapModuleUrl)
+  const { GRAPH_SOURCES } = await import('../skill/lib/contracts/graph-sources.js')
   const rootGraph = {
     meta: {
       repoName: 'python-scope-fixture',
       branch: 'main',
       generatedAt: new Date().toISOString(),
-      source: 'claude',
+      source: GRAPH_SOURCES.CLAUDE,
     },
     nodes: [
       {
@@ -340,7 +341,7 @@ async function assertScopedPythonEdgeInference() {
 
 async function main() {
   createFixtureRepo()
-  const artifactRoot = buildArtifact()
+  const artifactRoot = await buildArtifact()
   installClaudeMap({
     artifactRoot,
     buildArtifact: false,

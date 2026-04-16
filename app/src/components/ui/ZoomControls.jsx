@@ -1,5 +1,6 @@
 import { Activity, Locate, Minus, Plus } from 'lucide-react'
 import { useReactFlow } from '@xyflow/react'
+import { PRESENTATION_MODES } from '../../contracts/presentation'
 import { useGraphStore } from '../../store/graphStore'
 
 export default function ZoomControls() {
@@ -53,7 +54,7 @@ export default function ZoomControls() {
         pointerEvents: 'auto',
       }}
     >
-      {presentationMode === 'free' ? (
+      {presentationMode === PRESENTATION_MODES.FREE ? (
         <div style={islandStyle}>
           <button
             style={getButtonStyle(healthOverlay)}

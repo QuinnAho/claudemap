@@ -1,4 +1,6 @@
 import { create } from 'zustand'
+import { GRAPH_SOURCES } from '../contracts/graph-sources'
+import { PRESENTATION_MODES } from '../contracts/presentation'
 
 function arePathsEqual(left = [], right = []) {
   if (left.length !== right.length) {
@@ -17,7 +19,7 @@ export const useGraphStore = create((set) => ({
   meta: {
     repoName: 'claudemap',
     creditLabel: 'ClaudeMap graph',
-    source: 'runtime',
+    source: GRAPH_SOURCES.RUNTIME,
     lastSyncedAt: Date.now(),
   },
   selectedNode: null,
@@ -27,7 +29,7 @@ export const useGraphStore = create((set) => ({
   hoveredPathIds: [],
   focusRequest: null,
   guidedFlowRequest: null,
-  presentationMode: 'free',
+  presentationMode: PRESENTATION_MODES.FREE,
   presentationLockInput: false,
   presentationCaption: null,
 
@@ -94,9 +96,9 @@ export const useGraphStore = create((set) => ({
         : []
       const focusRequest = controls?.focus || null
       const guidedFlowRequest = controls?.guidedFlow || null
-      const presentationMode = controls?.presentation?.mode || 'free'
+      const presentationMode = controls?.presentation?.mode || PRESENTATION_MODES.FREE
       const shouldClearSelection =
-        presentationMode !== 'free' &&
+        presentationMode !== PRESENTATION_MODES.FREE &&
         !focusRequest &&
         !guidedFlowRequest &&
         highlightedNodes.length === 0
@@ -150,7 +152,7 @@ export const useGraphStore = create((set) => ({
       hoveredPathIds: [],
       focusRequest: null,
       guidedFlowRequest: null,
-      presentationMode: 'free',
+      presentationMode: PRESENTATION_MODES.FREE,
       presentationLockInput: false,
       presentationCaption: null,
     }),

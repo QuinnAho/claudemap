@@ -1,6 +1,8 @@
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { GRAPH_SOURCES } from './contracts/graph-sources.js'
+import { PRESENTATION_MODES } from './contracts/presentation.js'
 import { writeJsonFileAtomic } from './runtime-paths.js'
 
 const DEFAULT_RUNTIME_GRAPH_PATH = path.resolve(
@@ -18,7 +20,7 @@ function createDefaultRuntimeState() {
     focus: null,
     guidedFlow: null,
     presentation: {
-      mode: 'free',
+      mode: PRESENTATION_MODES.FREE,
       lockInput: false,
       title: null,
       explanation: null,
@@ -36,7 +38,7 @@ function createDefaultRuntimeEnvelope() {
     graphMeta: {
       repoName: 'claudemap',
       generatedAt: null,
-      source: 'file-shim',
+      source: GRAPH_SOURCES.FILE_SHIM,
       nodeCount: 0,
       edgeCount: 0,
       fileCount: 0,
@@ -47,14 +49,14 @@ function createDefaultRuntimeEnvelope() {
 
 function normalizePresentationMode(mode) {
   if (mode === 'locked-demo') {
-    return 'locked'
+    return PRESENTATION_MODES.LOCKED
   }
 
-  if (mode === 'guided' || mode === 'locked') {
+  if (mode === PRESENTATION_MODES.GUIDED || mode === PRESENTATION_MODES.LOCKED) {
     return mode
   }
 
-  return 'free'
+  return PRESENTATION_MODES.FREE
 }
 
 function createEmptyGraph() {
@@ -64,7 +66,7 @@ function createEmptyGraph() {
       branch: 'workspace',
       creditLabel: 'ClaudeMap skill',
       generatedAt: new Date().toISOString(),
-      source: 'file-shim',
+      source: GRAPH_SOURCES.FILE_SHIM,
     },
     nodes: [],
     edges: [],
@@ -93,11 +95,11 @@ function normalizeRuntimeState(runtime) {
       ...normalizedPresentation,
       explanation: normalizedExplanation,
       body: normalizedPresentation.body || normalizedExplanation,
-      mode: normalizedPresentation.mode || 'free',
+      mode: normalizedPresentation.mode || PRESENTATION_MODES.FREE,
       lockInput:
         typeof normalizedPresentation.lockInput === 'boolean'
           ? normalizedPresentation.lockInput
-          : normalizedPresentation.mode === 'locked',
+          : normalizedPresentation.mode === PRESENTATION_MODES.LOCKED,
     },
   }
 }
@@ -106,7 +108,7 @@ function summarizeGraph(graph) {
   return {
     repoName: graph.meta?.repoName || 'claudemap',
     generatedAt: graph.meta?.generatedAt || null,
-    source: graph.meta?.source || 'file-shim',
+    source: graph.meta?.source || GRAPH_SOURCES.FILE_SHIM,
     nodeCount: Array.isArray(graph.nodes) ? graph.nodes.length : 0,
     edgeCount: Array.isArray(graph.edges) ? graph.edges.length : 0,
     fileCount: Array.isArray(graph.files) ? graph.files.length : 0,
@@ -210,7 +212,7 @@ function applyGraphChangesToGraph(graph, payload = {}) {
       ...graph.meta,
       ...payload.meta,
       generatedAt: payload.meta.generatedAt || graph.meta?.generatedAt || new Date().toISOString(),
-      source: payload.meta.source || graph.meta?.source || 'file-shim',
+      source: payload.meta.source || graph.meta?.source || GRAPH_SOURCES.FILE_SHIM,
     }
   }
 
@@ -282,7 +284,7 @@ async function invokeFileShim(client, toolName, payload) {
           ...graph.meta,
           ...(payload.meta || {}),
           generatedAt: payload.meta?.generatedAt || new Date().toISOString(),
-          source: payload.meta?.source || 'file-shim',
+          source: payload.meta?.source || GRAPH_SOURCES.FILE_SHIM,
         },
         nodes: payload.nodes || [],
         edges: payload.edges || [],
@@ -444,9 +446,9 @@ async function invokeFileShim(client, toolName, payload) {
       const nextMode = normalizePresentationMode(payload.mode)
       const shouldResetScene = payload.resetScene !== false
       const nextPresentation =
-        nextMode === 'free'
+        nextMode === PRESENTATION_MODES.FREE
           ? {
-              mode: 'free',
+              mode: PRESENTATION_MODES.FREE,
               lockInput: false,
               title: null,
               explanation: null,
@@ -460,7 +462,7 @@ async function invokeFileShim(client, toolName, payload) {
               lockInput:
                 typeof payload.lockInput === 'boolean'
                   ? payload.lockInput
-                  : nextMode === 'locked',
+                  : nextMode === PRESENTATION_MODES.LOCKED,
               explanation:
                 payload.explanation === undefined
                   ? shouldResetScene
@@ -503,7 +505,7 @@ async function invokeFileShim(client, toolName, payload) {
 
     case 'present_step': {
       const nextMode = normalizePresentationMode(
-        payload.mode || runtimeEnvelope.runtime.presentation?.mode || 'guided',
+        payload.mode || runtimeEnvelope.runtime.presentation?.mode || PRESENTATION_MODES.GUIDED,
       )
       const nextExplanation = payload.explanation || null
 
@@ -525,7 +527,7 @@ async function invokeFileShim(client, toolName, payload) {
             lockInput:
               typeof payload.lockInput === 'boolean'
                 ? payload.lockInput
-                : nextMode === 'locked',
+                : nextMode === PRESENTATION_MODES.LOCKED,
             title: payload.title || null,
             explanation: nextExplanation,
             body: nextExplanation,
@@ -544,11 +546,11 @@ async function invokeFileShim(client, toolName, payload) {
           ...runtimeEnvelope.runtime,
           presentation: {
             ...runtimeEnvelope.runtime.presentation,
-            mode: runtimeEnvelope.runtime.presentation?.mode || 'guided',
+            mode: runtimeEnvelope.runtime.presentation?.mode || PRESENTATION_MODES.GUIDED,
             lockInput:
               typeof runtimeEnvelope.runtime.presentation?.lockInput === 'boolean'
                 ? runtimeEnvelope.runtime.presentation.lockInput
-                : normalizePresentationMode(runtimeEnvelope.runtime.presentation?.mode) === 'locked',
+                : normalizePresentationMode(runtimeEnvelope.runtime.presentation?.mode) === PRESENTATION_MODES.LOCKED,
             title: payload.title || null,
             explanation: payload.body || '',
             body: payload.body || '',
@@ -728,7 +730,7 @@ export async function presentStep(mcpClient, options = {}) {
     nodeIds: options.nodeIds || [],
     color: options.color || 'accent',
     zoom: options.zoom || 1,
-    mode: options.mode || 'guided',
+    mode: options.mode || PRESENTATION_MODES.GUIDED,
     lockInput: options.lockInput,
     title: options.title || null,
     stepLabel: options.stepLabel || null,

@@ -1,6 +1,7 @@
 import { ReactFlowProvider } from '@xyflow/react'
 import GraphCanvas from './GraphCanvas'
 import PresentationOverlay from './PresentationOverlay'
+import { PRESENTATION_MODES } from '../../contracts/presentation'
 import { useGraphStore } from '../../store/graphStore'
 
 export default function GraphRuntime() {
@@ -10,7 +11,7 @@ export default function GraphRuntime() {
     <ReactFlowProvider>
       <div style={{ position: 'relative', width: '100%', height: '100%' }}>
         <GraphCanvas />
-        {presentationMode !== 'free' ? (
+        {presentationMode !== PRESENTATION_MODES.FREE ? (
           <div
             style={{
               position: 'absolute',

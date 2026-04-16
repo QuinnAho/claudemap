@@ -2,6 +2,7 @@ import { Background, ReactFlow, useReactFlow } from '@xyflow/react'
 import { useCallback, useEffect, useRef } from 'react'
 import '@xyflow/react/dist/style.css'
 import ZoomControls from '../ui/ZoomControls'
+import { PRESENTATION_MODES } from '../../contracts/presentation'
 import { useGraphStore } from '../../store/graphStore'
 import { useGraphData } from '../../hooks/useGraphData'
 import { useLayout } from '../../hooks/useLayout'
@@ -75,8 +76,8 @@ export default function GraphCanvas() {
   const layoutReady = useLayout(zoomLevel)
   const graphReady = graphLoaded && layoutReady
   const hasMountedGraphRef = useRef(false)
-  const sceneInteractionLocked = presentationMode !== 'free'
-  const highlightMode = presentationMode === 'free' ? 'subtle' : 'presentation'
+  const sceneInteractionLocked = presentationMode !== PRESENTATION_MODES.FREE
+  const highlightMode = presentationMode === PRESENTATION_MODES.FREE ? 'subtle' : 'presentation'
   const leaveTimeoutRef = useRef(null)
   const hoverFrameRef = useRef(null)
   const pendingHoverPathRef = useRef([])
@@ -98,7 +99,7 @@ export default function GraphCanvas() {
   const runtimeExpandedSystemIds = new Set(
     zoomLevel === ZOOM_LEVELS.OVERVIEW
       ? []
-      : presentationMode === 'free'
+      : presentationMode === PRESENTATION_MODES.FREE
         ? [
             ...highlightedNodes.flatMap((nodeId) => getSystemPath(nodeId, nodeById)),
             ...(focusRequest?.nodeId ? getSystemPath(focusRequest.nodeId, nodeById) : []),
@@ -113,7 +114,7 @@ export default function GraphCanvas() {
   const expandedSystemIds = new Set(
     zoomLevel === ZOOM_LEVELS.OVERVIEW
       ? []
-      : presentationMode === 'free'
+      : presentationMode === PRESENTATION_MODES.FREE
         ? [...hoveredPathIds, ...runtimeExpandedSystemIds]
         : [...runtimeExpandedSystemIds],
   )
@@ -123,7 +124,7 @@ export default function GraphCanvas() {
       .filter(Boolean),
   )
   const presentationLeadNodeId =
-    presentationMode !== 'free'
+    presentationMode !== PRESENTATION_MODES.FREE
       ? presentationTargetNode?.id || null
       : focusRequest?.nodeId || null
   const presentationLeadSystemId = getTopLevelSystemId(presentationTargetNode, nodeById)
@@ -212,9 +213,9 @@ export default function GraphCanvas() {
         return
       }
 
-      const pathIds = presentationMode === 'free' ? getSystemPath(targetNode.id, nodeById) : []
+      const pathIds = presentationMode === PRESENTATION_MODES.FREE ? getSystemPath(targetNode.id, nodeById) : []
       const viewportTargetNode =
-        presentationMode !== 'free'
+        presentationMode !== PRESENTATION_MODES.FREE
           ? nodeById.get(getTopLevelSystemId(targetNode, nodeById)) || targetNode
           : zoom <= OVERVIEW_FIT_VIEW_OPTIONS.maxZoom && targetNode.type !== 'system'
             ? nodeById.get(getTopLevelSystemId(targetNode, nodeById)) || targetNode
@@ -252,7 +253,7 @@ export default function GraphCanvas() {
         const centerY =
           absolutePosition.y +
           nodeHeight / 2 -
-          (presentationMode !== 'free' ? 48 : 0)
+          (presentationMode !== PRESENTATION_MODES.FREE ? 48 : 0)
         setCenter(centerX, centerY, {
           zoom: Math.max(0.55, Math.min(zoom, 1.4)),
           duration: shouldAnimate ? 450 : 0,
@@ -365,7 +366,7 @@ export default function GraphCanvas() {
   const activeSelectedNode =
     selectedNode && visibleNodeIds.has(selectedNode.id) ? selectedNode : null
   const shouldFitView =
-    presentationMode === 'free' &&
+    presentationMode === PRESENTATION_MODES.FREE &&
     !focusRequest?.nodeId &&
     !(Array.isArray(guidedFlowRequest?.steps) && guidedFlowRequest.steps.length)
   const selectedSystemId = getTopLevelSystemId(activeSelectedNode, nodeById)
@@ -473,7 +474,7 @@ export default function GraphCanvas() {
 
   if (selectedSystemId) {
     visibleEdges.forEach((edge) => {
-      if (presentationMode !== 'free') {
+      if (presentationMode !== PRESENTATION_MODES.FREE) {
         return
       }
 
@@ -500,25 +501,25 @@ export default function GraphCanvas() {
     const isRuntimeHighlighted =
       explicitHighlightedNodeIds.has(node.id) || highlightedSystemIds.has(topLevelSystemId)
     const isBranchHighlighted =
-      presentationMode === 'free' &&
+      presentationMode === PRESENTATION_MODES.FREE &&
       !!activeSelectedNode &&
       !isSelected &&
       !isInSelectedBranch &&
       !!topLevelSystemId &&
       connectedSystemIds.has(topLevelSystemId)
     const isHighlighted = isRuntimeHighlighted || isBranchHighlighted
-    const isPresentationLead = presentationMode !== 'free' && presentationLeadNodeId === node.id
+    const isPresentationLead = presentationMode !== PRESENTATION_MODES.FREE && presentationLeadNodeId === node.id
     const isPresentationContext =
-      presentationMode !== 'free' &&
+      presentationMode !== PRESENTATION_MODES.FREE &&
       !!activeSelectedNode &&
       !isPresentationLead &&
       isNodeInSelectedBranch(node, activeSelectedNode, nodeById)
     const isPresentationAncestor =
-      presentationMode !== 'free' &&
+      presentationMode !== PRESENTATION_MODES.FREE &&
       !isPresentationLead &&
       focusPathIds.has(node.id)
     const isGhosted =
-      presentationMode !== 'free' &&
+      presentationMode !== PRESENTATION_MODES.FREE &&
       !isSelected &&
       !isPresentationContext &&
       !isHighlighted
@@ -562,7 +563,7 @@ export default function GraphCanvas() {
         isPresentationLead,
         isPresentationContext,
         isPresentationAncestor,
-        hideDescription: presentationMode !== 'free',
+        hideDescription: presentationMode !== PRESENTATION_MODES.FREE,
         mapAffordance,
       },
     }
@@ -586,11 +587,11 @@ export default function GraphCanvas() {
     const sourceSystemId = getTopLevelSystemId(nodeById.get(edge.source), nodeById)
     const targetSystemId = getTopLevelSystemId(nodeById.get(edge.target), nodeById)
     const isSelectionTrace =
-      presentationMode === 'free' &&
+      presentationMode === PRESENTATION_MODES.FREE &&
       !!selectedSystemId &&
       (sourceSystemId === selectedSystemId || targetSystemId === selectedSystemId)
     const isHighlighted =
-      presentationMode !== 'free'
+      presentationMode !== PRESENTATION_MODES.FREE
         ? presentationSystemIds.has(sourceSystemId) || presentationSystemIds.has(targetSystemId)
         : isSelectionTrace ||
           explicitHighlightedNodeIds.has(edge.source) ||
@@ -603,7 +604,7 @@ export default function GraphCanvas() {
       data: {
         ...edge.data,
         isHighlighted,
-        isDimmed: presentationMode !== 'free' ? !isHighlighted : !isHighlighted,
+        isDimmed: presentationMode !== PRESENTATION_MODES.FREE ? !isHighlighted : !isHighlighted,
         highlightMode,
         isSelectionTrace,
         isPresentationTrace: false,
@@ -711,7 +712,7 @@ export default function GraphCanvas() {
             panOnDrag
             zoomOnScroll
             zoomOnPinch
-            zoomOnDoubleClick={presentationMode === 'free'}
+            zoomOnDoubleClick={presentationMode === PRESENTATION_MODES.FREE}
             elementsSelectable={!sceneInteractionLocked}
             selectionOnDrag={!sceneInteractionLocked}
             onViewportChange={onViewportChange}
@@ -726,7 +727,7 @@ export default function GraphCanvas() {
               transition: 'opacity 0.18s ease',
             }}
           >
-            {presentationMode === 'free' ? <Background color="#1a1a1a" gap={40} size={1} /> : null}
+            {presentationMode === PRESENTATION_MODES.FREE ? <Background color="#1a1a1a" gap={40} size={1} /> : null}
           </ReactFlow>
           <ZoomControls />
           {isGraphTransitioning ? (

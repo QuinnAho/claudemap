@@ -10,6 +10,7 @@ import {
   getFunctionNodePosition,
   getSystemNodeWidth,
 } from '../components/graph/systemNodeSizing'
+import { PRESENTATION_MODES } from '../contracts/presentation'
 import { getSystemPath } from '../lib/graphNodeUtils'
 import { useGraphStore } from '../store/graphStore'
 import { ZOOM_LEVELS } from './useZoomLevel'
@@ -153,7 +154,7 @@ export function useLayout(zoomLevel) {
     const expandedSystemIds = new Set(
       zoomLevel === ZOOM_LEVELS.OVERVIEW
         ? []
-        : presentationMode === 'free'
+        : presentationMode === PRESENTATION_MODES.FREE
           ? [
               ...hoveredPathIds,
               ...highlightedNodes.flatMap((nodeId) => getSystemPath(nodeId, nodeById)),

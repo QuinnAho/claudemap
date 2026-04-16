@@ -1,6 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { GRAPH_SOURCES } from './contracts/graph-sources.js'
 import { createSystemImportEdges } from './import-resolution.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -8,13 +9,13 @@ const PROMPT_PATH = path.join(__dirname, '../prompts/enrichment.txt')
 const SCOPED_PROMPT_PATH = path.join(__dirname, '../prompts/scoped-enrichment.txt')
 const ARCHITECT_AGENT_PATH = path.join(__dirname, '../../agents/claudemap-architect.md')
 const GRAPH_SOURCE_PRIORITY = {
-  sample: 0,
-  seed: 0,
-  'file-shim': 0,
-  heuristic: 10,
-  claude: 30,
-  imported: 40,
-  manual: 50,
+  [GRAPH_SOURCES.SAMPLE]: 0,
+  [GRAPH_SOURCES.SEED]: 0,
+  [GRAPH_SOURCES.FILE_SHIM]: 0,
+  [GRAPH_SOURCES.HEURISTIC]: 10,
+  [GRAPH_SOURCES.CLAUDE]: 30,
+  [GRAPH_SOURCES.IMPORTED]: 40,
+  [GRAPH_SOURCES.MANUAL]: 50,
 }
 
 function slugify(value) {
@@ -313,7 +314,7 @@ function createHeuristicGraph(snapshot) {
       branch: snapshot.branch || 'workspace',
       creditLabel: 'ClaudeMap skill',
       generatedAt: snapshot.generatedAt,
-      source: 'heuristic',
+      source: GRAPH_SOURCES.HEURISTIC,
     },
     nodes: [...systemNodes, ...fileNodes, ...functionNodes],
     edges,
@@ -323,7 +324,7 @@ function createHeuristicGraph(snapshot) {
 
 async function parseProvidedResponse(snapshot, responseText) {
   const graph = parseGraphResponse(responseText)
-  return normalizeGraphMeta(snapshot, graph, 'claude')
+  return normalizeGraphMeta(snapshot, graph, GRAPH_SOURCES.CLAUDE)
 }
 
 function readResponseOverride() {
@@ -446,7 +447,7 @@ export async function enrichScopedGraph(scopedSnapshot, options = {}) {
       branch: graph.meta?.branch || scopedSnapshot.branch || 'workspace',
       creditLabel: graph.meta?.creditLabel || 'ClaudeMap skill',
       generatedAt: scopedSnapshot.generatedAt || new Date().toISOString(),
-      source: 'claude-scoped',
+      source: GRAPH_SOURCES.CLAUDE_SCOPED,
       scope: scopedSnapshot.scope || null,
     },
     files: scopedSnapshot.files,
