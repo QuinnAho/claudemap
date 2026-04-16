@@ -16,7 +16,7 @@ All powered by the same AI you vibecode with.
 
 ## See It In Action
 
-## What's Coming in v0.2.0
+### What's Coming in v0.2.0
 
 ClaudeMap is under active development. Here's what's landing next:
 
