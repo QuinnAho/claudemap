@@ -10,6 +10,10 @@ async function loadPathContracts() {
   return import('../skill/lib/contracts/paths.js')
 }
 
+async function loadSchemas() {
+  return import('../skill/lib/contracts/schemas/index.js')
+}
+
 function printUsage() {
   console.log('ClaudeMap installer')
   console.log(
@@ -218,7 +222,7 @@ function removePartialInstallMarker(targetRoot, claudeRootDir, markerFilename) {
   fs.rmSync(markerPath, { force: true })
 }
 
-function readInstallRecord(targetRoot, claudeRootDir, installRecordFilename) {
+function readInstallRecord(targetRoot, claudeRootDir, installRecordFilename, schemas) {
   const recordPath = path.join(targetRoot, claudeRootDir, installRecordFilename)
 
   if (!fs.existsSync(recordPath)) {
@@ -226,7 +230,15 @@ function readInstallRecord(targetRoot, claudeRootDir, installRecordFilename) {
   }
 
   try {
-    return readJsonFile(recordPath)
+    const record = readJsonFile(recordPath)
+
+    if (schemas) {
+      schemas.validateWithWarning(schemas.SCHEMA_NAMES.INSTALL_RECORD, record, {
+        filePath: recordPath,
+      })
+    }
+
+    return record
   } catch {
     return null
   }
@@ -342,6 +354,7 @@ function installDependencies(targetRoot, dryRun, skillRootRel) {
 
 async function installClaudeMap(options) {
   const paths = await loadPathContracts()
+  const schemas = await loadSchemas()
   const defaultOutputRoot = path.join(REPO_ROOT, paths.PACKAGE_ARTIFACT_DIR_REL)
 
   ensureTargetRepository(options.targetRoot)
@@ -372,6 +385,7 @@ async function installClaudeMap(options) {
       options.targetRoot,
       paths.CLAUDE_ROOT_DIR,
       paths.INSTALL_RECORD_FILENAME,
+      schemas,
     )
     const removedManagedPaths = previousInstallRecord
       ? removeManagedPaths(options.targetRoot, previousInstallRecord.managedPaths, options.dryRun)

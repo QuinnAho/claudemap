@@ -1,4 +1,5 @@
 import fs from 'fs'
+import { SCHEMA_NAMES } from '../contracts/schemas/index.js'
 import {
   getProjectManifestPath,
   getRuntimeManifestPath,
@@ -28,7 +29,9 @@ function manifestExists(projectRoot) {
 
 export function readManifest(projectRoot) {
   const manifestPath = getProjectManifestPath(projectRoot)
-  const manifest = readJsonFile(manifestPath, createDefaultManifest)
+  const manifest = readJsonFile(manifestPath, createDefaultManifest, {
+    schema: SCHEMA_NAMES.MANIFEST,
+  })
   return normalizeManifest(manifest)
 }
 

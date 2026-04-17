@@ -2,6 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { MAPS_MANIFEST_FILENAME, RUNTIME_INSTALLED_PATH_SUFFIX } from './contracts/paths.js'
+import { validateWithWarning } from './contracts/schemas/index.js'
 
 const RUNTIME_ROOT = path.resolve(fileURLToPath(new URL('../../', import.meta.url)))
 const RUNTIME_PUBLIC_ROOT = path.join(RUNTIME_ROOT, 'app', 'public')
@@ -66,16 +67,23 @@ export function getRuntimeManifestPath() {
   return path.join(RUNTIME_PUBLIC_ROOT, MAPS_MANIFEST_FILENAME)
 }
 
-export function readJsonFile(filePath, fallbackFactory = null) {
+export function readJsonFile(filePath, fallbackFactory = null, options = {}) {
   if (!fs.existsSync(filePath)) {
     return typeof fallbackFactory === 'function' ? fallbackFactory() : null
   }
 
+  let parsed = null
   try {
-    return JSON.parse(fs.readFileSync(filePath, 'utf8'))
+    parsed = JSON.parse(fs.readFileSync(filePath, 'utf8'))
   } catch {
     return typeof fallbackFactory === 'function' ? fallbackFactory() : null
   }
+
+  if (options.schema) {
+    validateWithWarning(options.schema, parsed, { filePath })
+  }
+
+  return parsed
 }
 
 export function writeJsonFileAtomic(filePath, data) {

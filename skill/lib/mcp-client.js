@@ -7,6 +7,7 @@ import {
   APP_PUBLIC_GRAPH_RUNTIME_REL,
   APP_PUBLIC_GRAPH_STATE_REL,
 } from './contracts/paths.js'
+import { SCHEMA_NAMES, validateWithWarning } from './contracts/schemas/index.js'
 import { writeJsonFileAtomic } from './runtime-paths.js'
 
 const DEFAULT_RUNTIME_GRAPH_PATH = path.resolve(
@@ -119,24 +120,31 @@ function summarizeGraph(graph) {
   }
 }
 
-function readJsonFile(filePath, fallbackFactory) {
+function readJsonFile(filePath, fallbackFactory, schemaName) {
   if (!fs.existsSync(filePath)) {
     return fallbackFactory()
   }
 
+  let parsed = null
   try {
-    return JSON.parse(fs.readFileSync(filePath, 'utf8'))
+    parsed = JSON.parse(fs.readFileSync(filePath, 'utf8'))
   } catch {
     return fallbackFactory()
   }
+
+  if (schemaName) {
+    validateWithWarning(schemaName, parsed, { filePath })
+  }
+
+  return parsed
 }
 
 function readGraph(graphPath) {
-  return readJsonFile(graphPath, createEmptyGraph)
+  return readJsonFile(graphPath, createEmptyGraph, SCHEMA_NAMES.GRAPH)
 }
 
 function readRuntimeEnvelope(statePath) {
-  return readJsonFile(statePath, createDefaultRuntimeEnvelope)
+  return readJsonFile(statePath, createDefaultRuntimeEnvelope, SCHEMA_NAMES.RUNTIME_ENVELOPE)
 }
 
 function writeJsonFile(filePath, data) {

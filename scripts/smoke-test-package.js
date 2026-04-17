@@ -15,6 +15,14 @@ async function loadPathContracts() {
   return import('../skill/lib/contracts/paths.js')
 }
 
+async function loadSchemas() {
+  return import('../skill/lib/contracts/schemas/index.js')
+}
+
+async function loadErrors() {
+  return import('../skill/lib/contracts/errors.js')
+}
+
 const REPO_ROOT = path.resolve(__dirname, '..')
 const ARTIFACTS_ROOT = path.join(REPO_ROOT, 'artifacts')
 const SMOKE_ROOT = path.join(ARTIFACTS_ROOT, 'smoke')
@@ -644,6 +652,87 @@ function assertBinCliDryRun() {
   )
 }
 
+// Round-trip: every shape we ship inside the packaged artifact passes
+// its own validator. Malformed ship payloads are a failing PR.
+async function assertPackagedShapesValidate(artifactRoot, paths) {
+  const schemas = await loadSchemas()
+  const skillRoot = path.join(artifactRoot, paths.SKILL_ROOT_REL)
+
+  const graph = readJson(path.join(skillRoot, 'app', 'public', paths.RUNTIME_GRAPH_REL))
+  const graphResult = schemas.validate(schemas.SCHEMA_NAMES.GRAPH, graph)
+  assert(
+    graphResult.ok,
+    `Packaged graph failed schema: ${JSON.stringify(graphResult.errors.slice(0, 3))}`,
+  )
+
+  const state = readJson(path.join(skillRoot, 'app', 'public', paths.RUNTIME_STATE_REL))
+  const stateResult = schemas.validate(schemas.SCHEMA_NAMES.RUNTIME_ENVELOPE, state)
+  assert(
+    stateResult.ok,
+    `Packaged runtime state failed schema: ${JSON.stringify(stateResult.errors.slice(0, 3))}`,
+  )
+
+  const manifest = readJson(path.join(skillRoot, 'app', 'public', paths.MAPS_MANIFEST_FILENAME))
+  const manifestResult = schemas.validate(schemas.SCHEMA_NAMES.MANIFEST, manifest)
+  assert(
+    manifestResult.ok,
+    `Packaged manifest failed schema: ${JSON.stringify(manifestResult.errors.slice(0, 3))}`,
+  )
+}
+
+// Drift detection: a deliberately malformed payload produces a
+// structured warning via the errors contract. This pins the
+// warn+best-effort contract end-to-end.
+async function assertSchemaDriftDetection() {
+  const schemas = await loadSchemas()
+  const errors = await loadErrors()
+
+  const collectedWarnings = []
+  errors.setWarningSink((warn) => collectedWarnings.push(warn))
+
+  try {
+    // Missing required `nodes`; graph validator must reject.
+    schemas.validateWithWarning(
+      schemas.SCHEMA_NAMES.GRAPH,
+      { meta: {}, edges: [] },
+      { filePath: '(drift-fixture)' },
+    )
+
+    assert(
+      collectedWarnings.length === 1,
+      `Expected one schema-validation warning, got ${collectedWarnings.length}`,
+    )
+
+    const [warn] = collectedWarnings
+    assert(
+      warn.code === errors.ERROR_CODES.SCHEMA_VALIDATION_FAILED,
+      `Expected SCHEMA_VALIDATION_FAILED code, got ${warn.code}`,
+    )
+    assert(
+      warn.context && warn.context.schema === schemas.SCHEMA_NAMES.GRAPH,
+      'Drift warning missing schema context',
+    )
+    assert(
+      Array.isArray(warn.context.errors) && warn.context.errors.length > 0,
+      'Drift warning missing per-field errors',
+    )
+
+    // A well-formed value must not fire a warning.
+    collectedWarnings.length = 0
+    schemas.validateWithWarning(
+      schemas.SCHEMA_NAMES.GRAPH,
+      { meta: {}, nodes: [], edges: [] },
+      { filePath: '(happy-path)' },
+    )
+    assert(
+      collectedWarnings.length === 0,
+      `Expected no warnings on valid payload, got ${collectedWarnings.length}`,
+    )
+  } finally {
+    errors.setWarningSink(null)
+  }
+}
+
 async function main() {
   createFixtureRepo()
   await assertAppExclusionRules()
@@ -659,6 +748,8 @@ async function main() {
 
   const paths = await loadPathContracts()
   assertPackagedGraphShapes(artifactRoot, paths)
+  await assertPackagedShapesValidate(artifactRoot, paths)
+  await assertSchemaDriftDetection()
   assertArtifactManifestManagedPaths(artifactRoot, paths)
   assertInstalledLayout()
   assertPromptTemplates()

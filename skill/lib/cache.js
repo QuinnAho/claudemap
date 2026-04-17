@@ -1,4 +1,5 @@
 import { CACHE_FILENAME } from './contracts/paths.js'
+import { SCHEMA_NAMES } from './contracts/schemas/index.js'
 import { readJsonFile, resolveProjectPath, writeJsonFileAtomic } from './runtime-paths.js'
 
 const CACHE_SCHEMA_VERSION = 1
@@ -37,7 +38,7 @@ export function writeCache(projectRoot, graphData, currentFiles = [], options = 
 
 export function readCache(projectRoot, options = {}) {
   const cachePath = getCachePath(projectRoot, options.relativePath)
-  return readJsonFile(cachePath, () => null)
+  return readJsonFile(cachePath, () => null, { schema: SCHEMA_NAMES.CACHE })
 }
 
 export function isCacheStale(projectRoot, currentFileList, cache = readCache(projectRoot)) {
