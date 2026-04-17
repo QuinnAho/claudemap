@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import path from 'path'
+import { fileURLToPath } from 'url'
 import { resolveMapPaths } from '../lib/active-map.js'
 import { readCache, writeCache } from '../lib/cache.js'
 import { diffFiles } from '../lib/differ.js'
@@ -17,52 +18,23 @@ import {
   resolveScopeAgainstGraph,
   writeManifest,
 } from '../lib/map-manifest.js'
-import { closeMcpClient, connectMcpClient, renderGraph } from '../lib/mcp-client.js'
+import { renderGraph } from '../lib/mcp-client.js'
 import { buildScopedGraphFromRoot } from '../lib/scoped-map.js'
 import { GRAPH_SOURCES } from '../lib/contracts/graph-sources.js'
+import { runCommand, exitOnError } from '../lib/command-harness/run-command.js'
+import { success } from '../lib/contracts/errors.js'
+import { loadEnrichmentFileStrict, cleanupEnrichmentFile, readEnrichmentArg } from '../lib/command-harness/enrichment-io.js'
 
-function resolveProjectRoot(argv) {
-  const optionsWithValues = new Set(['--enrichment-file'])
-  const projectRootArg = argv.find((argument, index) => {
-    if (argument.startsWith('--')) {
-      return false
-    }
-
-    const previousArgument = argv[index - 1]
-    return !optionsWithValues.has(previousArgument)
-  })
-  return path.resolve(
-    projectRootArg || process.env.CLAUDEMAP_PROJECT_ROOT || process.env.INIT_CWD || process.cwd(),
-  )
-}
-
-function hasFlag(argv, flagName) {
-  return argv.includes(`--${flagName}`)
-}
-
-function getOptionValue(argv, optionName) {
-  const optionIndex = argv.indexOf(`--${optionName}`)
-
-  if (optionIndex === -1) {
-    return null
+function formatRenderMode(skipRender, mcpClient, graphSource) {
+  if (skipRender) {
+    return 'skipped'
   }
 
-  return argv[optionIndex + 1] || null
-}
-
-function printUsage() {
-  console.log('ClaudeMap refresh')
-  console.log(
-    '  claudemap-refresh [project-root] [--force-refresh] [--no-render] [--stdio-mcp] [--enrichment-file <file>]',
-  )
-}
-
-function formatRenderMode(mcpClient, baseMode) {
   if (mcpClient?.fallbackReason) {
-    return `${baseMode} (stdio fallback:file-shim)`
+    return `full-render (stdio fallback:file-shim) (${graphSource})`
   }
 
-  return baseMode
+  return `full-render (${graphSource})`
 }
 
 async function renderMapGraph(mcpClient, mapPaths, graphData) {
@@ -176,20 +148,12 @@ async function buildRootGraph(snapshot, cache, options) {
   })
 }
 
-async function main() {
-  const argv = process.argv.slice(2)
-
-  if (hasFlag(argv, 'help') || hasFlag(argv, 'h')) {
-    printUsage()
-    return
-  }
-
-  const projectRoot = resolveProjectRoot(argv)
-  const forceRefresh = hasFlag(argv, 'force-refresh')
-  const skipRender = hasFlag(argv, 'no-render')
-  const useStdioMcp = hasFlag(argv, 'stdio-mcp')
-  const enrichmentFile = getOptionValue(argv, 'enrichment-file')
-  const responseText = enrichmentFile ? await loadEnrichmentFileStrict(enrichmentFile) : null
+async function handleUpdate({ ctx, args }) {
+  const projectRoot = ctx.projectRoot
+  const forceRefresh = args.forceRefresh || false
+  const skipRender = args.noRender || false
+  const enrichmentFile = args.enrichmentFile
+  const responseText = enrichmentFile ? loadEnrichmentFileStrict(enrichmentFile) : null
   const enrichmentStrict = Boolean(enrichmentFile)
   let manifest = writeManifest(projectRoot, readManifest(projectRoot))
   const rootMapEntry = findMapById(manifest, DEFAULT_MAP_ID)
@@ -197,13 +161,7 @@ async function main() {
   const snapshot = collectProjectSnapshot(projectRoot)
   const cache = readCache(projectRoot, { relativePath: rootMapEntry.cachePath })
   const hasExplicitEnrichmentInput = Boolean(responseText) || hasEnrichmentResponseOverride()
-  const mcpClient = skipRender
-    ? null
-    : await connectMcpClient({
-        mode: useStdioMcp ? 'stdio' : GRAPH_SOURCES.FILE_SHIM,
-        graphPath: rootMapPaths.graphPath,
-        statePath: rootMapPaths.statePath,
-      })
+  const mcpClient = ctx.mcp
 
   try {
     if (!cache || forceRefresh) {
@@ -232,7 +190,7 @@ async function main() {
       manifest = writeManifest(projectRoot, manifest)
 
       if (enrichmentFile) {
-        await cleanupEnrichmentFile(enrichmentFile)
+        cleanupEnrichmentFile(enrichmentFile)
       }
 
       console.log(
@@ -243,11 +201,11 @@ async function main() {
       console.log(`Updated - ${snapshot.totalFiles} files added, 0 removed, 0 changed`)
       console.log(`Project root: ${projectRoot}`)
       console.log(`Active map: ${manifest.activeMapId}`)
-      console.log(`Refresh mode: ${formatRenderMode(mcpClient, skipRender ? 'skipped' : 'full-render')}`)
+      console.log(`Refresh mode: ${formatRenderMode(skipRender, mcpClient, rootGraphSelection.graph.meta?.source || 'generated')}`)
       console.log(
         `Maps refreshed: root + ${scopedRefresh.refreshedCount} scoped (${scopedRefresh.staleCount} stale)`,
       )
-      return
+      return success()
     }
 
     const diff = diffFiles(snapshot.files, cache)
@@ -258,7 +216,7 @@ async function main() {
       console.log('No changes detected')
       console.log(`Project root: ${projectRoot}`)
       console.log(`Active map: ${manifest.activeMapId}`)
-      return
+      return success()
     }
 
     const changedPaths = new Set()
@@ -300,7 +258,7 @@ async function main() {
     manifest = writeManifest(projectRoot, manifest)
 
     if (enrichmentFile) {
-      await cleanupEnrichmentFile(enrichmentFile)
+      cleanupEnrichmentFile(enrichmentFile)
     }
 
     if (hasChanges) {
@@ -320,61 +278,47 @@ async function main() {
       console.log('Graph cache was not replaced. Use --force-refresh to allow a lower-priority regeneration.')
     } else {
       console.log(
-        `Refresh mode: ${formatRenderMode(mcpClient, skipRender ? 'skipped' : 'full-render')} (${nextRootGraph.meta?.source || 'generated'})`,
+        `Refresh mode: ${formatRenderMode(skipRender, mcpClient, nextRootGraph.meta?.source || 'generated')}`,
       )
     }
 
     console.log(
       `Maps refreshed: root + ${scopedRefresh.refreshedCount} scoped (${scopedRefresh.staleCount} stale)`,
     )
-  } finally {
-    if (mcpClient) {
-      await closeMcpClient(mcpClient)
-    }
-  }
-}
-
-main().catch((error) => {
-  console.error(`ClaudeMap refresh failed: ${error.message}`)
-  process.exitCode = 1
-})
-
-async function readFileIfExists(filePath) {
-  const resolvedPath = path.resolve(filePath)
-  return (await import('fs/promises')).readFile(resolvedPath, 'utf8')
-}
-
-async function loadEnrichmentFileStrict(filePath) {
-  const fs = await import('fs/promises')
-  const resolvedPath = path.resolve(filePath)
-  let rawContent
-
-  try {
-    rawContent = await fs.readFile(resolvedPath, 'utf8')
+    return success()
   } catch (error) {
-    if (error && error.code === 'ENOENT') {
-      throw new Error(
-        `Enrichment file not found: ${resolvedPath}. Save the @claudemap-architect subagent output to that file before running update.`,
-      )
-    }
-
     throw error
   }
-
-  if (typeof rawContent !== 'string' || rawContent.trim().length === 0) {
-    throw new Error(
-      `Enrichment file is empty: ${resolvedPath}. The @claudemap-architect subagent must return valid graph JSON before update runs. Refusing to fall back to the heuristic graph silently.`,
-    )
-  }
-
-  return rawContent
 }
 
-async function cleanupEnrichmentFile(filePath) {
-  try {
-    const fs = await import('fs/promises')
-    await fs.unlink(path.resolve(filePath))
-  } catch {
-    // Best-effort cleanup; ignore failures.
-  }
+export const UPDATE_COMMAND = {
+  name: 'update',
+  summary: 'Refresh the ClaudeMap graph for the current project after local code changes.',
+  positional: {
+    name: 'projectRoot',
+    required: false,
+  },
+  flags: [
+    { name: 'force-refresh', type: 'boolean' },
+    { name: 'no-render', type: 'boolean' },
+    { name: 'stdio-mcp', type: 'boolean' },
+    { name: 'enrichment-file', type: 'string' },
+  ],
+  withMcp: {
+    mode: 'auto',
+    required: false,
+  },
+  handler: handleUpdate,
+}
+
+export async function main(argv = process.argv.slice(2)) {
+  return runCommand(UPDATE_COMMAND, argv)
+}
+
+function isDirectExecution(fileUrl) {
+  return process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(fileUrl)
+}
+
+if (isDirectExecution(import.meta.url)) {
+  main().catch(exitOnError)
 }
