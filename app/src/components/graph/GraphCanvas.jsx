@@ -1,11 +1,11 @@
-import { Background, ReactFlow, useReactFlow } from '@xyflow/react'
+import { Background, ReactFlow } from '@xyflow/react'
 import { useCallback, useEffect, useRef } from 'react'
 import '@xyflow/react/dist/style.css'
 import ZoomControls from '../ui/ZoomControls'
 import { MOTION } from '../../contracts/motion'
 import { PRESENTATION_MODES } from '../../contracts/presentation'
 import { COLOR } from '../../contracts/tokens'
-import { FIT_VIEW, VIEWPORT } from '../../contracts/zoom'
+import { FIT_VIEW } from '../../contracts/zoom'
 import { useGraphStore } from '../../store/graphStore'
 import {
   selectClearRuntimeEmphasis,
@@ -19,9 +19,9 @@ import {
   selectNodes,
   selectPresentationMode,
   selectSelectedNode,
-  selectSetHoveredPathIds,
   selectSetSelectedNode,
 } from '../../store/selectors'
+import { useGraphFocusRuntime } from '../../hooks/useGraphFocusRuntime'
 import { useGraphLoaded } from '../../hooks/useGraphLoaded'
 import { useHoverPathScheduler } from '../../hooks/useHoverPathScheduler'
 import { useLayout } from '../../hooks/useLayout'
@@ -32,14 +32,7 @@ import FunctionNode from './FunctionNode'
 import { useZoomLevel, ZOOM_LEVELS } from '../../hooks/useZoomLevel'
 import { copyNodeToClipboard } from '../../hooks/useClipboard'
 import {
-  FILE_NODE_HEIGHT,
-  FILE_NODE_WIDTH,
-  FUNCTION_NODE_HEIGHT,
-  FUNCTION_NODE_WIDTH,
-} from './systemNodeSizing'
-import {
   buildNodeByIdMap,
-  getNodeAbsolutePosition,
   getSystemPath,
   getTopLevelSystemId,
 } from '../../lib/graphNodeUtils'
@@ -72,7 +65,6 @@ const OVERVIEW_FIT_VIEW_OPTIONS = {
 }
 
 export default function GraphCanvas() {
-  const { setCenter } = useReactFlow()
   const nodes = useGraphStore(selectNodes)
   const edges = useGraphStore(selectEdges)
   const mapsManifest = useGraphStore(selectMapsManifest)
@@ -81,7 +73,6 @@ export default function GraphCanvas() {
   const selectedNode = useGraphStore(selectSelectedNode)
   const setSelectedNode = useGraphStore(selectSetSelectedNode)
   const highlightedNodes = useGraphStore(selectHighlightedNodes)
-  const setHoveredPathIds = useGraphStore(selectSetHoveredPathIds)
   const clearRuntimeEmphasis = useGraphStore(selectClearRuntimeEmphasis)
   const focusRequest = useGraphStore(selectFocusRequest)
   const guidedFlowRequest = useGraphStore(selectGuidedFlowRequest)
@@ -100,10 +91,8 @@ export default function GraphCanvas() {
     cancelHoverClear,
     clearHoveredPath,
   } = useHoverPathScheduler()
-  const lastFocusKeyRef = useRef('')
-  const lastGuidedFlowKeyRef = useRef('')
-  const hasAppliedRuntimeViewportRef = useRef(false)
   const nodeById = buildNodeByIdMap(nodes)
+  const { buildSelectedNodePayload } = useGraphFocusRuntime({ graphReady, nodeById })
   const focusTargetNode = focusRequest?.nodeId ? nodeById.get(focusRequest.nodeId) : null
   const presentationTargetNode =
     focusTargetNode || (selectedNode?.id ? nodeById.get(selectedNode.id) : null)
@@ -157,134 +146,6 @@ export default function GraphCanvas() {
       clearHoveredPath()
     }
   }, [cancelHoverClear, clearHoveredPath, hoveredPathIds.length, zoomLevel])
-
-  const buildSelectedNodePayload = useCallback(
-    (node) => ({
-      id: node.id,
-      type: node.type,
-      parentId: node.parentId || null,
-      ...node.data,
-    }),
-    [],
-  )
-
-  const focusNodeById = useCallback(
-    (nodeId, zoom = 1, options = {}) => {
-      const targetNode = nodeById.get(nodeId)
-
-      if (!targetNode) {
-        return
-      }
-
-      const pathIds = presentationMode === PRESENTATION_MODES.FREE ? getSystemPath(targetNode.id, nodeById) : []
-      const viewportTargetNode =
-        presentationMode !== PRESENTATION_MODES.FREE
-          ? nodeById.get(getTopLevelSystemId(targetNode, nodeById)) || targetNode
-          : zoom <= OVERVIEW_FIT_VIEW_OPTIONS.maxZoom && targetNode.type !== 'system'
-            ? nodeById.get(getTopLevelSystemId(targetNode, nodeById)) || targetNode
-            : targetNode
-
-      if (pathIds.length) {
-        setHoveredPathIds(pathIds)
-      }
-
-      setSelectedNode(buildSelectedNodePayload(targetNode))
-      const shouldAnimate = options.animate !== false
-
-      window.setTimeout(() => {
-        const absolutePosition = getNodeAbsolutePosition(viewportTargetNode, nodeById)
-
-        if (!absolutePosition) {
-          return
-        }
-
-        const nodeWidth =
-          viewportTargetNode.width ||
-          (viewportTargetNode.type === 'function'
-            ? FUNCTION_NODE_WIDTH
-            : viewportTargetNode.type === 'file'
-              ? FILE_NODE_WIDTH
-              : 0)
-        const nodeHeight =
-          viewportTargetNode.height ||
-          (viewportTargetNode.type === 'function'
-            ? FUNCTION_NODE_HEIGHT
-            : viewportTargetNode.type === 'file'
-              ? FILE_NODE_HEIGHT
-              : 0)
-        const centerX = absolutePosition.x + nodeWidth / 2
-        const centerY =
-          absolutePosition.y +
-          nodeHeight / 2 -
-          (presentationMode !== PRESENTATION_MODES.FREE ? VIEWPORT.presentationOffsetPx : 0)
-        setCenter(centerX, centerY, {
-          zoom: Math.max(VIEWPORT.minZoom, Math.min(zoom, VIEWPORT.maxZoom)),
-          duration: shouldAnimate ? MOTION.viewport : 0,
-        })
-      }, shouldAnimate ? MOTION.hoverExit : 0)
-    },
-    [
-      buildSelectedNodePayload,
-      nodeById,
-      presentationMode,
-      setCenter,
-      setHoveredPathIds,
-      setSelectedNode,
-    ],
-  )
-
-  useEffect(() => {
-    if (!graphReady || !focusRequest?.nodeId) {
-      return
-    }
-
-    const focusKey = `${focusRequest.nodeId}:${focusRequest.zoom || 1}:${focusRequest.requestedAt || ''}`
-    const shouldAnimate = hasAppliedRuntimeViewportRef.current
-
-    if (focusKey === lastFocusKeyRef.current) {
-      return
-    }
-
-    lastFocusKeyRef.current = focusKey
-    focusNodeById(focusRequest.nodeId, focusRequest.zoom || 1, {
-      animate: shouldAnimate,
-    })
-    hasAppliedRuntimeViewportRef.current = true
-  }, [focusNodeById, focusRequest, graphReady])
-
-  useEffect(() => {
-    if (!graphReady || !Array.isArray(guidedFlowRequest?.steps) || guidedFlowRequest.steps.length === 0) {
-      return
-    }
-
-    const flowKey = `${guidedFlowRequest.requestedAt || ''}:${guidedFlowRequest.steps.join('|')}`
-
-    if (flowKey === lastGuidedFlowKeyRef.current) {
-      return
-    }
-
-    lastGuidedFlowKeyRef.current = flowKey
-    let stepIndex = 0
-    const delay = Math.max(MOTION.guidedFlowStepMin, guidedFlowRequest.delay || MOTION.guidedFlowStep)
-    const shouldAnimateFirstStep = hasAppliedRuntimeViewportRef.current
-
-    focusNodeById(guidedFlowRequest.steps[stepIndex], 1, {
-      animate: shouldAnimateFirstStep,
-    })
-    hasAppliedRuntimeViewportRef.current = true
-    const intervalId = window.setInterval(() => {
-      stepIndex += 1
-
-      if (stepIndex >= guidedFlowRequest.steps.length) {
-        window.clearInterval(intervalId)
-        return
-      }
-
-      focusNodeById(guidedFlowRequest.steps[stepIndex], 1)
-    }, delay)
-
-    return () => window.clearInterval(intervalId)
-  }, [focusNodeById, graphReady, guidedFlowRequest])
 
   const visibleNodes = computeVisibleNodes({
     nodes,
@@ -505,6 +366,7 @@ export default function GraphCanvas() {
     },
     [
       hoveredPathIds.length,
+      pendingHoverPathRef,
       sceneInteractionLocked,
       scheduleHoverPath,
     ],
@@ -520,7 +382,14 @@ export default function GraphCanvas() {
     clearHoveredPath()
     clearRuntimeEmphasis()
     setSelectedNode(null)
-  }, [cancelHoverClear, clearHoveredPath, clearRuntimeEmphasis, sceneInteractionLocked, setSelectedNode])
+  }, [
+    cancelHoverClear,
+    clearHoveredPath,
+    clearRuntimeEmphasis,
+    pendingHoverPathRef,
+    sceneInteractionLocked,
+    setSelectedNode,
+  ])
 
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
