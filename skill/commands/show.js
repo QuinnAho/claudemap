@@ -2,8 +2,6 @@
 import {
   clearHighlight,
   clearCaption,
-  closeMcpClient,
-  connectMcpClient,
   guidedFlow,
   highlightNodes,
   navigateTo,
@@ -13,9 +11,13 @@ import {
   setHealthOverlay,
   showCaption,
 } from '../lib/mcp-client.js'
-import { resolveActiveMap } from '../lib/active-map.js'
-import { GRAPH_SOURCES } from '../lib/contracts/graph-sources.js'
-import { PRESENTATION_MODES } from '../lib/contracts/presentation.js'
+import { PRESENTATION_MODES, PRESENTATION_MODE_LIST } from '../lib/contracts/presentation.js'
+import { runCommand, exitOnError } from '../lib/command-harness/run-command.js'
+import { success, failure, ERROR_CODES } from '../lib/contracts/errors.js'
+import { fileURLToPath } from 'url'
+import path from 'path'
+
+const CURRENT_FILE_PATH = fileURLToPath(import.meta.url)
 
 function scoreNode(node, query) {
   const normalizedQuery = query.toLowerCase()
@@ -168,50 +170,6 @@ function parseIntentTarget(phrase, prefixes, suffixes = []) {
   return value.trim()
 }
 
-function parseCommandOptions(args) {
-  const positional = []
-  const options = {}
-
-  for (let index = 0; index < args.length; index += 1) {
-    const argument = args[index]
-
-    if (argument === '--lock') {
-      options.lockInput = true
-      continue
-    }
-
-    if (argument === '--unlock') {
-      options.lockInput = false
-      continue
-    }
-
-    if (argument === '--keep-mode') {
-      options.keepMode = true
-      continue
-    }
-
-    if (['--title', '--step', '--explain', '--mode', '--zoom'].includes(argument)) {
-      const nextValue = args[index + 1]
-
-      if (!nextValue || nextValue.startsWith('--')) {
-        throw new Error(`Missing value for ${argument}`)
-      }
-
-      options[argument.slice(2)] = argument === '--zoom' ? Number(nextValue) : nextValue
-      index += 1
-      continue
-    }
-
-    positional.push(argument)
-  }
-
-  if (options.zoom !== undefined && !Number.isFinite(options.zoom)) {
-    throw new Error('Invalid --zoom value')
-  }
-
-  return { positional, options }
-}
-
 function findDependentSystemIds(graph, targetSystemId) {
   return graph.edges
     .filter((edge) => edge.target === targetSystemId)
@@ -231,8 +189,6 @@ function buildGuidedSteps(graph, node) {
 }
 
 async function revertToFreeMode(client) {
-  // Preserve the scene the command just painted (highlights, focus, guided flow)
-  // while dropping guided/locked mode so the user can interact with the graph again.
   await setPresentationMode(client, PRESENTATION_MODES.FREE, { resetScene: false })
 }
 
@@ -246,335 +202,411 @@ function readGraphOrExit(graphPath) {
   return graph
 }
 
-function printUsage() {
-  console.log('ClaudeMap show commands:')
-  console.log(
-    '  node skill/commands/show.js highlight <query[, query2 ...]> [--zoom <value>] [--explain "..."] [--keep-mode]',
-  )
-  console.log('  node skill/commands/show.js clear-highlight')
-  console.log(
-    '  node skill/commands/show.js present <query[, query2 ...]> [--title "..."] [--step "..."] [--explain "..."] [--keep-mode]',
-  )
-  console.log('  node skill/commands/show.js navigate <query> [--zoom <value>]')
-  console.log('  node skill/commands/show.js health <on|off>')
-  console.log('  node skill/commands/show.js mode <free|guided|locked>')
-  console.log('  node skill/commands/show.js caption [--title <title>] [--step <step>] <body>')
-  console.log('  node skill/commands/show.js clear-caption')
-  console.log('  node skill/commands/show.js flow <query1> <query2> [query3 ...]')
-  console.log('  node skill/commands/show.js ask "<phrase>"')
+function uniqueArray(values) {
+  return [...new Set(values.filter(Boolean))]
 }
 
-async function main() {
-  const [action, ...args] = process.argv.slice(2)
-  const useStdioMcp = args.includes('--stdio-mcp')
-  const commandArgs = args.filter((arg) => arg !== '--stdio-mcp')
-  const projectRoot =
-    process.env.CLAUDEMAP_PROJECT_ROOT || process.env.INIT_CWD || process.cwd()
-  const activeMap = resolveActiveMap(projectRoot)
-  const client = await connectMcpClient({
-    mode: useStdioMcp ? 'stdio' : GRAPH_SOURCES.FILE_SHIM,
-    graphPath: activeMap.graphPath,
-    statePath: activeMap.statePath,
+async function handleClearHighlight({ ctx }) {
+  await clearHighlight(ctx.mcp)
+  console.log(`[${ctx.activeMap.mapId}] Cleared highlights`)
+  return success()
+}
+
+async function handleClearCaption({ ctx }) {
+  await clearCaption(ctx.mcp)
+  console.log(`[${ctx.activeMap.mapId}] Cleared presentation caption`)
+  return success()
+}
+
+async function handleHealth({ ctx, args }) {
+  const value = args._positional?.[0]?.toLowerCase()
+
+  if (!['on', 'off'].includes(value)) {
+    return failure(ERROR_CODES.INVALID_ARGUMENT, 'Usage: health <on|off>')
+  }
+
+  await setHealthOverlay(ctx.mcp, value === 'on')
+  console.log(`[${ctx.activeMap.mapId}] Health overlay ${value}`)
+  return success()
+}
+
+async function handleMode({ ctx, args }) {
+  const requestedMode = args._positional?.[0]?.toLowerCase()
+  const mode = requestedMode === 'locked-demo' ? PRESENTATION_MODES.LOCKED : requestedMode
+
+  if (![PRESENTATION_MODES.FREE, PRESENTATION_MODES.GUIDED, PRESENTATION_MODES.LOCKED].includes(mode)) {
+    return failure(ERROR_CODES.INVALID_ARGUMENT, 'Usage: mode <free|guided|locked>')
+  }
+
+  await setPresentationMode(ctx.mcp, mode, {
+    lockInput: mode === PRESENTATION_MODES.LOCKED,
   })
+  console.log(`[${ctx.activeMap.mapId}] Presentation mode ${mode}`)
+  return success()
+}
 
-  if (!action) {
-    printUsage()
-    process.exitCode = 1
-    await closeMcpClient(client)
-    return
+async function handleCaption({ ctx, args }) {
+  const body = args.body
+
+  if (!body) {
+    return failure(ERROR_CODES.MISSING_ARGUMENT, 'Usage: caption [--title <title>] [--step <step>] <body>')
   }
 
-  if (action === 'clear-highlight') {
-    await clearHighlight(client)
-    console.log(`[${activeMap.mapId}] Cleared highlights`)
-    await closeMcpClient(client)
-    return
+  await showCaption(ctx.mcp, body, {
+    title: args.title || null,
+    stepLabel: args.step || null,
+  })
+  console.log(`[${ctx.activeMap.mapId}] Caption updated${args.title ? `: ${args.title}` : ''}`)
+  return success()
+}
+
+async function handleHighlight({ ctx, args }) {
+  const query = args.query
+
+  if (!query) {
+    return failure(ERROR_CODES.MISSING_ARGUMENT, 'Usage: highlight <query[, query2 ...]> [--zoom <value>] [--explain "..."]')
   }
 
-  if (action === 'clear-caption') {
-    await clearCaption(client)
-    console.log(`[${activeMap.mapId}] Cleared presentation caption`)
-    await closeMcpClient(client)
-    return
-  }
+  const graph = readGraphOrExit(ctx.activeMap.graphPath)
+  const resolvedNodes = resolveNodes(graph, query)
+  const primaryNode = resolvedNodes[0]
+  const nodeIds = uniqueArray(
+    resolvedNodes.flatMap((node) => buildHighlightNodeIds(graph, node)),
+  )
+  const zoom = args.zoom ?? getDefaultZoomForNode(primaryNode)
 
-  if (action === 'health') {
-    const value = (commandArgs[0] || '').toLowerCase()
-
-    if (!['on', 'off'].includes(value)) {
-      throw new Error('Usage: health <on|off>')
-    }
-
-    await setHealthOverlay(client, value === 'on')
-    console.log(`[${activeMap.mapId}] Health overlay ${value}`)
-    await closeMcpClient(client)
-    return
-  }
-
-  if (action === 'mode') {
-    const requestedMode = (commandArgs[0] || '').toLowerCase()
-    const mode = requestedMode === 'locked-demo' ? PRESENTATION_MODES.LOCKED : requestedMode
-
-    if (![PRESENTATION_MODES.FREE, PRESENTATION_MODES.GUIDED, PRESENTATION_MODES.LOCKED].includes(mode)) {
-      throw new Error('Usage: mode <free|guided|locked>')
-    }
-
-    await setPresentationMode(client, mode, {
-      lockInput: mode === PRESENTATION_MODES.LOCKED,
-    })
-    console.log(`[${activeMap.mapId}] Presentation mode ${mode}`)
-    await closeMcpClient(client)
-    return
-  }
-
-  if (action === 'caption') {
-    const titleIndex = commandArgs.indexOf('--title')
-    const stepIndex = commandArgs.indexOf('--step')
-    const title = titleIndex !== -1 ? commandArgs[titleIndex + 1] || '' : ''
-    const stepLabel = stepIndex !== -1 ? commandArgs[stepIndex + 1] || '' : ''
-    const bodyTokens = commandArgs.filter((argument, index) => {
-      if (argument === '--title' || argument === '--step') {
-        return false
-      }
-
-      const previousArgument = commandArgs[index - 1]
-      return previousArgument !== '--title' && previousArgument !== '--step'
-    })
-    const body = bodyTokens.join(' ').trim()
-
-    if (!body) {
-      throw new Error('Usage: caption [--title <title>] [--step <step>] <body>')
-    }
-
-    await showCaption(client, body, {
-      title: title || null,
-      stepLabel: stepLabel || null,
-    })
-    console.log(`[${activeMap.mapId}] Caption updated${title ? `: ${title}` : ''}`)
-    await closeMcpClient(client)
-    return
-  }
-
-  const graph = readGraphOrExit(activeMap.graphPath)
-
-  if (action === 'highlight') {
-    const { positional, options } = parseCommandOptions(commandArgs)
-    const query = positional.join(' ').trim()
-
-    if (!query) {
-      throw new Error('Usage: highlight <query[, query2 ...]> [--zoom <value>] [--explain "..."]')
-    }
-
-    const resolvedNodes = resolveNodes(graph, query)
-    const primaryNode = resolvedNodes[0]
-    const nodeIds = uniqueArray(
-      resolvedNodes.flatMap((node) => buildHighlightNodeIds(graph, node)),
-    )
-    const zoom = options.zoom ?? getDefaultZoomForNode(primaryNode)
-
-    if (
-      options.explain ||
-      options.title ||
-      options.step ||
-      options.mode ||
-      typeof options.lockInput === 'boolean'
-    ) {
-      await presentStep(client, {
-        nodeId: primaryNode.id,
-        nodeIds,
-        zoom,
-        mode: options.mode || PRESENTATION_MODES.GUIDED,
-        lockInput: options.lockInput,
-        title: options.title || null,
-        stepLabel: options.step || null,
-        explanation: options.explain || null,
-      })
-      if (!options.keepMode) {
-        await revertToFreeMode(client)
-      }
-      console.log(`[${activeMap.mapId}] Presented ${resolvedNodes.map((node) => node.label).join(', ')}`)
-      await closeMcpClient(client)
-      return
-    }
-
-    await highlightNodes(client, nodeIds)
-    await navigateTo(client, primaryNode.id, zoom)
-    console.log(
-      `[${activeMap.mapId}] Highlighted ${resolvedNodes.map((node) => node.label).join(', ')} (${nodeIds.length} nodes)`,
-    )
-    await closeMcpClient(client)
-    return
-  }
-
-  if (action === 'present') {
-    const { positional, options } = parseCommandOptions(commandArgs)
-    const query = positional.join(' ').trim()
-
-    if (!query) {
-      throw new Error(
-        'Usage: present <query[, query2 ...]> [--title "..."] [--step "..."] [--explain "..."]',
-      )
-    }
-
-    const resolvedNodes = resolveNodes(graph, query)
-    const primaryNode = resolvedNodes[0]
-    const nodeIds = uniqueArray(
-      resolvedNodes.flatMap((node) => buildHighlightNodeIds(graph, node)),
-    )
-    await presentStep(client, {
+  if (
+    args.explain ||
+    args.title ||
+    args.step ||
+    args.mode ||
+    typeof args.lockInput === 'boolean'
+  ) {
+    await presentStep(ctx.mcp, {
       nodeId: primaryNode.id,
       nodeIds,
-      zoom: options.zoom ?? getDefaultZoomForNode(primaryNode),
-      mode: options.mode || PRESENTATION_MODES.GUIDED,
-      lockInput: options.lockInput,
-      title: options.title || null,
-      stepLabel: options.step || null,
-      explanation: options.explain || null,
+      zoom,
+      mode: args.mode || PRESENTATION_MODES.GUIDED,
+      lockInput: args.lockInput,
+      title: args.title || null,
+      stepLabel: args.step || null,
+      explanation: args.explain || null,
     })
-    if (!options.keepMode) {
-      await revertToFreeMode(client)
+    if (!args.keepMode) {
+      await revertToFreeMode(ctx.mcp)
     }
-    console.log(`[${activeMap.mapId}] Presented ${resolvedNodes.map((node) => node.label).join(', ')}`)
-    await closeMcpClient(client)
-    return
+    console.log(`[${ctx.activeMap.mapId}] Presented ${resolvedNodes.map((node) => node.label).join(', ')}`)
+    return success()
   }
 
-  if (action === 'navigate') {
-    const { positional, options } = parseCommandOptions(commandArgs)
-    const query = positional.join(' ').trim()
+  await highlightNodes(ctx.mcp, nodeIds)
+  await navigateTo(ctx.mcp, primaryNode.id, zoom)
+  console.log(
+    `[${ctx.activeMap.mapId}] Highlighted ${resolvedNodes.map((node) => node.label).join(', ')} (${nodeIds.length} nodes)`,
+  )
+  return success()
+}
 
-    if (!query) {
-      throw new Error('Usage: navigate <query> [--zoom <value>]')
-    }
+async function handlePresent({ ctx, args }) {
+  const query = args.query
 
+  if (!query) {
+    return failure(
+      ERROR_CODES.MISSING_ARGUMENT,
+      'Usage: present <query[, query2 ...]> [--title "..."] [--step "..."] [--explain "..."]',
+    )
+  }
+
+  const graph = readGraphOrExit(ctx.activeMap.graphPath)
+  const resolvedNodes = resolveNodes(graph, query)
+  const primaryNode = resolvedNodes[0]
+  const nodeIds = uniqueArray(
+    resolvedNodes.flatMap((node) => buildHighlightNodeIds(graph, node)),
+  )
+  await presentStep(ctx.mcp, {
+    nodeId: primaryNode.id,
+    nodeIds,
+    zoom: args.zoom ?? getDefaultZoomForNode(primaryNode),
+    mode: args.mode || PRESENTATION_MODES.GUIDED,
+    lockInput: args.lockInput,
+    title: args.title || null,
+    stepLabel: args.step || null,
+    explanation: args.explain || null,
+  })
+  if (!args.keepMode) {
+    await revertToFreeMode(ctx.mcp)
+  }
+  console.log(`[${ctx.activeMap.mapId}] Presented ${resolvedNodes.map((node) => node.label).join(', ')}`)
+  return success()
+}
+
+async function handleNavigate({ ctx, args }) {
+  const query = args.query
+
+  if (!query) {
+    return failure(ERROR_CODES.MISSING_ARGUMENT, 'Usage: navigate <query> [--zoom <value>]')
+  }
+
+  const graph = readGraphOrExit(ctx.activeMap.graphPath)
+  const node = resolveNode(graph, query)
+
+  if (!node) {
+    return failure(ERROR_CODES.NO_NODE_MATCHED, `No node matched "${query}"`)
+  }
+
+  await navigateTo(ctx.mcp, node.id, args.zoom ?? getDefaultZoomForNode(node))
+  console.log(`[${ctx.activeMap.mapId}] Navigating to ${node.label}`)
+  return success()
+}
+
+async function handleFlow({ ctx, args }) {
+  const queries = args._positional
+
+  if (!queries || queries.length < 2) {
+    return failure(ERROR_CODES.MISSING_ARGUMENT, 'Usage: flow <query1> <query2> [query3 ...]')
+  }
+
+  const graph = readGraphOrExit(ctx.activeMap.graphPath)
+  const resolvedNodes = queries.map((query) => {
     const node = resolveNode(graph, query)
 
     if (!node) {
       throw new Error(`No node matched "${query}"`)
     }
 
-    await navigateTo(client, node.id, options.zoom ?? getDefaultZoomForNode(node))
-    console.log(`[${activeMap.mapId}] Navigating to ${node.label}`)
-    await closeMcpClient(client)
-    return
+    return node
+  })
+
+  await guidedFlow(
+    ctx.mcp,
+    resolvedNodes.map((node) => node.id),
+    1200,
+  )
+  console.log(`[${ctx.activeMap.mapId}] Started guided flow across ${resolvedNodes.length} nodes`)
+  return success()
+}
+
+async function handleAsk({ ctx, args }) {
+  const phrase = args.query?.toLowerCase()
+
+  if (!phrase) {
+    return failure(ERROR_CODES.MISSING_ARGUMENT, 'Usage: ask "<phrase>"')
   }
 
-  if (action === 'flow') {
-    if (commandArgs.length < 2) {
-      throw new Error('Usage: flow <query1> <query2> [query3 ...]')
+  const graph = readGraphOrExit(ctx.activeMap.graphPath)
+
+  if (phrase.includes("what's wrong") || phrase.includes('what is wrong')) {
+    const worstNode = findWorstNode(graph)
+
+    if (!worstNode) {
+      return failure(ERROR_CODES.NO_NODE_MATCHED, 'Could not determine a worst node from the runtime graph')
     }
 
-    const resolvedNodes = commandArgs.map((query) => {
-      const node = resolveNode(graph, query)
-
-      if (!node) {
-        throw new Error(`No node matched "${query}"`)
-      }
-
-      return node
-    })
-
-    await guidedFlow(
-      client,
-      resolvedNodes.map((node) => node.id),
-      1200,
+    await setHealthOverlay(ctx.mcp, true)
+    await navigateTo(ctx.mcp, worstNode.id, 1.05)
+    console.log(
+      `[${ctx.activeMap.mapId}] ${worstNode.label}: ${worstNode.healthReason || 'This node has the highest current health severity.'}`,
     )
-    console.log(`[${activeMap.mapId}] Started guided flow across ${resolvedNodes.length} nodes`)
-    await closeMcpClient(client)
-    return
+    return success()
   }
 
-  if (action === 'ask') {
-    const phrase = commandArgs.join(' ').trim().toLowerCase()
+  if (phrase.startsWith('highlight ')) {
+    const query = parseIntentTarget(phrase, ['highlight the ', 'highlight '], [' system'])
+    const node = resolveNode(graph, query)
 
-    if (!phrase) {
-      throw new Error('Usage: ask "<phrase>"')
+    if (!node) {
+      return failure(ERROR_CODES.NO_NODE_MATCHED, `No node matched "${query}"`)
     }
 
-    if (phrase.includes("what's wrong") || phrase.includes('what is wrong')) {
-      const worstNode = findWorstNode(graph)
-
-      if (!worstNode) {
-        throw new Error('Could not determine a worst node from the runtime graph')
-      }
-
-      await setHealthOverlay(client, true)
-      await navigateTo(client, worstNode.id, 1.05)
-      console.log(
-        `[${activeMap.mapId}] ${worstNode.label}: ${worstNode.healthReason || 'This node has the highest current health severity.'}`,
-      )
-      await closeMcpClient(client)
-      return
-    }
-
-    if (phrase.startsWith('highlight ')) {
-      const query = parseIntentTarget(phrase, ['highlight the ', 'highlight '], [' system'])
-      const node = resolveNode(graph, query)
-
-      if (!node) {
-        throw new Error(`No node matched "${query}"`)
-      }
-
-      const nodeIds = buildHighlightNodeIds(graph, node)
-      await highlightNodes(client, nodeIds)
-      await navigateTo(client, node.id, getDefaultZoomForNode(node))
-      console.log(`[${activeMap.mapId}] Highlighted ${node.label}`)
-      await closeMcpClient(client)
-      return
-    }
-
-    if (phrase.startsWith('what depends on ')) {
-      const query = parseIntentTarget(phrase, ['what depends on the ', 'what depends on '])
-      const node = resolveNode(graph, query)
-      const targetSystemId = node?.type === 'system' ? node.id : node?.parentId
-
-      if (!node || !targetSystemId) {
-        throw new Error(`No system matched "${query}"`)
-      }
-
-      const dependentSystemIds = findDependentSystemIds(graph, targetSystemId)
-      const nodeIds = uniqueArray(
-        dependentSystemIds.flatMap((systemId) => collectBranchIds(graph.nodes, systemId)),
-      )
-
-      await highlightNodes(client, nodeIds)
-      console.log(
-        nodeIds.length
-          ? `[${activeMap.mapId}] Highlighted ${dependentSystemIds.length} dependent systems for ${node.label}`
-          : `[${activeMap.mapId}] No systems currently depend on ${node.label}`,
-      )
-      await closeMcpClient(client)
-      return
-    }
-
-    if (phrase.startsWith('show me how ') && phrase.endsWith(' works')) {
-      const query = parseIntentTarget(phrase, ['show me how '], [' works'])
-      const node = resolveNode(graph, query)
-
-      if (!node) {
-        throw new Error(`No node matched "${query}"`)
-      }
-
-      const steps = buildGuidedSteps(graph, node)
-      await guidedFlow(client, steps, 1200)
-      console.log(`[${activeMap.mapId}] Started guided flow for ${node.label}`)
-      await closeMcpClient(client)
-      return
-    }
-
-    throw new Error(`No built-in intent matched "${phrase}"`)
+    const nodeIds = buildHighlightNodeIds(graph, node)
+    await highlightNodes(ctx.mcp, nodeIds)
+    await navigateTo(ctx.mcp, node.id, getDefaultZoomForNode(node))
+    console.log(`[${ctx.activeMap.mapId}] Highlighted ${node.label}`)
+    return success()
   }
 
-  printUsage()
-  process.exitCode = 1
-  await closeMcpClient(client)
+  if (phrase.startsWith('what depends on ')) {
+    const query = parseIntentTarget(phrase, ['what depends on the ', 'what depends on '])
+    const node = resolveNode(graph, query)
+    const targetSystemId = node?.type === 'system' ? node.id : node?.parentId
+
+    if (!node || !targetSystemId) {
+      return failure(ERROR_CODES.NO_NODE_MATCHED, `No system matched "${query}"`)
+    }
+
+    const dependentSystemIds = findDependentSystemIds(graph, targetSystemId)
+    const nodeIds = uniqueArray(
+      dependentSystemIds.flatMap((systemId) => collectBranchIds(graph.nodes, systemId)),
+    )
+
+    await highlightNodes(ctx.mcp, nodeIds)
+    console.log(
+      nodeIds.length
+        ? `[${ctx.activeMap.mapId}] Highlighted ${dependentSystemIds.length} dependent systems for ${node.label}`
+        : `[${ctx.activeMap.mapId}] No systems currently depend on ${node.label}`,
+    )
+    return success()
+  }
+
+  if (phrase.startsWith('show me how ') && phrase.endsWith(' works')) {
+    const query = parseIntentTarget(phrase, ['show me how '], [' works'])
+    const node = resolveNode(graph, query)
+
+    if (!node) {
+      return failure(ERROR_CODES.NO_NODE_MATCHED, `No node matched "${query}"`)
+    }
+
+    const steps = buildGuidedSteps(graph, node)
+    await guidedFlow(ctx.mcp, steps, 1200)
+    console.log(`[${ctx.activeMap.mapId}] Started guided flow for ${node.label}`)
+    return success()
+  }
+
+  return failure(ERROR_CODES.NO_INTENT_MATCH, `No built-in intent matched "${phrase}"`)
 }
 
-function uniqueArray(values) {
-  return [...new Set(values.filter(Boolean))]
+export const SHOW_COMMAND = {
+  name: 'show',
+  summary: 'Highlight, present, navigate, and caption nodes on the active map.',
+  globalFlags: [
+    { name: 'stdio-mcp', type: 'boolean' },
+  ],
+  actions: [
+    {
+      name: 'highlight',
+      summary: 'Highlight one or more nodes and navigate to the primary node.',
+      positional: {
+        name: 'query',
+        rest: true,
+        required: true,
+      },
+      flags: [
+        { name: 'zoom', type: 'number' },
+        { name: 'explain', type: 'string' },
+        { name: 'title', type: 'string' },
+        { name: 'step', type: 'string' },
+        { name: 'keep-mode', type: 'boolean' },
+        { name: 'mode', type: 'enum', values: PRESENTATION_MODE_LIST },
+        { name: 'lock', type: 'boolean' },
+        { name: 'lockInput', type: 'boolean' },
+      ],
+      withMcp: true,
+      handler: handleHighlight,
+    },
+    {
+      name: 'clear-highlight',
+      summary: 'Clear all node highlights.',
+      withMcp: true,
+      handler: handleClearHighlight,
+    },
+    {
+      name: 'present',
+      summary: 'Present one or more nodes with a caption and guidance.',
+      positional: {
+        name: 'query',
+        rest: true,
+        required: true,
+      },
+      flags: [
+        { name: 'zoom', type: 'number' },
+        { name: 'title', type: 'string' },
+        { name: 'step', type: 'string' },
+        { name: 'explain', type: 'string' },
+        { name: 'keep-mode', type: 'boolean' },
+        { name: 'mode', type: 'enum', values: PRESENTATION_MODE_LIST },
+        { name: 'lockInput', type: 'boolean' },
+      ],
+      withMcp: true,
+      handler: handlePresent,
+    },
+    {
+      name: 'navigate',
+      summary: 'Navigate to a node without highlighting.',
+      positional: {
+        name: 'query',
+        rest: true,
+        required: true,
+      },
+      flags: [
+        { name: 'zoom', type: 'number' },
+      ],
+      withMcp: true,
+      handler: handleNavigate,
+    },
+    {
+      name: 'health',
+      summary: 'Toggle health overlay.',
+      positional: {
+        name: 'value',
+        required: true,
+      },
+      withMcp: true,
+      handler: handleHealth,
+    },
+    {
+      name: 'mode',
+      summary: 'Set presentation mode.',
+      positional: {
+        name: 'mode',
+        required: true,
+      },
+      withMcp: true,
+      handler: handleMode,
+    },
+    {
+      name: 'caption',
+      summary: 'Show a caption on the graph.',
+      positional: {
+        name: 'body',
+        rest: true,
+        required: true,
+      },
+      flags: [
+        { name: 'title', type: 'string' },
+        { name: 'step', type: 'string' },
+      ],
+      withMcp: true,
+      handler: handleCaption,
+    },
+    {
+      name: 'clear-caption',
+      summary: 'Clear the presentation caption.',
+      withMcp: true,
+      handler: handleClearCaption,
+    },
+    {
+      name: 'flow',
+      summary: 'Show a guided flow across multiple nodes.',
+      positional: {
+        name: 'queries',
+        rest: true,
+        required: true,
+      },
+      withMcp: true,
+      handler: handleFlow,
+    },
+    {
+      name: 'ask',
+      summary: 'Ask an intent-driven question about the graph.',
+      positional: {
+        name: 'query',
+        rest: true,
+        required: true,
+      },
+      withMcp: true,
+      handler: handleAsk,
+    },
+  ],
 }
 
-main().catch((error) => {
-  console.error(`ClaudeMap show failed: ${error.message}`)
-  process.exitCode = 1
-})
+export async function main(argv = process.argv.slice(2)) {
+  return runCommand(SHOW_COMMAND, argv)
+}
+
+function isDirectExecution(fileUrl) {
+  return process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(fileUrl)
+}
+
+if (isDirectExecution(import.meta.url)) {
+  main().catch(exitOnError)
+}
