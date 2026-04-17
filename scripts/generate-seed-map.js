@@ -5,10 +5,11 @@ const path = require('path')
 const { buildSeedMapGraph } = require('./lib/seed-map-builder.js')
 
 async function main() {
-  const [{ collectProjectSnapshot }, { GRAPH_SOURCES }, { PRESENTATION_MODES }] = await Promise.all([
+  const [{ collectProjectSnapshot }, { GRAPH_SOURCES }, { PRESENTATION_MODES }, paths] = await Promise.all([
     import('../skill/lib/file-walker.js'),
     import('../skill/lib/contracts/graph-sources.js'),
     import('../skill/lib/contracts/presentation.js'),
+    import('../skill/lib/contracts/paths.js'),
   ])
   const contracts = { GRAPH_SOURCES, PRESENTATION_MODES }
 
@@ -16,14 +17,15 @@ async function main() {
   const snapshot = collectProjectSnapshot(repoRoot)
   const { graph, filteredSnapshot, excludedPaths } = buildSeedMapGraph(snapshot, contracts)
   const runtimeState = createRuntimeStateFromGraph(graph, contracts)
-  const mapsManifest = createDefaultMapsManifest()
+  const mapsManifest = createDefaultMapsManifest(paths)
 
-  writeJsonFile(path.join(repoRoot, 'contracts', 'claudemap-seed-map.json'), graph)
-  writeJsonFile(path.join(repoRoot, 'docs', 'graph', 'claudemap-runtime.json'), graph)
-  writeJsonFile(path.join(repoRoot, 'docs', 'graph', 'claudemap-runtime-state.json'), runtimeState)
-  writeJsonFile(path.join(repoRoot, 'docs', 'claudemap-maps.json'), mapsManifest)
+  const seedMapPath = path.join(repoRoot, paths.SEED_MAP_REL)
+  writeJsonFile(seedMapPath, graph)
+  writeJsonFile(path.join(repoRoot, paths.DOCS_DIR_REL, paths.RUNTIME_GRAPH_REL), graph)
+  writeJsonFile(path.join(repoRoot, paths.DOCS_DIR_REL, paths.RUNTIME_STATE_REL), runtimeState)
+  writeJsonFile(path.join(repoRoot, paths.DOCS_DIR_REL, paths.MAPS_MANIFEST_FILENAME), mapsManifest)
 
-  console.log(`Seed map ready at ${path.join(repoRoot, 'contracts', 'claudemap-seed-map.json')}`)
+  console.log(`Seed map ready at ${seedMapPath}`)
   console.log(`Included files: ${filteredSnapshot.totalFiles}`)
   console.log(`Excluded paths: ${excludedPaths.join(', ')}`)
   console.log(`Graph source: ${graph.meta?.source || GRAPH_SOURCES.HEURISTIC}`)
@@ -67,7 +69,7 @@ function createRuntimeStateFromGraph(graph, contracts) {
   }
 }
 
-function createDefaultMapsManifest() {
+function createDefaultMapsManifest(paths) {
   return {
     version: 1,
     activeMapId: 'root',
@@ -77,9 +79,9 @@ function createDefaultMapsManifest() {
         label: 'ClaudeMap',
         summary: 'Full repo overview',
         scope: null,
-        cachePath: 'claudemap-cache.json',
-        graphPath: 'graph/claudemap-runtime.json',
-        statePath: 'graph/claudemap-runtime-state.json',
+        cachePath: paths.CACHE_FILENAME,
+        graphPath: paths.RUNTIME_GRAPH_REL,
+        statePath: paths.RUNTIME_STATE_REL,
       },
     ],
   }

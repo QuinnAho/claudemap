@@ -5,13 +5,10 @@ const path = require('path')
 const { spawnSync } = require('child_process')
 
 const REPO_ROOT = path.resolve(__dirname, '..')
-const DEFAULT_OUTPUT_ROOT = path.join(REPO_ROOT, 'artifacts', 'claudemap-skill')
-const ARTIFACT_NAME = 'claudemap'
-const DEFAULT_ARTIFACT_ROOT = path.join(DEFAULT_OUTPUT_ROOT, ARTIFACT_NAME)
-const MANIFEST_NAME = 'claudemap-artifact.json'
-const CLAUDE_ROOT = '.claude'
-const INSTALL_RECORD_NAME = 'claudemap-install.json'
-const RUNTIME_ROOT = path.join(CLAUDE_ROOT, 'skills', 'claudemap-runtime')
+
+async function loadPathContracts() {
+  return import('../skill/lib/contracts/paths.js')
+}
 
 function printUsage() {
   console.log('ClaudeMap installer')
@@ -20,9 +17,9 @@ function printUsage() {
   )
 }
 
-function parseArgs(argv) {
+function parseArgs(argv, defaultArtifactRoot) {
   const options = {
-    artifactRoot: DEFAULT_ARTIFACT_ROOT,
+    artifactRoot: defaultArtifactRoot,
     buildArtifact: true,
     dryRun: false,
     installDependencies: true,
@@ -130,17 +127,17 @@ function runCommand(command, args, workingDirectory, options = {}) {
   }
 }
 
-function buildArtifactIfNeeded(options) {
+function buildArtifactIfNeeded(options, defaultOutputRoot) {
   if (!options.buildArtifact || options.dryRun) {
     return
   }
 
   const packageScriptPath = path.join(REPO_ROOT, 'scripts', 'package-claudemap-skill.js')
-  runCommand(getNodeCommand(), [packageScriptPath, '--output', DEFAULT_OUTPUT_ROOT], REPO_ROOT)
+  runCommand(getNodeCommand(), [packageScriptPath, '--output', defaultOutputRoot], REPO_ROOT)
 }
 
-function loadArtifactManifest(artifactRoot) {
-  const manifestPath = path.join(artifactRoot, MANIFEST_NAME)
+function loadArtifactManifest(artifactRoot, manifestFilename) {
+  const manifestPath = path.join(artifactRoot, manifestFilename)
 
   if (!fs.existsSync(manifestPath)) {
     throw new Error(`ClaudeMap artifact manifest not found: ${manifestPath}`)
@@ -149,8 +146,8 @@ function loadArtifactManifest(artifactRoot) {
   return readJsonFile(manifestPath)
 }
 
-function readInstallRecord(targetRoot) {
-  const recordPath = path.join(targetRoot, CLAUDE_ROOT, INSTALL_RECORD_NAME)
+function readInstallRecord(targetRoot, claudeRootDir, installRecordFilename) {
+  const recordPath = path.join(targetRoot, claudeRootDir, installRecordFilename)
 
   if (!fs.existsSync(recordPath)) {
     return null
@@ -205,12 +202,12 @@ function removeManagedPaths(targetRoot, managedPaths, dryRun) {
   return removedPaths
 }
 
-function installArtifact(artifactRoot, targetRoot, dryRun) {
-  const sourceClaudeRoot = path.join(artifactRoot, CLAUDE_ROOT)
-  const targetClaudeRoot = path.join(targetRoot, CLAUDE_ROOT)
+function installArtifact(artifactRoot, targetRoot, dryRun, claudeRootDir) {
+  const sourceClaudeRoot = path.join(artifactRoot, claudeRootDir)
+  const targetClaudeRoot = path.join(targetRoot, claudeRootDir)
 
   if (!fs.existsSync(sourceClaudeRoot)) {
-    throw new Error(`ClaudeMap artifact is missing ${CLAUDE_ROOT}: ${sourceClaudeRoot}`)
+    throw new Error(`ClaudeMap artifact is missing ${claudeRootDir}: ${sourceClaudeRoot}`)
   }
 
   if (dryRun) {
@@ -232,8 +229,8 @@ function installArtifact(artifactRoot, targetRoot, dryRun) {
   }
 }
 
-function writeInstallRecord(targetRoot, manifest, artifactRoot, mode, dryRun) {
-  const recordPath = path.join(targetRoot, CLAUDE_ROOT, INSTALL_RECORD_NAME)
+function writeInstallRecord(targetRoot, manifest, artifactRoot, mode, dryRun, claudeRootDir, installRecordFilename) {
+  const recordPath = path.join(targetRoot, claudeRootDir, installRecordFilename)
   const record = {
     artifact: manifest.name,
     artifactVersion: manifest.version || 'unknown',
@@ -253,8 +250,8 @@ function writeInstallRecord(targetRoot, manifest, artifactRoot, mode, dryRun) {
   return recordPath
 }
 
-function installDependencies(targetRoot, dryRun) {
-  const runtimeInstallRoot = path.join(targetRoot, RUNTIME_ROOT)
+function installDependencies(targetRoot, dryRun, skillRootRel) {
+  const runtimeInstallRoot = path.join(targetRoot, skillRootRel)
   const runtimePackageJson = path.join(runtimeInstallRoot, 'package.json')
 
   if (!fs.existsSync(runtimePackageJson)) {
@@ -271,28 +268,42 @@ function installDependencies(targetRoot, dryRun) {
   return runtimeInstallRoot
 }
 
-function installClaudeMap(options) {
-  ensureTargetRepository(options.targetRoot)
-  buildArtifactIfNeeded(options)
+async function installClaudeMap(options) {
+  const paths = await loadPathContracts()
+  const defaultOutputRoot = path.join(REPO_ROOT, paths.PACKAGE_ARTIFACT_DIR_REL)
 
-  const manifest = loadArtifactManifest(options.artifactRoot)
-  const previousInstallRecord = readInstallRecord(options.targetRoot)
+  ensureTargetRepository(options.targetRoot)
+  buildArtifactIfNeeded(options, defaultOutputRoot)
+
+  const manifest = loadArtifactManifest(options.artifactRoot, paths.ARTIFACT_MANIFEST_FILENAME)
+  const previousInstallRecord = readInstallRecord(
+    options.targetRoot,
+    paths.CLAUDE_ROOT_DIR,
+    paths.INSTALL_RECORD_FILENAME,
+  )
   const removedManagedPaths = previousInstallRecord
     ? removeManagedPaths(options.targetRoot, previousInstallRecord.managedPaths, options.dryRun)
     : []
-  const installState = installArtifact(options.artifactRoot, options.targetRoot, options.dryRun)
+  const installState = installArtifact(
+    options.artifactRoot,
+    options.targetRoot,
+    options.dryRun,
+    paths.CLAUDE_ROOT_DIR,
+  )
   const recordPath = writeInstallRecord(
     options.targetRoot,
     manifest,
     options.artifactRoot,
     options.mode,
     options.dryRun,
+    paths.CLAUDE_ROOT_DIR,
+    paths.INSTALL_RECORD_FILENAME,
   )
 
   let runtimeInstallRoot = null
 
   if (options.installDependencies) {
-    runtimeInstallRoot = installDependencies(options.targetRoot, options.dryRun)
+    runtimeInstallRoot = installDependencies(options.targetRoot, options.dryRun, paths.SKILL_ROOT_REL)
   }
 
   const actionLabel = options.mode === 'update' ? 'updated' : 'installed'
@@ -325,15 +336,21 @@ function installClaudeMap(options) {
   }
 }
 
-function main(argv = process.argv.slice(2)) {
-  const options = parseArgs(argv)
+async function main(argv = process.argv.slice(2)) {
+  const paths = await loadPathContracts()
+  const defaultArtifactRoot = path.join(
+    REPO_ROOT,
+    paths.PACKAGE_ARTIFACT_DIR_REL,
+    paths.NPM_BUNDLE_SUBDIR,
+  )
+  const options = parseArgs(argv, defaultArtifactRoot)
 
   if (options.help) {
     printUsage()
     return
   }
 
-  installClaudeMap(options)
+  await installClaudeMap(options)
 }
 
 module.exports = {
@@ -341,10 +358,8 @@ module.exports = {
 }
 
 if (require.main === module) {
-  try {
-    main()
-  } catch (error) {
+  main().catch((error) => {
     console.error(`ClaudeMap install failed: ${error.message}`)
     process.exitCode = 1
-  }
+  })
 }

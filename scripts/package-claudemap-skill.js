@@ -5,22 +5,20 @@ const path = require('path')
 const { spawnSync } = require('child_process')
 
 const REPO_ROOT = path.resolve(__dirname, '..')
-const DEFAULT_OUTPUT_ROOT = path.join(REPO_ROOT, 'artifacts', 'claudemap-skill')
 const ARTIFACT_NAME = 'claudemap'
-const CLAUDE_ROOT = '.claude'
-const SKILL_ROOT = path.join(CLAUDE_ROOT, 'skills', 'claudemap-runtime')
-const COMMANDS_ROOT = path.join(CLAUDE_ROOT, 'commands')
-const AGENTS_ROOT = path.join(CLAUDE_ROOT, 'agents')
-const DEFAULT_SEED_MAP_PATH = path.join(REPO_ROOT, 'contracts', 'claudemap-seed-map.json')
+
+async function loadPathContracts() {
+  return import('../skill/lib/contracts/paths.js')
+}
 
 function printUsage() {
   console.log('ClaudeMap skill packager')
   console.log('  node scripts/package-claudemap-skill.js [--output <dir>] [--zip]')
 }
 
-function parseArgs(argv) {
+function parseArgs(argv, defaultOutputRoot) {
   const options = {
-    outputRoot: DEFAULT_OUTPUT_ROOT,
+    outputRoot: defaultOutputRoot,
     zip: false,
   }
 
@@ -87,7 +85,7 @@ function createEmptyRuntimeGraph(contracts) {
   }
 }
 
-function createDefaultMapsManifest() {
+function createDefaultMapsManifest(paths) {
   return {
     version: 1,
     activeMapId: 'root',
@@ -97,9 +95,9 @@ function createDefaultMapsManifest() {
         label: 'ClaudeMap',
         summary: 'Full repo overview',
         scope: null,
-        cachePath: 'claudemap-cache.json',
-        graphPath: 'graph/claudemap-runtime.json',
-        statePath: 'graph/claudemap-runtime-state.json',
+        cachePath: paths.CACHE_FILENAME,
+        graphPath: paths.RUNTIME_GRAPH_REL,
+        statePath: paths.RUNTIME_STATE_REL,
       },
     ],
   }
@@ -149,7 +147,7 @@ function readJsonFileOrFallback(filePath, fallbackFactory) {
   }
 }
 
-function writeRuntimePlaceholders(projectRoot, contracts, graphSourcePath = DEFAULT_SEED_MAP_PATH) {
+function writeRuntimePlaceholders(projectRoot, contracts, paths, skillRoot, graphSourcePath) {
   const packagedGraph = readJsonFileOrFallback(
     graphSourcePath,
     () => createEmptyRuntimeGraph(contracts),
@@ -159,16 +157,16 @@ function writeRuntimePlaceholders(projectRoot, contracts, graphSourcePath = DEFA
   // runtime graph outputs have an obvious home and are not mixed with
   // unrelated static assets.
   writeJsonFile(
-    path.join(projectRoot, SKILL_ROOT, 'app', 'public', 'graph', 'claudemap-runtime.json'),
+    path.join(projectRoot, skillRoot, 'app', 'public', paths.RUNTIME_GRAPH_REL),
     packagedGraph,
   )
   writeJsonFile(
-    path.join(projectRoot, SKILL_ROOT, 'app', 'public', 'graph', 'claudemap-runtime-state.json'),
+    path.join(projectRoot, skillRoot, 'app', 'public', paths.RUNTIME_STATE_REL),
     createDefaultRuntimeStateFromGraph(packagedGraph, contracts),
   )
   writeJsonFile(
-    path.join(projectRoot, SKILL_ROOT, 'app', 'public', 'claudemap-maps.json'),
-    createDefaultMapsManifest(),
+    path.join(projectRoot, skillRoot, 'app', 'public', paths.MAPS_MANIFEST_FILENAME),
+    createDefaultMapsManifest(paths),
   )
 }
 
@@ -350,17 +348,17 @@ Workflow:
   }
 }
 
-function writeSlashCommands(artifactRoot) {
+function writeSlashCommands(artifactRoot, commandsRoot) {
   const commandTemplates = createSlashCommandTemplates()
 
   for (const [fileName, content] of Object.entries(commandTemplates)) {
-    writeTextFile(path.join(artifactRoot, COMMANDS_ROOT, fileName), content)
+    writeTextFile(path.join(artifactRoot, commandsRoot, fileName), content)
   }
 }
 
-function writeNavigationDocs(artifactRoot) {
+function writeNavigationDocs(artifactRoot, skillRoot) {
   writeTextFile(
-    path.join(artifactRoot, SKILL_ROOT, 'NAVIGATION.md'),
+    path.join(artifactRoot, skillRoot, 'NAVIGATION.md'),
     `# ClaudeMap Navigation
 
 ## Quick Start
@@ -400,41 +398,41 @@ ClaudeMap works in three stages:
   )
 }
 
-function writeArtifactManifest(artifactRoot) {
+function writeArtifactManifest(artifactRoot, paths, skillRoot, commandsRoot, agentsRoot) {
   const managedPaths = [
-    toPosix(SKILL_ROOT),
-    toPosix(path.join(AGENTS_ROOT, 'claudemap-architect.md')),
-    toPosix(path.join(COMMANDS_ROOT, 'setup-claudemap.md')),
-    toPosix(path.join(COMMANDS_ROOT, 'open-claudemap.md')),
-    toPosix(path.join(COMMANDS_ROOT, 'create-map.md')),
-    toPosix(path.join(COMMANDS_ROOT, 'refresh.md')),
-    toPosix(path.join(COMMANDS_ROOT, 'show.md')),
-    toPosix(path.join(COMMANDS_ROOT, 'explain.md')),
-    toPosix(path.join(CLAUDE_ROOT, 'claudemap-install.json')),
+    toPosix(skillRoot),
+    toPosix(path.join(agentsRoot, paths.ARCHITECT_AGENT_FILENAME)),
+    toPosix(path.join(commandsRoot, 'setup-claudemap.md')),
+    toPosix(path.join(commandsRoot, 'open-claudemap.md')),
+    toPosix(path.join(commandsRoot, 'create-map.md')),
+    toPosix(path.join(commandsRoot, 'refresh.md')),
+    toPosix(path.join(commandsRoot, 'show.md')),
+    toPosix(path.join(commandsRoot, 'explain.md')),
+    toPosix(path.join(paths.CLAUDE_ROOT_DIR, paths.INSTALL_RECORD_FILENAME)),
   ]
 
-  writeJsonFile(path.join(artifactRoot, 'claudemap-artifact.json'), {
+  writeJsonFile(path.join(artifactRoot, paths.ARTIFACT_MANIFEST_FILENAME), {
     name: ARTIFACT_NAME,
     version: require(path.join(REPO_ROOT, 'package.json')).version,
     generatedAt: new Date().toISOString(),
     entrypoints: {
-      skill: toPosix(path.join(SKILL_ROOT, 'SKILL.md')),
-      'setup-claudemap': toPosix(path.join(SKILL_ROOT, 'skill', 'commands', 'setup-claudemap.js')),
-      'open-claudemap': toPosix(path.join(SKILL_ROOT, 'skill', 'commands', 'open-claudemap.js')),
-      'create-map': toPosix(path.join(SKILL_ROOT, 'skill', 'commands', 'create-map.js')),
-      refresh: toPosix(path.join(SKILL_ROOT, 'skill', 'commands', 'update.js')),
-      show: toPosix(path.join(SKILL_ROOT, 'skill', 'commands', 'show.js')),
+      skill: toPosix(path.join(skillRoot, 'SKILL.md')),
+      'setup-claudemap': toPosix(path.join(skillRoot, 'skill', 'commands', 'setup-claudemap.js')),
+      'open-claudemap': toPosix(path.join(skillRoot, 'skill', 'commands', 'open-claudemap.js')),
+      'create-map': toPosix(path.join(skillRoot, 'skill', 'commands', 'create-map.js')),
+      refresh: toPosix(path.join(skillRoot, 'skill', 'commands', 'update.js')),
+      show: toPosix(path.join(skillRoot, 'skill', 'commands', 'show.js')),
     },
     subagents: {
-      claudemapArchitect: toPosix(path.join(AGENTS_ROOT, 'claudemap-architect.md')),
+      claudemapArchitect: toPosix(path.join(agentsRoot, paths.ARCHITECT_AGENT_FILENAME)),
     },
     slashCommands: {
-      'setup-claudemap': toPosix(path.join(COMMANDS_ROOT, 'setup-claudemap.md')),
-      explain: toPosix(path.join(COMMANDS_ROOT, 'explain.md')),
-      'create-map': toPosix(path.join(COMMANDS_ROOT, 'create-map.md')),
-      'open-claudemap': toPosix(path.join(COMMANDS_ROOT, 'open-claudemap.md')),
-      refresh: toPosix(path.join(COMMANDS_ROOT, 'refresh.md')),
-      show: toPosix(path.join(COMMANDS_ROOT, 'show.md')),
+      'setup-claudemap': toPosix(path.join(commandsRoot, 'setup-claudemap.md')),
+      explain: toPosix(path.join(commandsRoot, 'explain.md')),
+      'create-map': toPosix(path.join(commandsRoot, 'create-map.md')),
+      'open-claudemap': toPosix(path.join(commandsRoot, 'open-claudemap.md')),
+      refresh: toPosix(path.join(commandsRoot, 'refresh.md')),
+      show: toPosix(path.join(commandsRoot, 'show.md')),
     },
     publicCommands: [
       'setup-claudemap',
@@ -446,9 +444,9 @@ function writeArtifactManifest(artifactRoot) {
     ],
     managedPaths,
     internalRuntime: {
-      skillRoot: toPosix(SKILL_ROOT),
-      navigationDoc: toPosix(path.join(SKILL_ROOT, 'NAVIGATION.md')),
-      sharedSubagent: toPosix(path.join(AGENTS_ROOT, 'claudemap-architect.md')),
+      skillRoot: toPosix(skillRoot),
+      navigationDoc: toPosix(path.join(skillRoot, 'NAVIGATION.md')),
+      sharedSubagent: toPosix(path.join(agentsRoot, paths.ARCHITECT_AGENT_FILENAME)),
     },
     notes: [
       'Install the bundled .claude directory into your target project root with scripts/install-claudemap.js, or copy it manually.',
@@ -473,33 +471,35 @@ function shouldExcludeSkill(relativePath) {
   return relativePath === 'SKILL.md'
 }
 
-function shouldExcludeApp(relativePath) {
-  return (
-    relativePath === 'node_modules' ||
-    relativePath.startsWith('node_modules/') ||
-    relativePath === 'dist' ||
-    relativePath.startsWith('dist/') ||
-    relativePath === 'public/claudemap-maps.json' ||
-    /^public\/claudemap-runtime(-state)?(\.[^/]+)?\.json$/.test(relativePath) ||
-    relativePath === 'public/graph' ||
-    relativePath.startsWith('public/graph/')
-  )
+function createShouldExcludeApp(paths) {
+  return function shouldExcludeApp(relativePath) {
+    return (
+      relativePath === 'node_modules' ||
+      relativePath.startsWith('node_modules/') ||
+      relativePath === 'dist' ||
+      relativePath.startsWith('dist/') ||
+      relativePath === `public/${paths.MAPS_MANIFEST_FILENAME}` ||
+      /^public\/claudemap-runtime(-state)?(\.[^/]+)?\.json$/.test(relativePath) ||
+      relativePath === `public/${paths.GRAPH_DIR_NAME}` ||
+      relativePath.startsWith(`public/${paths.GRAPH_DIR_NAME}/`)
+    )
+  }
 }
 
-function copyArtifactFiles(artifactRoot) {
-  copyFile('skill/SKILL.md', artifactRoot, path.join(SKILL_ROOT, 'SKILL.md'))
-  copyFile('package.json', artifactRoot, path.join(SKILL_ROOT, 'package.json'))
+function copyArtifactFiles(artifactRoot, paths, skillRoot, agentsRoot) {
+  copyFile('skill/SKILL.md', artifactRoot, path.join(skillRoot, 'SKILL.md'))
+  copyFile('package.json', artifactRoot, path.join(skillRoot, 'package.json'))
 
   if (fs.existsSync(path.join(REPO_ROOT, 'package-lock.json'))) {
-    copyFile('package-lock.json', artifactRoot, path.join(SKILL_ROOT, 'package-lock.json'))
+    copyFile('package-lock.json', artifactRoot, path.join(skillRoot, 'package-lock.json'))
   }
 
-  copyDirectoryInto('skill', artifactRoot, path.join(SKILL_ROOT, 'skill'), shouldExcludeSkill)
-  copyDirectoryInto('app', artifactRoot, path.join(SKILL_ROOT, 'app'), shouldExcludeApp)
-  copyDirectoryInto('contracts', artifactRoot, path.join(SKILL_ROOT, 'contracts'))
+  copyDirectoryInto('skill', artifactRoot, path.join(skillRoot, 'skill'), shouldExcludeSkill)
+  copyDirectoryInto('app', artifactRoot, path.join(skillRoot, 'app'), createShouldExcludeApp(paths))
+  copyDirectoryInto('contracts', artifactRoot, path.join(skillRoot, 'contracts'))
 
   if (fs.existsSync(path.join(REPO_ROOT, 'agents'))) {
-    copyDirectoryInto('agents', artifactRoot, AGENTS_ROOT)
+    copyDirectoryInto('agents', artifactRoot, agentsRoot)
   }
 }
 
@@ -558,17 +558,23 @@ function maybeCreateZip(artifactRoot, outputRoot, zipRequested) {
 }
 
 async function buildClaudeMapArtifact(options = {}) {
+  const paths = await loadPathContracts()
+  const defaultOutputRoot = path.join(REPO_ROOT, paths.PACKAGE_ARTIFACT_DIR_REL)
   const normalizedOptions = {
-    outputRoot: options.outputRoot || DEFAULT_OUTPUT_ROOT,
+    outputRoot: options.outputRoot || defaultOutputRoot,
     zip: options.zip === true,
   }
   const contracts = await loadContracts()
+  const skillRoot = path.join(paths.CLAUDE_ROOT_DIR, paths.SKILLS_SUBDIR, paths.RUNTIME_SKILL_NAME)
+  const commandsRoot = path.join(paths.CLAUDE_ROOT_DIR, paths.COMMANDS_SUBDIR)
+  const agentsRoot = path.join(paths.CLAUDE_ROOT_DIR, paths.AGENTS_SUBDIR)
+  const defaultSeedMapPath = path.join(REPO_ROOT, paths.SEED_MAP_REL)
   const artifactRoot = ensureCleanArtifactLocation(normalizedOptions.outputRoot)
-  copyArtifactFiles(artifactRoot)
-  writeRuntimePlaceholders(artifactRoot, contracts)
-  writeSlashCommands(artifactRoot)
-  writeNavigationDocs(artifactRoot)
-  writeArtifactManifest(artifactRoot)
+  copyArtifactFiles(artifactRoot, paths, skillRoot, agentsRoot)
+  writeRuntimePlaceholders(artifactRoot, contracts, paths, skillRoot, defaultSeedMapPath)
+  writeSlashCommands(artifactRoot, commandsRoot)
+  writeNavigationDocs(artifactRoot, skillRoot)
+  writeArtifactManifest(artifactRoot, paths, skillRoot, commandsRoot, agentsRoot)
 
   return {
     artifactRoot,
@@ -577,7 +583,9 @@ async function buildClaudeMapArtifact(options = {}) {
 }
 
 async function main(argv = process.argv.slice(2)) {
-  const options = parseArgs(argv)
+  const paths = await loadPathContracts()
+  const defaultOutputRoot = path.join(REPO_ROOT, paths.PACKAGE_ARTIFACT_DIR_REL)
+  const options = parseArgs(argv, defaultOutputRoot)
 
   if (options.help) {
     printUsage()

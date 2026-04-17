@@ -1,6 +1,12 @@
 import fs from 'fs'
 import crypto from 'crypto'
 import {
+  CACHE_FILENAME,
+  GRAPH_DIR_NAME,
+  RUNTIME_GRAPH_FILENAME,
+  RUNTIME_STATE_FILENAME,
+} from './contracts/paths.js'
+import {
   getProjectManifestPath,
   getRuntimeManifestPath,
   readJsonFile,
@@ -27,17 +33,15 @@ function uniqueSorted(values) {
   return [...new Set(values.filter(Boolean))].sort((left, right) => left.localeCompare(right))
 }
 
-const GRAPH_DIR_NAME = 'graph'
-
 function createRootMapEntry() {
   return {
     id: DEFAULT_MAP_ID,
     label: 'ClaudeMap',
     summary: 'Full repo overview',
     scope: null,
-    cachePath: 'claudemap-cache.json',
-    graphPath: `${GRAPH_DIR_NAME}/claudemap-runtime.json`,
-    statePath: `${GRAPH_DIR_NAME}/claudemap-runtime-state.json`,
+    cachePath: CACHE_FILENAME,
+    graphPath: `${GRAPH_DIR_NAME}/${RUNTIME_GRAPH_FILENAME}`,
+    statePath: `${GRAPH_DIR_NAME}/${RUNTIME_STATE_FILENAME}`,
   }
 }
 
@@ -54,8 +58,8 @@ function migrateLegacyRuntimePath(relativePath, fallbackPath) {
   }
 
   if (
-    normalizedPath === 'claudemap-runtime.json' ||
-    normalizedPath === 'claudemap-runtime-state.json' ||
+    normalizedPath === RUNTIME_GRAPH_FILENAME ||
+    normalizedPath === RUNTIME_STATE_FILENAME ||
     /^claudemap-runtime\.[^/]+\.json$/.test(normalizedPath) ||
     /^claudemap-runtime-state\.[^/]+\.json$/.test(normalizedPath)
   ) {
@@ -72,11 +76,11 @@ function migrateLegacyMapEntryPaths(mapEntry) {
 
   const defaultGraphFileName =
     mapEntry.id === DEFAULT_MAP_ID
-      ? 'claudemap-runtime.json'
+      ? RUNTIME_GRAPH_FILENAME
       : `claudemap-runtime.${mapEntry.id}.json`
   const defaultStateFileName =
     mapEntry.id === DEFAULT_MAP_ID
-      ? 'claudemap-runtime-state.json'
+      ? RUNTIME_STATE_FILENAME
       : `claudemap-runtime-state.${mapEntry.id}.json`
 
   return {

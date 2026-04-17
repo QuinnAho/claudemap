@@ -7,12 +7,11 @@ const { spawnSync } = require('child_process')
 const REPO_ROOT = path.resolve(__dirname, '..')
 const APP_ROOT = path.join(REPO_ROOT, 'app')
 const PACKAGE_JSON_PATH = path.join(REPO_ROOT, 'package.json')
-const OUTPUT_ROOT = path.join(REPO_ROOT, 'docs')
 const TEMP_BUILD_CONFIG_PATH = path.join(APP_ROOT, '.claudemap-build.json')
-const RUNTIME_GRAPH_PATH = path.join(APP_ROOT, 'public', 'graph', 'claudemap-runtime.json')
-const RUNTIME_STATE_PATH = path.join(APP_ROOT, 'public', 'graph', 'claudemap-runtime-state.json')
-const RUNTIME_MANIFEST_PATH = path.join(APP_ROOT, 'public', 'claudemap-maps.json')
-const SEEDED_SELF_MAP_PATH = path.join(REPO_ROOT, 'contracts', 'claudemap-seed-map.json')
+
+async function loadPathContracts() {
+  return import('../skill/lib/contracts/paths.js')
+}
 
 function readRepositoryUrl() {
   const packageJson = JSON.parse(fs.readFileSync(PACKAGE_JSON_PATH, 'utf8'))
@@ -85,7 +84,7 @@ function createRuntimeStateFromGraph(graphData, contracts) {
   }
 }
 
-function createDefaultMapsManifest() {
+function createDefaultMapsManifest(paths) {
   return {
     version: 1,
     activeMapId: 'root',
@@ -95,9 +94,9 @@ function createDefaultMapsManifest() {
         label: 'ClaudeMap',
         summary: 'Full repo overview',
         scope: null,
-        cachePath: 'claudemap-cache.json',
-        graphPath: 'graph/claudemap-runtime.json',
-        statePath: 'graph/claudemap-runtime-state.json',
+        cachePath: paths.CACHE_FILENAME,
+        graphPath: paths.RUNTIME_GRAPH_REL,
+        statePath: paths.RUNTIME_STATE_REL,
       },
     ],
   }
@@ -124,32 +123,38 @@ function buildApp() {
 }
 
 async function main() {
-  const [{ GRAPH_SOURCES }, { PRESENTATION_MODES }] = await Promise.all([
+  const [{ GRAPH_SOURCES }, { PRESENTATION_MODES }, paths] = await Promise.all([
     import('../skill/lib/contracts/graph-sources.js'),
     import('../skill/lib/contracts/presentation.js'),
+    loadPathContracts(),
   ])
   const contracts = { GRAPH_SOURCES, PRESENTATION_MODES }
+  const outputRoot = path.join(REPO_ROOT, paths.DOCS_DIR_REL)
+  const runtimeGraphPath = path.join(APP_ROOT, 'public', paths.RUNTIME_GRAPH_REL)
+  const runtimeStatePath = path.join(APP_ROOT, 'public', paths.RUNTIME_STATE_REL)
+  const runtimeManifestPath = path.join(APP_ROOT, 'public', paths.MAPS_MANIFEST_FILENAME)
+  const seededSelfMapPath = path.join(REPO_ROOT, paths.SEED_MAP_REL)
   const pagesConfig = getGitHubPagesConfig()
-  const seededSelfMap = readJsonFile(SEEDED_SELF_MAP_PATH)
-  const originalGraph = fs.existsSync(RUNTIME_GRAPH_PATH)
-    ? fs.readFileSync(RUNTIME_GRAPH_PATH, 'utf8')
+  const seededSelfMap = readJsonFile(seededSelfMapPath)
+  const originalGraph = fs.existsSync(runtimeGraphPath)
+    ? fs.readFileSync(runtimeGraphPath, 'utf8')
     : null
-  const originalRuntimeState = fs.existsSync(RUNTIME_STATE_PATH)
-    ? fs.readFileSync(RUNTIME_STATE_PATH, 'utf8')
+  const originalRuntimeState = fs.existsSync(runtimeStatePath)
+    ? fs.readFileSync(runtimeStatePath, 'utf8')
     : null
-  const originalRuntimeManifest = fs.existsSync(RUNTIME_MANIFEST_PATH)
-    ? fs.readFileSync(RUNTIME_MANIFEST_PATH, 'utf8')
+  const originalRuntimeManifest = fs.existsSync(runtimeManifestPath)
+    ? fs.readFileSync(runtimeManifestPath, 'utf8')
     : null
 
   try {
     writeJsonFile(TEMP_BUILD_CONFIG_PATH, {
       base: pagesConfig.basePath,
-      outDir: OUTPUT_ROOT,
+      outDir: outputRoot,
       emptyOutDir: true,
     })
-    writeJsonFile(RUNTIME_GRAPH_PATH, seededSelfMap)
-    writeJsonFile(RUNTIME_STATE_PATH, createRuntimeStateFromGraph(seededSelfMap, contracts))
-    writeJsonFile(RUNTIME_MANIFEST_PATH, createDefaultMapsManifest())
+    writeJsonFile(runtimeGraphPath, seededSelfMap)
+    writeJsonFile(runtimeStatePath, createRuntimeStateFromGraph(seededSelfMap, contracts))
+    writeJsonFile(runtimeManifestPath, createDefaultMapsManifest(paths))
 
     const result = buildApp()
 
@@ -162,20 +167,20 @@ async function main() {
     }
   } finally {
     if (originalGraph === null) {
-      fs.rmSync(RUNTIME_GRAPH_PATH, { force: true })
+      fs.rmSync(runtimeGraphPath, { force: true })
     } else {
-      fs.writeFileSync(RUNTIME_GRAPH_PATH, originalGraph)
+      fs.writeFileSync(runtimeGraphPath, originalGraph)
     }
 
     if (originalRuntimeState === null) {
-      fs.rmSync(RUNTIME_STATE_PATH, { force: true })
+      fs.rmSync(runtimeStatePath, { force: true })
     } else {
-      fs.writeFileSync(RUNTIME_STATE_PATH, originalRuntimeState)
+      fs.writeFileSync(runtimeStatePath, originalRuntimeState)
     }
     if (originalRuntimeManifest === null) {
-      fs.rmSync(RUNTIME_MANIFEST_PATH, { force: true })
+      fs.rmSync(runtimeManifestPath, { force: true })
     } else {
-      fs.writeFileSync(RUNTIME_MANIFEST_PATH, originalRuntimeManifest)
+      fs.writeFileSync(runtimeManifestPath, originalRuntimeManifest)
     }
 
     if (fs.existsSync(TEMP_BUILD_CONFIG_PATH)) {
@@ -183,8 +188,8 @@ async function main() {
     }
   }
 
-  fs.writeFileSync(path.join(OUTPUT_ROOT, '.nojekyll'), '')
-  console.log(`ClaudeMap site ready at ${OUTPUT_ROOT}`)
+  fs.writeFileSync(path.join(outputRoot, '.nojekyll'), '')
+  console.log(`ClaudeMap site ready at ${outputRoot}`)
 
   if (pagesConfig.publicUrl) {
     console.log(`Expected GitHub Pages URL: ${pagesConfig.publicUrl}`)

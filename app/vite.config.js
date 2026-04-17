@@ -10,6 +10,7 @@ import {
   writeManifest,
 } from '../skill/lib/map-manifest.js';
 import { getDefaultProjectRoot } from '../skill/lib/runtime-paths.js';
+import { API_ACTIVE_MAP_ENDPOINT } from './src/contracts/paths.js';
 import { claudemapTokensPlugin } from './vite/tokens-plugin.js';
 
 const buildConfigPath = fileURLToPath(new URL('./.claudemap-build.json', import.meta.url));
@@ -39,7 +40,7 @@ function claudemapApiPlugin() {
   return {
     name: 'claudemap-api',
     configureServer(server) {
-      server.middlewares.use('/__claudemap/active-map', async (request, response) => {
+      server.middlewares.use(API_ACTIVE_MAP_ENDPOINT, async (request, response) => {
         if (request.method !== 'POST') {
           writeJsonResponse(response, 405, { error: 'Method not allowed' });
           return;

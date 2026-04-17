@@ -5,7 +5,10 @@ const { spawnSync } = require('child_process')
 
 const PACKAGE_ROOT = path.resolve(__dirname, '..')
 const INSTALL_SCRIPT_PATH = path.join(PACKAGE_ROOT, 'scripts', 'install-claudemap.js')
-const BUNDLED_ARTIFACT_ROOT = path.join(PACKAGE_ROOT, '.npm-bundle', 'claudemap')
+
+async function loadPathContracts() {
+  return import('../skill/lib/contracts/paths.js')
+}
 
 function printUsage() {
   console.log('ClaudeMap CLI')
@@ -27,7 +30,7 @@ function hasPositionalTarget(argv) {
   })
 }
 
-function normalizeArgs(argv) {
+function normalizeArgs(argv, bundledArtifactRoot) {
   const nextArgs = [...argv]
   const forwardedArgs = []
 
@@ -43,12 +46,12 @@ function normalizeArgs(argv) {
   }
 
   forwardedArgs.push(...nextArgs)
-  forwardedArgs.push('--artifact', BUNDLED_ARTIFACT_ROOT, '--skip-package')
+  forwardedArgs.push('--artifact', bundledArtifactRoot, '--skip-package')
 
   return forwardedArgs
 }
 
-function main() {
+async function main() {
   const argv = process.argv.slice(2)
 
   if (hasHelpFlag(argv)) {
@@ -56,7 +59,10 @@ function main() {
     return
   }
 
-  const result = spawnSync(process.execPath, [INSTALL_SCRIPT_PATH, ...normalizeArgs(argv)], {
+  const paths = await loadPathContracts()
+  const bundledArtifactRoot = path.join(PACKAGE_ROOT, paths.NPM_BUNDLE_DIR_REL, paths.NPM_BUNDLE_SUBDIR)
+
+  const result = spawnSync(process.execPath, [INSTALL_SCRIPT_PATH, ...normalizeArgs(argv, bundledArtifactRoot)], {
     cwd: process.cwd(),
     stdio: 'inherit',
   })
@@ -73,9 +79,7 @@ function main() {
   process.exitCode = 1
 }
 
-try {
-  main()
-} catch (error) {
+main().catch((error) => {
   console.error(`ClaudeMap CLI failed: ${error.message}`)
   process.exitCode = 1
-}
+})

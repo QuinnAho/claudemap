@@ -1,3 +1,5 @@
+import { API_ACTIVE_MAP_ENDPOINT } from '../contracts/paths'
+
 function createApiUrl(relativePath) {
   if (typeof window === 'undefined') {
     return `${import.meta.env.BASE_URL}${relativePath.replace(/^\//, '')}`
@@ -22,7 +24,7 @@ async function readApiError(response, fallbackMessage) {
 }
 
 export async function setActiveMap(mapId) {
-  const response = await window.fetch(createApiUrl('/__claudemap/active-map'), {
+  const response = await window.fetch(createApiUrl(API_ACTIVE_MAP_ENDPOINT), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

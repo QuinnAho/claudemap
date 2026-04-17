@@ -1,6 +1,6 @@
+import { CACHE_FILENAME } from './contracts/paths.js'
 import { readJsonFile, resolveProjectPath, writeJsonFileAtomic } from './runtime-paths.js'
 
-const CACHE_FILE_NAME = 'claudemap-cache.json'
 const CACHE_SCHEMA_VERSION = 1
 
 function normalizeFileList(files) {
@@ -17,8 +17,8 @@ function normalizeFileList(files) {
   }))
 }
 
-export function getCachePath(projectRoot, relativePath = CACHE_FILE_NAME) {
-  return resolveProjectPath(projectRoot, relativePath, CACHE_FILE_NAME)
+export function getCachePath(projectRoot, relativePath = CACHE_FILENAME) {
+  return resolveProjectPath(projectRoot, relativePath, CACHE_FILENAME)
 }
 
 export function writeCache(projectRoot, graphData, currentFiles = [], options = {}) {

@@ -1,6 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { GRAPH_SOURCES } from '../contracts/graph-sources'
 import { MOTION } from '../contracts/motion'
+import {
+  CACHE_FILENAME,
+  DEFAULT_MAP_ID,
+  MAPS_MANIFEST_FILENAME,
+  RUNTIME_GRAPH_REL,
+  RUNTIME_STATE_REL,
+} from '../contracts/paths'
 import { PRESENTATION_MODES } from '../contracts/presentation'
 import { useGraphStore } from '../store/graphStore'
 import {
@@ -229,16 +236,16 @@ function isRuntimeEnvelope(value) {
 function createLegacyManifest() {
   return {
     version: 1,
-    activeMapId: 'root',
+    activeMapId: DEFAULT_MAP_ID,
     maps: [
       {
-        id: 'root',
+        id: DEFAULT_MAP_ID,
         label: 'ClaudeMap',
         summary: 'Full repo overview',
         scope: null,
-        cachePath: 'claudemap-cache.json',
-        graphPath: 'graph/claudemap-runtime.json',
-        statePath: 'graph/claudemap-runtime-state.json',
+        cachePath: CACHE_FILENAME,
+        graphPath: RUNTIME_GRAPH_REL,
+        statePath: RUNTIME_STATE_REL,
       },
     ],
   }
@@ -331,7 +338,7 @@ async function fetchRuntimeEnvelopeAsset(relativePath) {
 
 async function fetchMapsManifest() {
   try {
-    const manifestUrl = createPublicAssetUrl('claudemap-maps.json')
+    const manifestUrl = createPublicAssetUrl(MAPS_MANIFEST_FILENAME)
     manifestUrl.searchParams.set('t', String(Date.now()))
 
     const response = await window.fetch(manifestUrl, {

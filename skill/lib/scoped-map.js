@@ -1,6 +1,7 @@
 import { findMapById } from './map-manifest.js'
 import { createSystemImportEdges } from './import-resolution.js'
 import { GRAPH_SOURCES } from './contracts/graph-sources.js'
+import { GRAPH_DIR_NAME } from './contracts/paths.js'
 
 function createChildrenByParentMap(nodes) {
   const childrenByParent = new Map()
@@ -232,7 +233,7 @@ export function allocateMapId(manifest, label) {
 export function createScopedMapFileSet(mapId) {
   return {
     cachePath: `claudemap-cache.${mapId}.json`,
-    graphPath: `graph/claudemap-runtime.${mapId}.json`,
-    statePath: `graph/claudemap-runtime-state.${mapId}.json`,
+    graphPath: `${GRAPH_DIR_NAME}/claudemap-runtime.${mapId}.json`,
+    statePath: `${GRAPH_DIR_NAME}/claudemap-runtime-state.${mapId}.json`,
   }
 }

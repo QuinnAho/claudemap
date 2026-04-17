@@ -53,6 +53,9 @@ export const PACKAGE_ARTIFACT_DIR_REL = 'artifacts/claudemap-skill'
 export const NPM_BUNDLE_DIR_REL = '.npm-bundle'
 export const NPM_BUNDLE_SUBDIR = 'claudemap'
 
+// Static-site output directory at the repo root.
+export const DOCS_DIR_REL = 'docs'
+
 // App public-graph location (inside the skill bundle).
 export const APP_PUBLIC_GRAPH_REL = 'app/public/graph'
 export const APP_PUBLIC_GRAPH_RUNTIME_REL = `${APP_PUBLIC_GRAPH_REL}/${RUNTIME_GRAPH_FILENAME}`

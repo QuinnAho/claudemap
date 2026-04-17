@@ -1,19 +1,16 @@
+import { CACHE_FILENAME, RUNTIME_GRAPH_REL, RUNTIME_STATE_REL } from './contracts/paths.js'
 import { DEFAULT_MAP_ID, findMapById, getActiveMap, readManifest } from './map-manifest.js'
 import { resolveProjectPath, resolveRuntimePublicPath } from './runtime-paths.js'
 
-const DEFAULT_CACHE_PATH = 'claudemap-cache.json'
-const DEFAULT_RUNTIME_GRAPH_PATH = 'graph/claudemap-runtime.json'
-const DEFAULT_RUNTIME_STATE_PATH = 'graph/claudemap-runtime-state.json'
-
 export function resolveMapRuntimePaths(mapEntry) {
   return {
-    graphPath: resolveRuntimePublicPath(mapEntry?.graphPath, DEFAULT_RUNTIME_GRAPH_PATH),
-    statePath: resolveRuntimePublicPath(mapEntry?.statePath, DEFAULT_RUNTIME_STATE_PATH),
+    graphPath: resolveRuntimePublicPath(mapEntry?.graphPath, RUNTIME_GRAPH_REL),
+    statePath: resolveRuntimePublicPath(mapEntry?.statePath, RUNTIME_STATE_REL),
   }
 }
 
 export function resolveMapCachePath(projectRoot, mapEntry) {
-  return resolveProjectPath(projectRoot, mapEntry?.cachePath, DEFAULT_CACHE_PATH)
+  return resolveProjectPath(projectRoot, mapEntry?.cachePath, CACHE_FILENAME)
 }
 
 export function resolveMapPaths(projectRoot, mapEntry) {

@@ -7,6 +7,10 @@ const { pathToFileURL } = require('url')
 const { installClaudeMap } = require('./install-claudemap.js')
 const { buildClaudeMapArtifact } = require('./package-claudemap-skill.js')
 
+async function loadPathContracts() {
+  return import('../skill/lib/contracts/paths.js')
+}
+
 const REPO_ROOT = path.resolve(__dirname, '..')
 const ARTIFACTS_ROOT = path.join(REPO_ROOT, 'artifacts')
 const SMOKE_ROOT = path.join(ARTIFACTS_ROOT, 'smoke')
@@ -342,7 +346,7 @@ async function assertScopedPythonEdgeInference() {
 async function main() {
   createFixtureRepo()
   const artifactRoot = await buildArtifact()
-  installClaudeMap({
+  await installClaudeMap({
     artifactRoot,
     buildArtifact: false,
     dryRun: false,

@@ -1,6 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import { execFileSync } from 'child_process'
+import { CACHE_FILENAME } from './contracts/paths.js'
 
 const branchCache = new Map()
 
@@ -16,7 +17,7 @@ const SKIPPED_DIRECTORY_NAMES = new Set([
 const SKIPPED_FILE_NAMES = new Set([
   '.env',
   '.gitignore',
-  'claudemap-cache.json',
+  CACHE_FILENAME,
   'package-lock.json',
   'yarn.lock',
 ])

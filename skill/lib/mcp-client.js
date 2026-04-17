@@ -3,13 +3,17 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import { GRAPH_SOURCES } from './contracts/graph-sources.js'
 import { PRESENTATION_MODES } from './contracts/presentation.js'
+import {
+  APP_PUBLIC_GRAPH_RUNTIME_REL,
+  APP_PUBLIC_GRAPH_STATE_REL,
+} from './contracts/paths.js'
 import { writeJsonFileAtomic } from './runtime-paths.js'
 
 const DEFAULT_RUNTIME_GRAPH_PATH = path.resolve(
-  fileURLToPath(new URL('../../app/public/graph/claudemap-runtime.json', import.meta.url)),
+  fileURLToPath(new URL(`../../${APP_PUBLIC_GRAPH_RUNTIME_REL}`, import.meta.url)),
 )
 const DEFAULT_RUNTIME_STATE_PATH = path.resolve(
-  fileURLToPath(new URL('../../app/public/graph/claudemap-runtime-state.json', import.meta.url)),
+  fileURLToPath(new URL(`../../${APP_PUBLIC_GRAPH_STATE_REL}`, import.meta.url)),
 )
 
 function createDefaultRuntimeState() {

@@ -2,12 +2,18 @@ import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { GRAPH_SOURCES } from './contracts/graph-sources.js'
+import {
+  AGENTS_SUBDIR,
+  ARCHITECT_AGENT_FILENAME,
+  ENRICHMENT_PROMPT_FILENAME,
+  SCOPED_ENRICHMENT_PROMPT_FILENAME,
+} from './contracts/paths.js'
 import { createSystemImportEdges } from './import-resolution.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const PROMPT_PATH = path.join(__dirname, '../prompts/enrichment.txt')
-const SCOPED_PROMPT_PATH = path.join(__dirname, '../prompts/scoped-enrichment.txt')
-const ARCHITECT_AGENT_PATH = path.join(__dirname, '../../agents/claudemap-architect.md')
+const PROMPT_PATH = path.join(__dirname, '..', 'prompts', ENRICHMENT_PROMPT_FILENAME)
+const SCOPED_PROMPT_PATH = path.join(__dirname, '..', 'prompts', SCOPED_ENRICHMENT_PROMPT_FILENAME)
+const ARCHITECT_AGENT_PATH = path.join(__dirname, '../..', AGENTS_SUBDIR, ARCHITECT_AGENT_FILENAME)
 const GRAPH_SOURCE_PRIORITY = {
   [GRAPH_SOURCES.SAMPLE]: 0,
   [GRAPH_SOURCES.SEED]: 0,

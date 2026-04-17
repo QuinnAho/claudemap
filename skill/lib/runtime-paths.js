@@ -1,10 +1,10 @@
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { MAPS_MANIFEST_FILENAME, RUNTIME_INSTALLED_PATH_SUFFIX } from './contracts/paths.js'
 
 const RUNTIME_ROOT = path.resolve(fileURLToPath(new URL('../../', import.meta.url)))
 const RUNTIME_PUBLIC_ROOT = path.join(RUNTIME_ROOT, 'app', 'public')
-const MANIFEST_FILE_NAME = 'claudemap-maps.json'
 
 function normalizePathSegments(filePath) {
   return filePath.split(path.sep).join('/')
@@ -29,7 +29,7 @@ export function getRuntimePublicRoot() {
 }
 
 export function isInstalledRuntimeRoot(runtimeRoot = RUNTIME_ROOT) {
-  return normalizePathSegments(runtimeRoot).endsWith('/.claude/skills/claudemap-runtime')
+  return normalizePathSegments(runtimeRoot).endsWith(RUNTIME_INSTALLED_PATH_SUFFIX)
 }
 
 export function getDefaultProjectRoot() {
@@ -59,11 +59,11 @@ export function resolveRuntimePublicPath(relativePath, fallbackName) {
 }
 
 export function getProjectManifestPath(projectRoot) {
-  return path.join(projectRoot, MANIFEST_FILE_NAME)
+  return path.join(projectRoot, MAPS_MANIFEST_FILENAME)
 }
 
 export function getRuntimeManifestPath() {
-  return path.join(RUNTIME_PUBLIC_ROOT, MANIFEST_FILE_NAME)
+  return path.join(RUNTIME_PUBLIC_ROOT, MAPS_MANIFEST_FILENAME)
 }
 
 export function readJsonFile(filePath, fallbackFactory = null) {
