@@ -43,9 +43,18 @@ import {
   getNodeAbsolutePosition,
   getSystemPath,
   getTopLevelSystemId,
-  isNodeInSelectedBranch,
-  isNodeVisible,
 } from '../../lib/graphNodeUtils'
+import {
+  areStringArraysEqual,
+  computeChildIndexes,
+  computeConnectedSystemIds,
+  computeExpandedSystemIds,
+  computeRevealedFileIds,
+  computeRewrittenVisibleEdges,
+  computeStyledEdges,
+  computeStyledNodes,
+  computeVisibleNodes,
+} from '../../lib/graphView'
 import { setActiveMap } from '../../lib/mapApi'
 
 const nodeTypes = {
@@ -61,14 +70,6 @@ const edgeTypes = {
 const OVERVIEW_FIT_VIEW_OPTIONS = {
   padding: FIT_VIEW.padding,
   maxZoom: FIT_VIEW.maxZoom,
-}
-
-function areStringArraysEqual(left = [], right = []) {
-  if (left.length !== right.length) {
-    return false
-  }
-
-  return left.every((value, index) => value === right[index])
 }
 
 export default function GraphCanvas() {
@@ -105,36 +106,21 @@ export default function GraphCanvas() {
   const focusTargetNode = focusRequest?.nodeId ? nodeById.get(focusRequest.nodeId) : null
   const presentationTargetNode =
     focusTargetNode || (selectedNode?.id ? nodeById.get(selectedNode.id) : null)
-  const childCountByParentId = new Map()
-  const functionIndexById = new Map()
-  const nextFunctionIndexByParentId = new Map()
   const explicitHighlightedNodeIds = new Set(highlightedNodes)
   const hasExplicitHighlights = explicitHighlightedNodeIds.size > 0
   const focusPathIds = new Set(
     presentationTargetNode ? getSystemPath(presentationTargetNode.id, nodeById) : [],
   )
-  const runtimeExpandedSystemIds = new Set(
-    zoomLevel === ZOOM_LEVELS.OVERVIEW
-      ? []
-      : presentationMode === PRESENTATION_MODES.FREE
-        ? [
-            ...highlightedNodes.flatMap((nodeId) => getSystemPath(nodeId, nodeById)),
-            ...(focusRequest?.nodeId ? getSystemPath(focusRequest.nodeId, nodeById) : []),
-            ...(selectedNode?.id ? getSystemPath(selectedNode.id, nodeById) : []),
-          ]
-        : [
-            ...focusPathIds,
-            ...highlightedNodes.flatMap((nodeId) => getSystemPath(nodeId, nodeById)),
-            ...(selectedNode?.id ? getSystemPath(selectedNode.id, nodeById) : []),
-          ],
-  )
-  const expandedSystemIds = new Set(
-    zoomLevel === ZOOM_LEVELS.OVERVIEW
-      ? []
-      : presentationMode === PRESENTATION_MODES.FREE
-        ? [...hoveredPathIds, ...runtimeExpandedSystemIds]
-        : [...runtimeExpandedSystemIds],
-  )
+  const { expandedSystemIds } = computeExpandedSystemIds({
+    nodeById,
+    zoomLevel,
+    presentationMode,
+    highlightedNodes,
+    focusRequest,
+    selectedNode,
+    hoveredPathIds,
+    focusPathIds,
+  })
   const highlightedSystemIds = new Set(
     highlightedNodes
       .map((nodeId) => getTopLevelSystemId(nodeById.get(nodeId), nodeById))
@@ -148,24 +134,11 @@ export default function GraphCanvas() {
   const presentationSystemIds = new Set(
     [presentationLeadSystemId, ...highlightedSystemIds].filter(Boolean),
   )
-  const revealedFileIds = new Set(
-    [selectedNode?.id, focusRequest?.nodeId, ...highlightedNodes]
-      .map((nodeId) => nodeById.get(nodeId))
-      .flatMap((node) => {
-        if (!node) {
-          return []
-        }
-
-        if (node.type === 'file') {
-          return [node.id]
-        }
-
-        if (node.type === 'function' && node.parentId) {
-          return [node.parentId]
-        }
-
-        return []
-      }),
+  const revealedFileIds = computeRevealedFileIds(
+    nodeById,
+    selectedNode,
+    focusRequest,
+    highlightedNodes,
   )
 
   if (graphReady) {
@@ -175,17 +148,7 @@ export default function GraphCanvas() {
   const showGraph = graphReady || hasMountedGraphRef.current
   const isGraphTransitioning = !graphLoaded && hasMountedGraphRef.current
 
-  nodes.forEach((node) => {
-    if (node.parentId) {
-      childCountByParentId.set(node.parentId, (childCountByParentId.get(node.parentId) || 0) + 1)
-    }
-
-    if (node.type === 'function' && node.parentId) {
-      const functionIndex = nextFunctionIndexByParentId.get(node.parentId) || 0
-      functionIndexById.set(node.id, functionIndex)
-      nextFunctionIndexByParentId.set(node.parentId, functionIndex + 1)
-    }
-  })
+  const { childCountByParentId, functionIndexById } = computeChildIndexes(nodes)
 
   const cancelHoverClear = useCallback((clearPendingPath = true) => {
     if (leaveTimeoutRef.current !== null) {
@@ -370,15 +333,13 @@ export default function GraphCanvas() {
     [cancelHoverClear, clearHoveredPath, hoveredPathIds, setHoveredPathIds],
   )
 
-  const visibleNodes = nodes.filter((node) =>
-    isNodeVisible(
-      node,
-      expandedSystemIds,
-      zoomLevel === ZOOM_LEVELS.OVERVIEW,
-      nodeById,
-      revealedFileIds,
-    ),
-  )
+  const visibleNodes = computeVisibleNodes({
+    nodes,
+    expandedSystemIds,
+    zoomLevel,
+    nodeById,
+    revealedFileIds,
+  })
   const visibleNodeIds = new Set(visibleNodes.map((node) => node.id))
   const activeSelectedNode =
     selectedNode && visibleNodeIds.has(selectedNode.id) ? selectedNode : null
@@ -387,37 +348,13 @@ export default function GraphCanvas() {
     !focusRequest?.nodeId &&
     !(Array.isArray(guidedFlowRequest?.steps) && guidedFlowRequest.steps.length)
   const selectedSystemId = getTopLevelSystemId(activeSelectedNode, nodeById)
-  // Edges only connect top-level systems. Any edge whose endpoint sits on a
-  // nested subsystem (or a descendant of one) is rewritten to that endpoint's
-  // top-level system ancestor. Edges that collapse to a self-loop after
-  // rewriting are dropped — intra-subsystem relationships belong in sub-maps,
-  // not the overview.
-  const rewrittenEdgesByKey = new Map()
-  edges.forEach((edge) => {
-    const sourceRoot = getTopLevelSystemId(nodeById.get(edge.source), nodeById)
-    const targetRoot = getTopLevelSystemId(nodeById.get(edge.target), nodeById)
-
-    if (!sourceRoot || !targetRoot || sourceRoot === targetRoot) {
-      return
-    }
-
-    if (!visibleNodeIds.has(sourceRoot) || !visibleNodeIds.has(targetRoot)) {
-      return
-    }
-
-    const key = `${sourceRoot}->${targetRoot}`
-    if (rewrittenEdgesByKey.has(key)) {
-      return
-    }
-
-    rewrittenEdgesByKey.set(key, {
-      ...edge,
-      source: sourceRoot,
-      target: targetRoot,
-    })
+  const visibleEdges = computeRewrittenVisibleEdges(edges, nodeById, visibleNodeIds)
+  const connectedSystemIds = computeConnectedSystemIds({
+    visibleEdges,
+    nodeById,
+    presentationMode,
+    selectedSystemId,
   })
-  const visibleEdges = Array.from(rewrittenEdgesByKey.values())
-  const connectedSystemIds = new Set()
 
   const getAncestorLabels = useCallback(
     (nodeId) => {
@@ -489,144 +426,64 @@ export default function GraphCanvas() {
     [getAncestorLabels],
   )
 
-  if (selectedSystemId) {
-    visibleEdges.forEach((edge) => {
-      if (presentationMode !== PRESENTATION_MODES.FREE) {
-        return
+  const buildMapAffordance = useCallback(
+    (node) => {
+      const qualifiesForScopedMap =
+        node.type === 'system' &&
+        node.data?.childType === 'system' &&
+        (node.data?.childCount || 0) > 2
+
+      if (!qualifiesForScopedMap) {
+        return null
       }
 
-      const sourceNode = nodeById.get(edge.source)
-      const targetNode = nodeById.get(edge.target)
-      const sourceSystemId = getTopLevelSystemId(sourceNode, nodeById)
-      const targetSystemId = getTopLevelSystemId(targetNode, nodeById)
+      const scopedMapEntry = findScopedMapEntry(node)
 
-      if (sourceSystemId === selectedSystemId && targetSystemId) {
-        connectedSystemIds.add(targetSystemId)
+      if (scopedMapEntry) {
+        return {
+          kind: 'open',
+          onClick: () => switchScopedMap(scopedMapEntry.id),
+        }
       }
 
-      if (targetSystemId === selectedSystemId && sourceSystemId) {
-        connectedSystemIds.add(sourceSystemId)
+      return {
+        kind: 'create',
+        command: buildCreateMapCommand(node),
       }
-    })
-  }
+    },
+    [buildCreateMapCommand, findScopedMapEntry, switchScopedMap],
+  )
 
-  const styledNodes = visibleNodes.map((node) => {
-    const isSelected = activeSelectedNode?.id === node.id
-    const isInSelectedBranch =
-      activeSelectedNode && isNodeInSelectedBranch(node, activeSelectedNode, nodeById)
-    const topLevelSystemId = getTopLevelSystemId(node, nodeById)
-    const isRuntimeHighlighted =
-      explicitHighlightedNodeIds.has(node.id) || highlightedSystemIds.has(topLevelSystemId)
-    const isBranchHighlighted =
-      presentationMode === PRESENTATION_MODES.FREE &&
-      !!activeSelectedNode &&
-      !isSelected &&
-      !isInSelectedBranch &&
-      !!topLevelSystemId &&
-      connectedSystemIds.has(topLevelSystemId)
-    const isHighlighted = isRuntimeHighlighted || isBranchHighlighted
-    const isPresentationLead = presentationMode !== PRESENTATION_MODES.FREE && presentationLeadNodeId === node.id
-    const isPresentationContext =
-      presentationMode !== PRESENTATION_MODES.FREE &&
-      !!activeSelectedNode &&
-      !isPresentationLead &&
-      isNodeInSelectedBranch(node, activeSelectedNode, nodeById)
-    const isPresentationAncestor =
-      presentationMode !== PRESENTATION_MODES.FREE &&
-      !isPresentationLead &&
-      focusPathIds.has(node.id)
-    const isGhosted =
-      presentationMode !== PRESENTATION_MODES.FREE &&
-      !isSelected &&
-      !isPresentationContext &&
-      !isHighlighted
-    const qualifiesForScopedMap =
-      node.type === 'system' &&
-      node.data?.childType === 'system' &&
-      (node.data?.childCount || 0) > 2
-    const scopedMapEntry = qualifiesForScopedMap ? findScopedMapEntry(node) : null
-    const mapAffordance = qualifiesForScopedMap
-      ? scopedMapEntry
-        ? {
-            kind: 'open',
-            onClick: () => switchScopedMap(scopedMapEntry.id),
-          }
-        : {
-            kind: 'create',
-            command: buildCreateMapCommand(node),
-          }
-      : null
-
-    return {
-      ...node,
-      data: {
-        ...node.data,
-        isSelected: !!isSelected,
-        isDimmed: !!activeSelectedNode
-          ? !isSelected && !isInSelectedBranch && !isHighlighted
-          : hasExplicitHighlights && !isHighlighted,
-        isHighlighted,
-        isGhosted,
-        highlightMode,
-        healthOverlay: node.type === 'system' ? healthOverlay : false,
-        isExpanded: node.type === 'system' && expandedSystemIds.has(node.id),
-        hasChildren: childCountByParentId.has(node.id),
-        visibleFunctionCount:
-          node.type === 'file' && revealedFileIds.has(node.id)
-            ? childCountByParentId.get(node.id) || 0
-            : 0,
-        revealIndex:
-          node.type === 'function' ? functionIndexById.get(node.id) || 0 : null,
-        isPresentationLead,
-        isPresentationContext,
-        isPresentationAncestor,
-        hideDescription: presentationMode !== PRESENTATION_MODES.FREE,
-        mapAffordance,
-      },
-    }
+  const styledNodes = computeStyledNodes({
+    visibleNodes,
+    nodeById,
+    activeSelectedNode,
+    presentationMode,
+    presentationLeadNodeId,
+    focusPathIds,
+    explicitHighlightedNodeIds,
+    highlightedSystemIds,
+    connectedSystemIds,
+    hasExplicitHighlights,
+    highlightMode,
+    healthOverlay,
+    expandedSystemIds,
+    childCountByParentId,
+    revealedFileIds,
+    functionIndexById,
+    buildMapAffordance,
   })
 
-  const styledEdges = visibleEdges.map((edge) => {
-    if (!selectedSystemId && !hasExplicitHighlights) {
-      return {
-        ...edge,
-        data: {
-          ...edge.data,
-          isHighlighted: false,
-          isDimmed: false,
-          highlightMode,
-          isSelectionTrace: false,
-          isPresentationTrace: false,
-        },
-      }
-    }
-
-    const sourceSystemId = getTopLevelSystemId(nodeById.get(edge.source), nodeById)
-    const targetSystemId = getTopLevelSystemId(nodeById.get(edge.target), nodeById)
-    const isSelectionTrace =
-      presentationMode === PRESENTATION_MODES.FREE &&
-      !!selectedSystemId &&
-      (sourceSystemId === selectedSystemId || targetSystemId === selectedSystemId)
-    const isHighlighted =
-      presentationMode !== PRESENTATION_MODES.FREE
-        ? presentationSystemIds.has(sourceSystemId) || presentationSystemIds.has(targetSystemId)
-        : isSelectionTrace ||
-          explicitHighlightedNodeIds.has(edge.source) ||
-          explicitHighlightedNodeIds.has(edge.target) ||
-          highlightedSystemIds.has(sourceSystemId) ||
-          highlightedSystemIds.has(targetSystemId)
-
-    return {
-      ...edge,
-      data: {
-        ...edge.data,
-        isHighlighted,
-        isDimmed: presentationMode !== PRESENTATION_MODES.FREE ? !isHighlighted : !isHighlighted,
-        highlightMode,
-        isSelectionTrace,
-        isPresentationTrace: false,
-      },
-    }
+  const styledEdges = computeStyledEdges({
+    visibleEdges,
+    nodeById,
+    presentationMode,
+    selectedSystemId,
+    hasExplicitHighlights,
+    highlightMode,
+    presentationSystemIds,
+    explicitHighlightedNodeIds,
+    highlightedSystemIds,
   })
 
   const onNodeClick = useCallback(
