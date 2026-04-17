@@ -9,6 +9,7 @@ export const graphSliceInitialState = {
   mapsManifest: null,
   activeMapId: 'root',
   activeMap: null,
+  graphLoaded: false,
   meta: {
     repoName: 'claudemap',
     creditLabel: 'ClaudeMap graph',
@@ -22,6 +23,8 @@ export function createGraphSlice(set) {
     ...graphSliceInitialState,
 
     setGraph: (nodes, edges) => set({ nodes, edges }),
+
+    setGraphLoaded: (graphLoaded) => set({ graphLoaded }),
 
     setMapsManifest: (manifest) =>
       set({

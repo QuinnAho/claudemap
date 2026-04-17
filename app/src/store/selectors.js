@@ -14,10 +14,12 @@ export const selectActiveMapId = (state) => state.activeMapId
 export const selectActiveMap = (state) => state.activeMap
 export const selectMeta = (state) => state.meta
 export const selectMetaLastSyncedAt = (state) => state.meta.lastSyncedAt
+export const selectGraphLoaded = (state) => state.graphLoaded
 
 export const selectSetGraph = (state) => state.setGraph
 export const selectSetMapsManifest = (state) => state.setMapsManifest
 export const selectSetMeta = (state) => state.setMeta
+export const selectSetGraphLoaded = (state) => state.setGraphLoaded
 
 // ---- ui slice ----
 

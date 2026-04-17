@@ -24,7 +24,7 @@ import {
   selectSetHoveredPathIds,
   selectSetSelectedNode,
 } from '../../store/selectors'
-import { useGraphData } from '../../hooks/useGraphData'
+import { useGraphLoaded } from '../../hooks/useGraphLoaded'
 import { useLayout } from '../../hooks/useLayout'
 import SystemNode from './SystemNode'
 import CustomEdge from './CustomEdge'
@@ -88,7 +88,7 @@ export default function GraphCanvas() {
   const focusRequest = useGraphStore(selectFocusRequest)
   const guidedFlowRequest = useGraphStore(selectGuidedFlowRequest)
   const presentationMode = useGraphStore(selectPresentationMode)
-  const graphLoaded = useGraphData()
+  const graphLoaded = useGraphLoaded()
   const { zoomLevel, onViewportChange } = useZoomLevel()
   const layoutReady = useLayout(zoomLevel)
   const graphReady = graphLoaded && layoutReady

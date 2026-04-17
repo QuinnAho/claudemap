@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { GRAPH_SOURCES } from '../contracts/graph-sources'
 import {
   createDefaultRuntimeEnvelope,
@@ -15,6 +15,7 @@ import { useGraphStore } from '../store/graphStore'
 import {
   selectResetForMapChange,
   selectSetGraph,
+  selectSetGraphLoaded,
   selectSetMapsManifest,
   selectSetMeta,
   selectSetRuntimeControls,
@@ -23,9 +24,10 @@ import { transformToReactFlow } from '../lib/graphTransform'
 
 // useRuntimeGraph owns the loader pipeline that walks manifest -> active map ->
 // runtime envelope -> graph asset and writes the result into the graph and
-// runtime slices. It exposes a stable loadRuntimeData callback plus the
-// graphLoaded boolean. It does NOT manage the 1200ms polling interval;
-// useRuntimePolling drives that loop and just calls loadRuntimeData.
+// runtime slices. It exposes a stable loadRuntimeData callback. It does NOT
+// manage the polling interval; useRuntimePolling drives that loop and just
+// calls loadRuntimeData. It does NOT return graphLoaded; that lives in the
+// store now so any consumer can subscribe via selectGraphLoaded.
 
 export function useRuntimeGraph() {
   const setGraph = useGraphStore(selectSetGraph)
@@ -33,8 +35,8 @@ export function useRuntimeGraph() {
   const setMapsManifest = useGraphStore(selectSetMapsManifest)
   const setRuntimeControls = useGraphStore(selectSetRuntimeControls)
   const resetForMapChange = useGraphStore(selectResetForMapChange)
+  const setGraphLoaded = useGraphStore(selectSetGraphLoaded)
 
-  const [graphLoaded, setGraphLoaded] = useState(false)
   const isMountedRef = useRef(true)
   const latestGraphRevisionRef = useRef(null)
   const latestRuntimeSignatureRef = useRef('')
@@ -102,7 +104,6 @@ export function useRuntimeGraph() {
       latestGraphRevisionRef.current = null
       latestRuntimeSignatureRef.current = ''
       resetForMapChange()
-      setGraphLoaded(false)
     }
 
     const runtimeEnvelope = await fetchRuntimeEnvelopeAsset(activeMapEntry.statePath)
@@ -139,7 +140,7 @@ export function useRuntimeGraph() {
     applyGraphData(await loadSeedGraph())
     applyRuntimeEnvelope(null)
     latestGraphRevisionRef.current = -1
-  }, [resetForMapChange, setGraph, setMapsManifest, setMeta, setRuntimeControls])
+  }, [resetForMapChange, setGraph, setGraphLoaded, setMapsManifest, setMeta, setRuntimeControls])
 
-  return { graphLoaded, loadRuntimeData }
+  return { loadRuntimeData }
 }

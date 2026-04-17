@@ -96,6 +96,7 @@ export function createRuntimeSlice(set) {
         presentationMode: PRESENTATION_MODES.FREE,
         presentationLockInput: false,
         presentationCaption: null,
+        graphLoaded: false,
       }),
   }
 }
