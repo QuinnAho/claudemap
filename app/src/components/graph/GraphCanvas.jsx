@@ -1,27 +1,24 @@
 import { Background, ReactFlow } from '@xyflow/react'
-import { useCallback, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import '@xyflow/react/dist/style.css'
 import ZoomControls from '../ui/ZoomControls'
-import { MOTION } from '../../contracts/motion'
 import { PRESENTATION_MODES } from '../../contracts/presentation'
 import { COLOR } from '../../contracts/tokens'
 import { FIT_VIEW } from '../../contracts/zoom'
 import { useGraphStore } from '../../store/graphStore'
 import {
-  selectClearRuntimeEmphasis,
   selectEdges,
   selectFocusRequest,
   selectGuidedFlowRequest,
   selectHealthOverlay,
   selectHighlightedNodes,
-  selectMeta,
   selectNodes,
   selectPresentationMode,
   selectSelectedNode,
-  selectSetSelectedNode,
 } from '../../store/selectors'
 import { useGraphFocusRuntime } from '../../hooks/useGraphFocusRuntime'
 import { useGraphLoaded } from '../../hooks/useGraphLoaded'
+import { useGraphPointerHandlers } from '../../hooks/useGraphPointerHandlers'
 import { useHoverPathScheduler } from '../../hooks/useHoverPathScheduler'
 import { useLayout } from '../../hooks/useLayout'
 import { useScopedMapAffordance } from '../../hooks/useScopedMapAffordance'
@@ -30,7 +27,6 @@ import CustomEdge from './CustomEdge'
 import FileNode from './FileNode'
 import FunctionNode from './FunctionNode'
 import { useZoomLevel, ZOOM_LEVELS } from '../../hooks/useZoomLevel'
-import { copyNodeToClipboard } from '../../hooks/useClipboard'
 import {
   buildNodeByIdMap,
   getSystemPath,
@@ -66,11 +62,8 @@ export default function GraphCanvas() {
   const nodes = useGraphStore(selectNodes)
   const edges = useGraphStore(selectEdges)
   const healthOverlay = useGraphStore(selectHealthOverlay)
-  const meta = useGraphStore(selectMeta)
   const selectedNode = useGraphStore(selectSelectedNode)
-  const setSelectedNode = useGraphStore(selectSetSelectedNode)
   const highlightedNodes = useGraphStore(selectHighlightedNodes)
-  const clearRuntimeEmphasis = useGraphStore(selectClearRuntimeEmphasis)
   const focusRequest = useGraphStore(selectFocusRequest)
   const guidedFlowRequest = useGraphStore(selectGuidedFlowRequest)
   const presentationMode = useGraphStore(selectPresentationMode)
@@ -201,96 +194,18 @@ export default function GraphCanvas() {
     highlightedSystemIds,
   })
 
-  const onNodeClick = useCallback(
-    (_event, node) => {
-      if (sceneInteractionLocked) {
-        return
-      }
-
-      const nextSelectedNode = buildSelectedNodePayload(node)
-      void copyNodeToClipboard(nextSelectedNode, meta)
-
-      if (selectedNode?.id === node.id) {
-        setSelectedNode(null)
-        return
-      }
-
-      setSelectedNode(nextSelectedNode)
-    },
-    [buildSelectedNodePayload, meta, sceneInteractionLocked, selectedNode, setSelectedNode],
-  )
-
-  const onNodeMouseEnter = useCallback(
-    (_event, node) => {
-      if (sceneInteractionLocked) {
-        return
-      }
-
-      if (zoomLevel === ZOOM_LEVELS.OVERVIEW) {
-        return
-      }
-
-      if (node.type !== 'system' || !childCountByParentId.has(node.id)) {
-        return
-      }
-
-      scheduleHoverPath(getSystemPath(node.id, nodeById), {
-        delay: hoveredPathIds.length ? MOTION.hoverEnterSettle : MOTION.hoverEnter,
-      })
-    },
-    [
-      childCountByParentId,
-      hoveredPathIds.length,
-      nodeById,
-      sceneInteractionLocked,
-      scheduleHoverPath,
-      zoomLevel,
-    ],
-  )
-
-  const onPaneMouseMove = useCallback(
-    (event) => {
-      if (sceneInteractionLocked) {
-        return
-      }
-
-      if (!hoveredPathIds.length && !pendingHoverPathRef.current.length) {
-        return
-      }
-
-      const isOverNode =
-        event.target instanceof Element && !!event.target.closest('.react-flow__node')
-
-      if (!isOverNode) {
-        scheduleHoverPath([], { delay: MOTION.hoverExit })
-      }
-    },
-    [
-      hoveredPathIds.length,
-      pendingHoverPathRef,
-      sceneInteractionLocked,
-      scheduleHoverPath,
-    ],
-  )
-
-  const onPaneClick = useCallback(() => {
-    if (sceneInteractionLocked) {
-      return
-    }
-
-    cancelHoverClear()
-    pendingHoverPathRef.current = []
-    clearHoveredPath()
-    clearRuntimeEmphasis()
-    setSelectedNode(null)
-  }, [
+  const { onNodeClick, onNodeMouseEnter, onPaneMouseMove, onPaneClick } = useGraphPointerHandlers({
+    buildSelectedNodePayload,
     cancelHoverClear,
+    childCountByParentId,
     clearHoveredPath,
-    clearRuntimeEmphasis,
+    hoveredPathIds,
+    nodeById,
     pendingHoverPathRef,
     sceneInteractionLocked,
-    setSelectedNode,
-  ])
+    scheduleHoverPath,
+    zoomLevel,
+  })
 
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative' }}>
