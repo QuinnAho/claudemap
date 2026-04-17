@@ -114,6 +114,16 @@ const RULES = [
       'skill/lib/mcp-client.js',
     ],
   },
+  {
+    name: 'inline-store-selector',
+    pattern: /useGraphStore\s*\(\s*\(\s*state\s*\)\s*=>/g,
+    reason: 'Inline arrow selector on useGraphStore outside the store directory.',
+    suggestion: 'Import a named selector from app/src/store/selectors.js (or add one there) and pass it to useGraphStore.',
+    exemptFiles: [
+      'app/src/store/selectors.js',
+      'app/src/store/graphStore.js',
+    ],
+  },
 ]
 
 function toPosix(value) {
