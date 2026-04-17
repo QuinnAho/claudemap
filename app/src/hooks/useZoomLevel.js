@@ -1,10 +1,7 @@
 import { useCallback, useState } from 'react'
+import { ZOOM_LEVELS, ZOOM_THRESHOLDS } from '../contracts/zoom'
 
-export const ZOOM_LEVELS = {
-  OVERVIEW: 'overview',
-  DETAILED: 'detailed',
-  DEEP: 'deep',
-}
+export { ZOOM_LEVELS }
 
 export function useZoomLevel() {
   const [zoomLevel, setZoomLevel] = useState(ZOOM_LEVELS.OVERVIEW)
@@ -12,12 +9,12 @@ export function useZoomLevel() {
   const onViewportChange = useCallback((viewport) => {
     const zoom = viewport.zoom
 
-    if (zoom < 0.7) {
+    if (zoom < ZOOM_THRESHOLDS.overview) {
       setZoomLevel(ZOOM_LEVELS.OVERVIEW)
       return
     }
 
-    if (zoom < 1.5) {
+    if (zoom < ZOOM_THRESHOLDS.detailed) {
       setZoomLevel(ZOOM_LEVELS.DETAILED)
       return
     }

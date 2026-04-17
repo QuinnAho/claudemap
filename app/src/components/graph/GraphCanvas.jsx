@@ -2,7 +2,9 @@ import { Background, ReactFlow, useReactFlow } from '@xyflow/react'
 import { useCallback, useEffect, useRef } from 'react'
 import '@xyflow/react/dist/style.css'
 import ZoomControls from '../ui/ZoomControls'
+import { MOTION } from '../../contracts/motion'
 import { PRESENTATION_MODES } from '../../contracts/presentation'
+import { FIT_VIEW, VIEWPORT } from '../../contracts/zoom'
 import { useGraphStore } from '../../store/graphStore'
 import { useGraphData } from '../../hooks/useGraphData'
 import { useLayout } from '../../hooks/useLayout'
@@ -39,12 +41,9 @@ const edgeTypes = {
 }
 
 const OVERVIEW_FIT_VIEW_OPTIONS = {
-  padding: 0.2,
-  maxZoom: 0.65,
+  padding: FIT_VIEW.padding,
+  maxZoom: FIT_VIEW.maxZoom,
 }
-const HOVER_ENTER_DELAY_MS = 72
-const HOVER_ENTER_SETTLE_DELAY_MS = 48
-const HOVER_EXIT_DELAY_MS = 140
 
 function areStringArraysEqual(left = [], right = []) {
   if (left.length !== right.length) {
@@ -253,12 +252,12 @@ export default function GraphCanvas() {
         const centerY =
           absolutePosition.y +
           nodeHeight / 2 -
-          (presentationMode !== PRESENTATION_MODES.FREE ? 48 : 0)
+          (presentationMode !== PRESENTATION_MODES.FREE ? VIEWPORT.presentationOffsetPx : 0)
         setCenter(centerX, centerY, {
-          zoom: Math.max(0.55, Math.min(zoom, 1.4)),
-          duration: shouldAnimate ? 450 : 0,
+          zoom: Math.max(VIEWPORT.minZoom, Math.min(zoom, VIEWPORT.maxZoom)),
+          duration: shouldAnimate ? MOTION.viewport : 0,
         })
-      }, shouldAnimate ? 140 : 0)
+      }, shouldAnimate ? MOTION.hoverExit : 0)
     },
     [
       buildSelectedNodePayload,
@@ -302,7 +301,7 @@ export default function GraphCanvas() {
 
     lastGuidedFlowKeyRef.current = flowKey
     let stepIndex = 0
-    const delay = Math.max(400, guidedFlowRequest.delay || 1500)
+    const delay = Math.max(MOTION.guidedFlowStepMin, guidedFlowRequest.delay || MOTION.guidedFlowStep)
     const shouldAnimateFirstStep = hasAppliedRuntimeViewportRef.current
 
     focusNodeById(guidedFlowRequest.steps[stepIndex], 1, {
@@ -325,7 +324,7 @@ export default function GraphCanvas() {
 
   const scheduleHoverPath = useCallback(
     (nextPathIds, options = {}) => {
-      const { delay = HOVER_ENTER_DELAY_MS } = options
+      const { delay = MOTION.hoverEnter } = options
 
       if (
         areStringArraysEqual(nextPathIds, pendingHoverPathRef.current) ||
@@ -646,7 +645,7 @@ export default function GraphCanvas() {
       }
 
       scheduleHoverPath(getSystemPath(node.id, nodeById), {
-        delay: hoveredPathIds.length ? HOVER_ENTER_SETTLE_DELAY_MS : HOVER_ENTER_DELAY_MS,
+        delay: hoveredPathIds.length ? MOTION.hoverEnterSettle : MOTION.hoverEnter,
       })
     },
     [
@@ -673,7 +672,7 @@ export default function GraphCanvas() {
         event.target instanceof Element && !!event.target.closest('.react-flow__node')
 
       if (!isOverNode) {
-        scheduleHoverPath([], { delay: HOVER_EXIT_DELAY_MS })
+        scheduleHoverPath([], { delay: MOTION.hoverExit })
       }
     },
     [

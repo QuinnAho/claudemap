@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { ArrowUpRight, Sparkles } from 'lucide-react'
+import { MOTION } from '../../contracts/motion'
 import { copyTextToClipboard } from '../../hooks/useClipboard'
 
 export default function MapAffordance({ affordance }) {
@@ -46,7 +47,7 @@ export default function MapAffordance({ affordance }) {
     resetTimerRef.current = window.setTimeout(() => {
       setCopied(false)
       resetTimerRef.current = null
-    }, 1800)
+    }, MOTION.mapAffordanceReset)
   }
 
   const isOpen = affordance.kind === 'open'

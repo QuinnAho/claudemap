@@ -1,5 +1,7 @@
 import { Handle, Position } from '@xyflow/react'
 import { useEffect, useState } from 'react'
+import { MOTION } from '../../contracts/motion'
+import { FONT } from '../../contracts/tokens'
 import { FUNCTION_NODE_WIDTH } from './systemNodeSizing'
 
 const hiddenHandleStyle = {
@@ -12,7 +14,7 @@ export default function FunctionNode({ data }) {
   const isPresentationHighlight = data.isHighlighted && data.highlightMode === 'presentation'
   const isSubtleHighlight = data.isHighlighted && !isPresentationHighlight
   const isLead = data.isSelected || data.isPresentationLead
-  const revealDelayMs = Math.min((data.revealIndex || 0) * 40, 140)
+  const revealDelayMs = Math.min((data.revealIndex || 0) * MOTION.revealIndexStep, MOTION.revealIndexMax)
   const backgroundColor = data.isSelected
     ? 'rgba(232, 97, 60, 0.18)'
     : isPresentationHighlight
@@ -34,7 +36,7 @@ export default function FunctionNode({ data }) {
     setIsRevealActive(false)
     const timeoutId = window.setTimeout(() => {
       setIsRevealActive(true)
-    }, revealDelayMs + 24)
+    }, revealDelayMs + MOTION.revealActivation)
 
     return () => window.clearTimeout(timeoutId)
   }, [revealDelayMs])
@@ -73,7 +75,7 @@ export default function FunctionNode({ data }) {
           display: 'block',
           fontSize: '11px',
           color: isLead || isPresentationHighlight ? '#fff4ef' : 'var(--text-secondary)',
-          fontFamily: "'SF Mono', 'Fira Code', 'Consolas', monospace",
+          fontFamily: FONT.mono,
           whiteSpace: 'nowrap',
           overflow: 'hidden',
           textOverflow: 'ellipsis',

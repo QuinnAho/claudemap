@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { MOTION } from '../../contracts/motion'
 
 export default function FloatingDescription({ text, visible, position = 'above' }) {
   const [isAnimating, setIsAnimating] = useState(false)
@@ -8,12 +9,12 @@ export default function FloatingDescription({ text, visible, position = 'above' 
     if (visible) {
       setShouldRender(true)
       // Small delay to trigger CSS transition
-      const timeout = setTimeout(() => setIsAnimating(true), 10)
+      const timeout = setTimeout(() => setIsAnimating(true), MOTION.transitionTrigger)
       return () => clearTimeout(timeout)
     } else {
       setIsAnimating(false)
       // Wait for fade-out animation to complete
-      const timeout = setTimeout(() => setShouldRender(false), 320)
+      const timeout = setTimeout(() => setShouldRender(false), MOTION.fadeOut)
       return () => clearTimeout(timeout)
     }
   }, [visible])

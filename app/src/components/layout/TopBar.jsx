@@ -1,6 +1,7 @@
 import { Compass } from 'lucide-react'
 import { useState } from 'react'
 import { PRESENTATION_MODES } from '../../contracts/presentation'
+import { FONT } from '../../contracts/tokens'
 import { setActiveMap } from '../../lib/mapApi'
 import { useGraphStore } from '../../store/graphStore'
 import MapSelector from './MapSelector'
@@ -85,7 +86,7 @@ export default function TopBar() {
             fontWeight: 600,
             color: 'var(--accent)',
             letterSpacing: '-0.01em',
-            fontFamily: "'SF Mono', 'Fira Code', 'Consolas', monospace",
+            fontFamily: FONT.mono,
           }}
         >
           ClaudeMap
@@ -102,7 +103,7 @@ export default function TopBar() {
             fontSize: '11px',
             letterSpacing: '0.08em',
             color: 'rgba(229, 229, 229, 0.52)',
-            fontFamily: "'SF Mono', 'Fira Code', 'Consolas', monospace",
+            fontFamily: FONT.mono,
             whiteSpace: 'nowrap',
             pointerEvents: 'none',
           }}

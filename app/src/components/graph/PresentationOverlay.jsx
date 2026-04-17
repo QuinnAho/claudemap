@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
+import { MOTION } from '../../contracts/motion'
 import { PRESENTATION_MODES } from '../../contracts/presentation'
 import { useGraphStore } from '../../store/graphStore'
-
-const TYPE_INTERVAL_MS = 16
 
 function getTypingStepSize(textLength) {
   if (textLength > 280) {
@@ -43,7 +42,7 @@ export default function PresentationOverlay() {
       if (currentIndex >= explanation.length) {
         window.clearInterval(intervalId)
       }
-    }, TYPE_INTERVAL_MS)
+    }, MOTION.typeInterval)
 
     return () => window.clearInterval(intervalId)
   }, [explanation, presentationCaption?.updatedAt])

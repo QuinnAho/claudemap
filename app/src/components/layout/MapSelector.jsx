@@ -1,5 +1,7 @@
 import { ChevronDown, CornerDownRight } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
+import { MOTION } from '../../contracts/motion'
+import { FONT } from '../../contracts/tokens'
 import { setActiveMap } from '../../lib/mapApi'
 import { useGraphStore } from '../../store/graphStore'
 
@@ -66,7 +68,7 @@ export default function MapSelector() {
     setIsMenuVisible(false)
     const timeoutId = window.setTimeout(() => {
       setShouldRenderMenu(false)
-    }, 220)
+    }, MOTION.menuHide)
 
     return () => window.clearTimeout(timeoutId)
   }, [isOpen])
@@ -129,7 +131,7 @@ export default function MapSelector() {
         position: 'relative',
         display: 'flex',
         alignItems: 'center',
-        fontFamily: "'SF Mono', 'Fira Code', 'Consolas', monospace",
+        fontFamily: FONT.mono,
       }}
     >
       <button

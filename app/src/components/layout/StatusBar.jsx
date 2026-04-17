@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react'
+import { MOTION } from '../../contracts/motion'
+import { FONT } from '../../contracts/tokens'
 import { useGraphStore } from '../../store/graphStore'
 
 export default function StatusBar() {
@@ -9,7 +11,7 @@ export default function StatusBar() {
   useEffect(() => {
     const intervalId = window.setInterval(() => {
       setCurrentTime(Date.now())
-    }, 30000)
+    }, MOTION.statusBarRefresh)
 
     return () => window.clearInterval(intervalId)
   }, [])
@@ -47,7 +49,7 @@ export default function StatusBar() {
         justifyContent: 'space-between',
         padding: '0 16px',
         flexShrink: 0,
-        fontFamily: "'SF Mono', 'Fira Code', 'Consolas', monospace",
+        fontFamily: FONT.mono,
         fontSize: '12px',
         color: 'var(--text-secondary)',
       }}

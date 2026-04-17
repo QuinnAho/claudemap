@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { GRAPH_SOURCES } from '../contracts/graph-sources'
+import { MOTION } from '../contracts/motion'
 import { PRESENTATION_MODES } from '../contracts/presentation'
 import { useGraphStore } from '../store/graphStore'
 import {
@@ -458,7 +459,7 @@ export function useGraphData() {
 
     loadRuntimeData()
 
-    const intervalId = window.setInterval(loadRuntimeData, 1200)
+    const intervalId = window.setInterval(loadRuntimeData, MOTION.runtimePoll)
     window.addEventListener('focus', loadRuntimeData)
 
     return () => {

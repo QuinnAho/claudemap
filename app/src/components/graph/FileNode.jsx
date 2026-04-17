@@ -1,5 +1,7 @@
 import { Handle, Position } from '@xyflow/react'
 import { useEffect, useState } from 'react'
+import { MOTION } from '../../contracts/motion'
+import { FONT } from '../../contracts/tokens'
 import FloatingDescription from './FloatingDescription'
 
 const healthColors = {
@@ -38,7 +40,7 @@ export default function FileNode({ data }) {
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
       setIsVisible(true)
-    }, 30)
+    }, MOTION.nodeVisibility)
 
     return () => window.clearTimeout(timeoutId)
   }, [])
@@ -87,7 +89,7 @@ export default function FileNode({ data }) {
           style={{
             fontSize: '12px',
             color: isPresentationHighlight ? '#fff4ef' : 'var(--text-primary)',
-            fontFamily: "'SF Mono', 'Fira Code', 'Consolas', monospace",
+            fontFamily: FONT.mono,
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',

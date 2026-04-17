@@ -1,6 +1,8 @@
 import { Activity, Locate, Minus, Plus } from 'lucide-react'
 import { useReactFlow } from '@xyflow/react'
+import { MOTION } from '../../contracts/motion'
 import { PRESENTATION_MODES } from '../../contracts/presentation'
+import { FIT_VIEW } from '../../contracts/zoom'
 import { useGraphStore } from '../../store/graphStore'
 
 export default function ZoomControls() {
@@ -71,7 +73,7 @@ export default function ZoomControls() {
       <div style={islandStyle}>
         <button
           style={getButtonStyle()}
-          onClick={() => zoomIn({ duration: 300 })}
+          onClick={() => zoomIn({ duration: MOTION.zoomButton })}
           onMouseEnter={(event) => setHoverColor(event, { hover: true })}
           onMouseLeave={(event) => setHoverColor(event, { hover: false })}
           aria-label="Zoom in"
@@ -81,7 +83,7 @@ export default function ZoomControls() {
         <div style={dividerStyle} />
         <button
           style={getButtonStyle()}
-          onClick={() => zoomOut({ duration: 300 })}
+          onClick={() => zoomOut({ duration: MOTION.zoomButton })}
           onMouseEnter={(event) => setHoverColor(event, { hover: true })}
           onMouseLeave={(event) => setHoverColor(event, { hover: false })}
           aria-label="Zoom out"
@@ -91,7 +93,7 @@ export default function ZoomControls() {
         <div style={dividerStyle} />
         <button
           style={getButtonStyle()}
-          onClick={() => fitView({ duration: 500, padding: 0.2, maxZoom: 0.65 })}
+          onClick={() => fitView({ duration: MOTION.fitView, padding: FIT_VIEW.padding, maxZoom: FIT_VIEW.maxZoom })}
           onMouseEnter={(event) => setHoverColor(event, { hover: true })}
           onMouseLeave={(event) => setHoverColor(event, { hover: false })}
           aria-label="Fit view"
