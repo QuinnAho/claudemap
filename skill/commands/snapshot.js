@@ -27,6 +27,8 @@ async function handleSnapshot({ ctx, args }) {
 export const SNAPSHOT_COMMAND = {
   name: 'snapshot',
   summary: 'Collect a project snapshot and output it as JSON.',
+  argumentHint: '[project-root]',
+  noSlashTemplate: true,
   positional: {
     name: 'projectRoot',
     required: false,

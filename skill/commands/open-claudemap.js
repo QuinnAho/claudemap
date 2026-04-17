@@ -76,7 +76,16 @@ async function handleOpenClaudemap({ ctx, args }) {
 
 export const OPEN_CLAUDEMAP_COMMAND = {
   name: 'open-claudemap',
-  summary: 'Open the ClaudeMap app for the current project without rebuilding the graph.',
+  summary: 'Open the bundled ClaudeMap app for the current project without rebuilding the graph.',
+  disableModelInvocation: true,
+  body: `Use the bundled ClaudeMap open command to bring up the existing map runtime.
+
+Steps:
+1. Resolve the bundled command script at \`.claude/skills/claudemap-runtime/skill/commands/open-claudemap.js\`.
+2. Run the open command with Node.
+3. If a graph is already loaded, report the repo name, graph source, system count, and file count.
+4. If no graph is loaded yet, tell the user to run \`/setup-claudemap\` first.
+5. Report whether the app server was reused, started, or still unavailable.`,
   positional: {
     name: 'projectRoot',
     required: false,
