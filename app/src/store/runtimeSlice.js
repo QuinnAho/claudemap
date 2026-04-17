@@ -9,9 +9,8 @@ import { PRESENTATION_MODES } from '../contracts/presentation'
 //   presentation mode without an explicit focus/guided/highlight, because the
 //   prior selection would otherwise hang in front of the presentation overlay.
 //   It does NOT touch hoveredPathIds: hover lives in the UI slice and the
-//   runtime poller has no reason to look at it. (Phase 2 needed a defensive
-//   passthrough here; the slice barrier makes that line unreachable. See
-//   Commit 2 for the deletion of the legacy line.)
+//   runtime poller has no reason to look at it. The slice composition makes
+//   the prior defensive passthrough (state.hoveredPathIds) unnecessary.
 // - resetForMapChange clears every interactive field across UI and runtime
 //   slices on map switch. It is a reset, not a runtime update; it lives here
 //   for proximity to the runtime fields that dominate it.
@@ -75,9 +74,6 @@ export function createRuntimeSlice(set) {
                 }
               : null,
           selectedNode: shouldClearSelection ? null : state.selectedNode,
-          // Hover state is UI-local and must not be wiped by runtime-state polling.
-          // Clearing it here caused layout recalc every 1200ms, producing visible flicker.
-          hoveredPathIds: state.hoveredPathIds,
         }
       }),
 
