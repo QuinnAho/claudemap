@@ -4,6 +4,7 @@ import '@xyflow/react/dist/style.css'
 import ZoomControls from '../ui/ZoomControls'
 import { MOTION } from '../../contracts/motion'
 import { PRESENTATION_MODES } from '../../contracts/presentation'
+import { COLOR } from '../../contracts/tokens'
 import { FIT_VIEW, VIEWPORT } from '../../contracts/zoom'
 import { useGraphStore } from '../../store/graphStore'
 import { useGraphData } from '../../hooks/useGraphData'
@@ -726,7 +727,7 @@ export default function GraphCanvas() {
               transition: 'opacity 0.18s ease',
             }}
           >
-            {presentationMode === PRESENTATION_MODES.FREE ? <Background color="#1a1a1a" gap={40} size={1} /> : null}
+            {presentationMode === PRESENTATION_MODES.FREE ? <Background color={COLOR.bg.card} gap={40} size={1} /> : null}
           </ReactFlow>
           <ZoomControls />
           {isGraphTransitioning ? (

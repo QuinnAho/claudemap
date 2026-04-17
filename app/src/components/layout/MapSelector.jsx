@@ -1,7 +1,7 @@
 import { ChevronDown, CornerDownRight } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { MOTION } from '../../contracts/motion'
-import { FONT } from '../../contracts/tokens'
+import { FONT, alpha } from '../../contracts/tokens'
 import { setActiveMap } from '../../lib/mapApi'
 import { useGraphStore } from '../../store/graphStore'
 
@@ -145,7 +145,7 @@ export default function MapSelector() {
           padding: 0,
           border: 'none',
           background: 'transparent',
-          color: isOpen ? 'rgba(229, 229, 229, 0.92)' : 'var(--text-secondary)',
+          color: isOpen ? alpha('textPrimary', 0.92) : 'var(--text-secondary)',
           cursor: isPending ? 'default' : 'pointer',
           transition:
             'color var(--motion-quick-duration) var(--motion-ease-soft), opacity var(--motion-quick-duration) var(--motion-ease-soft)',
@@ -187,9 +187,9 @@ export default function MapSelector() {
             minWidth: '186px',
             padding: '4px',
             borderRadius: '10px',
-            border: '1px solid rgba(255, 255, 255, 0.05)',
-            background: 'rgba(12, 12, 12, 0.96)',
-            boxShadow: '0 10px 22px rgba(0, 0, 0, 0.22)',
+            border: `1px solid ${alpha('white', 0.05)}`,
+            background: alpha('menu', 0.96),
+            boxShadow: `0 10px 22px ${alpha('black', 0.22)}`,
             opacity: isMenuVisible ? 1 : 0,
             transform: isMenuVisible
               ? 'translateY(0px) scale(1)'
@@ -225,11 +225,11 @@ export default function MapSelector() {
                     width: '100%',
                     border: 'none',
                     borderRadius: '8px',
-                    background: isActive ? 'rgba(255, 255, 255, 0.035)' : 'transparent',
+                    background: isActive ? alpha('white', 0.035) : 'transparent',
                     color: isStale
-                      ? 'rgba(229, 229, 229, 0.36)'
+                      ? alpha('textPrimary', 0.36)
                       : isActive
-                        ? 'rgba(229, 229, 229, 0.96)'
+                        ? alpha('textPrimary', 0.96)
                         : 'var(--text-secondary)',
                     cursor: isPending || isStale ? 'default' : 'pointer',
                     padding: '8px 9px',
@@ -264,8 +264,8 @@ export default function MapSelector() {
                           size={12}
                           style={{
                             color: isActive
-                              ? 'rgba(229, 229, 229, 0.56)'
-                              : 'rgba(255, 255, 255, 0.22)',
+                              ? alpha('textPrimary', 0.56)
+                              : alpha('white', 0.22),
                           }}
                         />
                       ) : null}
@@ -298,7 +298,7 @@ export default function MapSelector() {
                           fontSize: '10px',
                           letterSpacing: '0.04em',
                           textTransform: 'uppercase',
-                          color: 'rgba(234, 179, 8, 0.76)',
+                          color: alpha('healthYellow', 0.76),
                         }}
                       >
                         Stale

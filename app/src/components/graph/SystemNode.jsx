@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Handle, Position } from '@xyflow/react'
 import { ChevronDown } from 'lucide-react'
+import { COLOR, alpha } from '../../contracts/tokens'
 import { getNodeIcon } from './nodeIcons'
 import MapAffordance from './MapAffordance'
 import { SYSTEM_NODE_HEADER_HEIGHT, SYSTEM_NODE_MIN_HEIGHT } from './systemNodeSizing'
@@ -12,9 +13,9 @@ const healthColors = {
 }
 
 const healthBackgrounds = {
-  green: 'rgba(34, 197, 94, 0.05)',
-  yellow: 'rgba(234, 179, 8, 0.08)',
-  red: 'rgba(239, 68, 68, 0.1)',
+  green: alpha('healthGreen', 0.05),
+  yellow: alpha('healthYellow', 0.08),
+  red: alpha('healthRed', 0.1),
 }
 
 const hiddenHandleStyle = {
@@ -36,9 +37,9 @@ export default function SystemNode({ data }) {
   const surfaceColor = data.healthOverlay
     ? healthBackgrounds[data.health] || healthBackgrounds.green
     : isPresentationHighlight
-      ? 'rgba(232, 97, 60, 0.08)'
+      ? alpha('accent', 0.08)
       : isSubtleHighlight
-        ? 'rgba(255, 255, 255, 0.012)'
+        ? alpha('white', 0.012)
       : 'var(--bg-card)'
   const restingOpacity = data.isGhosted
     ? 0.1
@@ -48,30 +49,30 @@ export default function SystemNode({ data }) {
         ? 0.42
         : 1
   const borderColor = data.isSelected
-    ? 'rgba(232, 97, 60, 0.7)'
+    ? alpha('accent', 0.7)
     : isPresentationHighlight
-      ? 'rgba(232, 97, 60, 0.42)'
+      ? alpha('accent', 0.42)
       : isSubtleHighlight
-        ? 'rgba(255, 255, 255, 0.07)'
+        ? alpha('white', 0.07)
     : isExpanded
       ? 'var(--border-light)'
       : 'transparent'
   const baseStyle = {
     width: '100%',
     height: '100%',
-    backgroundColor: isExpanded ? 'rgba(255, 255, 255, 0.01)' : surfaceColor,
+    backgroundColor: isExpanded ? alpha('white', 0.01) : surfaceColor,
     border: `1px solid ${borderColor}`,
     borderRadius: '12px',
     minHeight: `${SYSTEM_NODE_MIN_HEIGHT}px`,
     boxShadow: isPresentationAncestor
       ? 'none'
       : data.isSelected
-      ? '0 0 0 1px rgba(232, 97, 60, 0.12), 0 10px 24px rgba(232, 97, 60, 0.14)'
+      ? `0 0 0 1px ${alpha('accent', 0.12)}, 0 10px 24px ${alpha('accent', 0.14)}`
       : isPresentationHighlight
-        ? '0 0 0 1px rgba(232, 97, 60, 0.1), 0 8px 22px rgba(232, 97, 60, 0.12)'
+        ? `0 0 0 1px ${alpha('accent', 0.1)}, 0 8px 22px ${alpha('accent', 0.12)}`
         : isSubtleHighlight
-          ? '0 0 0 1px rgba(255, 255, 255, 0.025), 0 3px 8px rgba(0, 0, 0, 0.22)'
-        : '0 2px 8px rgba(0, 0, 0, 0.3)',
+          ? `0 0 0 1px ${alpha('white', 0.025)}, 0 3px 8px ${alpha('black', 0.22)}`
+        : `0 2px 8px ${alpha('black', 0.3)}`,
     cursor: 'pointer',
     display: 'flex',
     flexDirection: 'column',
@@ -148,7 +149,7 @@ export default function SystemNode({ data }) {
                   data.isSelected || isPresentationHighlight
                     ? 'var(--accent)'
                     : isSubtleHighlight
-                      ? 'rgba(255, 244, 239, 0.55)'
+                      ? alpha('highlightText', 0.55)
                       : 'var(--text-secondary)'
                 }
               />
@@ -158,7 +159,7 @@ export default function SystemNode({ data }) {
                   fontWeight: 600,
                   color:
                     data.isSelected || isPresentationHighlight
-                      ? '#fff4ef'
+                      ? COLOR.text.highlight
                       : 'var(--text-primary)',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
@@ -203,8 +204,8 @@ export default function SystemNode({ data }) {
           style={{
             flex: isExpanded ? 1 : 0,
             background:
-              'linear-gradient(180deg, rgba(255, 255, 255, 0.025) 0%, rgba(255, 255, 255, 0.01) 100%)',
-            borderTop: isExpanded ? '1px dashed rgba(255, 255, 255, 0.04)' : 'none',
+              `linear-gradient(180deg, ${alpha('white', 0.025)} 0%, ${alpha('white', 0.01)} 100%)`,
+            borderTop: isExpanded ? `1px dashed ${alpha('white', 0.04)}` : 'none',
             opacity: isExpanded ? 1 : 0,
             transition:
               'flex var(--motion-surface-duration) var(--motion-ease-smooth), opacity var(--motion-surface-duration) var(--motion-ease-soft), border-top var(--motion-surface-duration) var(--motion-ease-soft)',

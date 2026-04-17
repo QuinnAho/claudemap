@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { MOTION } from '../../contracts/motion'
+import { alpha } from '../../contracts/tokens'
 
 export default function FloatingDescription({ text, visible, position = 'above' }) {
   const [isAnimating, setIsAnimating] = useState(false)
@@ -37,8 +38,8 @@ export default function FloatingDescription({ text, visible, position = 'above' 
         ...positionStyle,
         padding: '10px 14px',
         background:
-          'linear-gradient(180deg, rgba(26, 26, 26, 0.98) 0%, rgba(18, 18, 18, 0.96) 100%)',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
+          `linear-gradient(180deg, ${alpha('card', 0.98)} 0%, ${alpha('floating', 0.96)} 100%)`,
+        border: `1px solid ${alpha('white', 0.1)}`,
         borderRadius: '8px',
         fontSize: '12px',
         color: 'var(--text-secondary)',
@@ -47,7 +48,7 @@ export default function FloatingDescription({ text, visible, position = 'above' 
         maxWidth: '360px',
         textAlign: 'left',
         whiteSpace: 'normal',
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.4)',
+        boxShadow: `0 4px 12px ${alpha('black', 0.4)}`,
         opacity: isAnimating ? 1 : 0,
         transition:
           'opacity var(--motion-surface-duration) var(--motion-ease-soft), transform var(--motion-surface-duration) var(--motion-ease-smooth)',

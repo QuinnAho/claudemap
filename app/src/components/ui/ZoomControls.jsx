@@ -2,6 +2,7 @@ import { Activity, Locate, Minus, Plus } from 'lucide-react'
 import { useReactFlow } from '@xyflow/react'
 import { MOTION } from '../../contracts/motion'
 import { PRESENTATION_MODES } from '../../contracts/presentation'
+import { alpha } from '../../contracts/tokens'
 import { FIT_VIEW } from '../../contracts/zoom'
 import { useGraphStore } from '../../store/graphStore'
 
@@ -16,7 +17,7 @@ export default function ZoomControls() {
     border: '1px solid var(--border)',
     borderRadius: '8px',
     overflow: 'hidden',
-    boxShadow: '0 6px 16px rgba(0, 0, 0, 0.18)',
+    boxShadow: `0 6px 16px ${alpha('black', 0.18)}`,
   }
 
   const getButtonStyle = (isActive = false) => ({

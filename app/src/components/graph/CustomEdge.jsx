@@ -1,4 +1,5 @@
 import { getBezierPath } from '@xyflow/react'
+import { alpha } from '../../contracts/tokens'
 
 export default function CustomEdge({
   id,
@@ -33,12 +34,12 @@ export default function CustomEdge({
         : 0.52
   const strokeWidth = isSelectionTrace ? 2.35 : isPresentationHighlight ? 2.2 : isSubtleHighlight ? 1.9 : 1.8
   const stroke = isSelectionTrace
-    ? 'rgba(232, 97, 60, 0.82)'
+    ? alpha('accent', 0.82)
     : isPresentationHighlight
-    ? 'rgba(232, 97, 60, 0.9)'
+    ? alpha('accent', 0.9)
     : isSubtleHighlight
-      ? 'rgba(232, 97, 60, 0.24)'
-      : 'rgba(255, 255, 255, 0.22)'
+      ? alpha('accent', 0.24)
+      : alpha('white', 0.22)
 
   return (
     <path
@@ -51,7 +52,7 @@ export default function CustomEdge({
       strokeLinecap="round"
       strokeLinejoin="round"
       style={{
-        filter: isSelectionTrace ? 'drop-shadow(0 0 3px rgba(232, 97, 60, 0.14))' : 'none',
+        filter: isSelectionTrace ? `drop-shadow(0 0 3px ${alpha('accent', 0.14)})` : 'none',
         transition:
           'stroke var(--motion-quick-duration) var(--motion-ease-soft), stroke-opacity var(--motion-quick-duration) var(--motion-ease-soft), stroke-width var(--motion-quick-duration) var(--motion-ease-soft), filter var(--motion-quick-duration) var(--motion-ease-soft)',
       }}

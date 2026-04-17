@@ -1,7 +1,7 @@
 import { Compass } from 'lucide-react'
 import { useState } from 'react'
 import { PRESENTATION_MODES } from '../../contracts/presentation'
-import { FONT } from '../../contracts/tokens'
+import { FONT, alpha } from '../../contracts/tokens'
 import { setActiveMap } from '../../lib/mapApi'
 import { useGraphStore } from '../../store/graphStore'
 import MapSelector from './MapSelector'
@@ -102,7 +102,7 @@ export default function TopBar() {
             transform: 'translate(-50%, -50%)',
             fontSize: '11px',
             letterSpacing: '0.08em',
-            color: 'rgba(229, 229, 229, 0.52)',
+            color: alpha('textPrimary', 0.52),
             fontFamily: FONT.mono,
             whiteSpace: 'nowrap',
             pointerEvents: 'none',

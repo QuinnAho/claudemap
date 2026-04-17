@@ -1,7 +1,7 @@
 import { Handle, Position } from '@xyflow/react'
 import { useEffect, useState } from 'react'
 import { MOTION } from '../../contracts/motion'
-import { FONT } from '../../contracts/tokens'
+import { COLOR, FONT, alpha } from '../../contracts/tokens'
 import { FUNCTION_NODE_WIDTH } from './systemNodeSizing'
 
 const hiddenHandleStyle = {
@@ -16,19 +16,19 @@ export default function FunctionNode({ data }) {
   const isLead = data.isSelected || data.isPresentationLead
   const revealDelayMs = Math.min((data.revealIndex || 0) * MOTION.revealIndexStep, MOTION.revealIndexMax)
   const backgroundColor = data.isSelected
-    ? 'rgba(232, 97, 60, 0.18)'
+    ? alpha('accent', 0.18)
     : isPresentationHighlight
-      ? 'rgba(232, 97, 60, 0.12)'
+      ? alpha('accent', 0.12)
       : isSubtleHighlight
-        ? 'rgba(255, 255, 255, 0.025)'
-      : 'rgba(26, 26, 26, 0.82)'
+        ? alpha('white', 0.025)
+      : alpha('card', 0.82)
   const borderColor = data.isSelected
-    ? 'rgba(232, 97, 60, 0.55)'
+    ? alpha('accent', 0.55)
     : isPresentationHighlight
-      ? 'rgba(232, 97, 60, 0.34)'
+      ? alpha('accent', 0.34)
       : isSubtleHighlight
-      ? 'rgba(255, 255, 255, 0.08)'
-      : 'rgba(255, 255, 255, 0.05)'
+      ? alpha('white', 0.08)
+      : alpha('white', 0.05)
   const restingOpacity = data.isGhosted ? 0.16 : data.isDimmed ? 0.48 : 1
   const finalOpacity = isRevealActive ? restingOpacity : 0
 
@@ -57,11 +57,11 @@ export default function FunctionNode({ data }) {
             : 'translateY(0) scale(1)'
           : 'translateY(10px) scale(0.96)',
         boxShadow: data.isSelected
-          ? '0 8px 18px rgba(232, 97, 60, 0.14)'
+          ? `0 8px 18px ${alpha('accent', 0.14)}`
           : isPresentationHighlight
-          ? '0 6px 14px rgba(232, 97, 60, 0.1)'
+          ? `0 6px 14px ${alpha('accent', 0.1)}`
           : isSubtleHighlight
-            ? '0 3px 8px rgba(0, 0, 0, 0.14)'
+            ? `0 3px 8px ${alpha('black', 0.14)}`
             : 'none',
         transition:
           'opacity var(--motion-surface-duration) var(--motion-ease-soft), transform var(--motion-surface-duration) var(--motion-ease-smooth), background-color var(--motion-quick-duration) var(--motion-ease-soft), border-color var(--motion-quick-duration) var(--motion-ease-soft), box-shadow var(--motion-surface-duration) var(--motion-ease-soft)',
@@ -74,7 +74,7 @@ export default function FunctionNode({ data }) {
         style={{
           display: 'block',
           fontSize: '11px',
-          color: isLead || isPresentationHighlight ? '#fff4ef' : 'var(--text-secondary)',
+          color: isLead || isPresentationHighlight ? COLOR.text.highlight : 'var(--text-secondary)',
           fontFamily: FONT.mono,
           whiteSpace: 'nowrap',
           overflow: 'hidden',

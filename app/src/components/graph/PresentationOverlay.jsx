@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { MOTION } from '../../contracts/motion'
 import { PRESENTATION_MODES } from '../../contracts/presentation'
+import { COLOR, alpha } from '../../contracts/tokens'
 import { useGraphStore } from '../../store/graphStore'
 
 function getTypingStepSize(textLength) {
@@ -76,10 +77,10 @@ export default function PresentationOverlay() {
             maxWidth: '56ch',
             fontSize: 'clamp(17px, 2vw, 22px)',
             lineHeight: 1.6,
-            color: '#f2ebe4',
+            color: COLOR.text.presentation,
             fontFamily: 'inherit',
             fontWeight: 500,
-            textShadow: '0 10px 28px rgba(0, 0, 0, 0.62)',
+            textShadow: `0 10px 28px ${alpha('black', 0.62)}`,
             letterSpacing: '0.01em',
           }}
         >
@@ -90,7 +91,7 @@ export default function PresentationOverlay() {
                 style={{
                   display: 'inline-block',
                   marginLeft: '2px',
-                  color: 'rgba(232, 97, 60, 0.92)',
+                  color: alpha('accent', 0.92),
                   animation: 'presentationCaretBlink 1s steps(1) infinite',
                 }}
               >
