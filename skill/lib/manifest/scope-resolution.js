@@ -12,16 +12,25 @@ import {
 // rename or move systems, so we try progressively looser strategies:
 //
 //   1. id               - exact id match
-//   2. file-path        - unique node with the same filePath
+//   2. path             - unique node with the same filePath
 //   3. fingerprint      - unique node whose computed fingerprint matches
 //   4. ancestor-label   - unique node whose label + ancestor chain match
-//                         (or first candidate if ambiguous)
 //   5. label            - unique node with a matching label anywhere
 //
-// Return null if none of the strategies yield a match. Commit 4.3 will
-// extend the matchType union with the ancestor-label-ambiguous sentinel
-// and add explicit telemetry; this module's current contract preserves
-// the historical return shape exactly.
+// Plus the one observability sentinel:
+//
+//   ancestor-label-ambiguous - multiple nodes matched on label +
+//     ancestor chain. The first candidate is returned, but callers can
+//     see that the match was not unique by checking the strategy tag.
+//
+// Return shape:
+//
+//   { system: <full node>, strategy: <tag> }   on match
+//   null                                        on miss
+//
+// The full node is returned (not just the id) so callers can use node
+// metadata (label, filePath, children) without a second nodes.find.
+// Legacy callers that only need the id just read resolved.system.id.
 
 export function resolveScopeAgainstGraph(scope, rootGraph) {
   const systemNodes = (rootGraph?.nodes || []).filter((node) => node.type === 'system')
@@ -34,7 +43,7 @@ export function resolveScopeAgainstGraph(scope, rootGraph) {
     const directMatch = systemNodes.find((node) => node.id === scope.rootSystemId)
 
     if (directMatch) {
-      return { systemId: directMatch.id, matchType: 'id' }
+      return { system: directMatch, strategy: 'id' }
     }
   }
 
@@ -44,7 +53,7 @@ export function resolveScopeAgainstGraph(scope, rootGraph) {
     )
 
     if (matchingSystems.length === 1) {
-      return { systemId: matchingSystems[0].id, matchType: 'file-path' }
+      return { system: matchingSystems[0], strategy: 'path' }
     }
   }
 
@@ -54,7 +63,7 @@ export function resolveScopeAgainstGraph(scope, rootGraph) {
     )
 
     if (matchingSystems.length === 1) {
-      return { systemId: matchingSystems[0].id, matchType: 'fingerprint' }
+      return { system: matchingSystems[0], strategy: 'fingerprint' }
     }
   }
 
@@ -73,11 +82,11 @@ export function resolveScopeAgainstGraph(scope, rootGraph) {
     })
 
     if (matchingSystems.length === 1) {
-      return { systemId: matchingSystems[0].id, matchType: 'ancestor-label' }
+      return { system: matchingSystems[0], strategy: 'ancestor-label' }
     }
 
     if (matchingSystems.length > 1) {
-      return { systemId: matchingSystems[0].id, matchType: 'ancestor-label-ambiguous' }
+      return { system: matchingSystems[0], strategy: 'ancestor-label-ambiguous' }
     }
   }
 
@@ -87,7 +96,7 @@ export function resolveScopeAgainstGraph(scope, rootGraph) {
     )
 
     if (matchingSystems.length === 1) {
-      return { systemId: matchingSystems[0].id, matchType: 'label' }
+      return { system: matchingSystems[0], strategy: 'label' }
     }
   }
 

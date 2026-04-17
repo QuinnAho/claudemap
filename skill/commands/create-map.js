@@ -67,7 +67,7 @@ function findExistingMapForSystem(manifest, rootGraph, systemId) {
       }
 
       const resolvedScope = resolveScopeAgainstGraph(mapEntry.scope, rootGraph)
-      return resolvedScope?.systemId === systemId
+      return resolvedScope?.system?.id === systemId
     }) || null
   )
 }
@@ -101,8 +101,8 @@ async function handleCreateMap({ ctx, args }) {
     )
   }
 
-  const resolvedSystemNode = rootGraph.nodes.find((node) => node.id === resolvedScope.systemId)
-  const existingMapEntry = findExistingMapForSystem(manifest, rootGraph, resolvedScope.systemId)
+  const resolvedSystemNode = rootGraph.nodes.find((node) => node.id === resolvedScope.system.id)
+  const existingMapEntry = findExistingMapForSystem(manifest, rootGraph, resolvedScope.system.id)
   const priorGraph = existingMapEntry
     ? readCache(projectRoot, { relativePath: existingMapEntry.cachePath })?.graph || null
     : null
@@ -111,7 +111,7 @@ async function handleCreateMap({ ctx, args }) {
   let graphSource
 
   if (enrichmentResponseText) {
-    const scopedSnapshot = buildScopedSnapshot(rootGraph, resolvedScope.systemId, {
+    const scopedSnapshot = buildScopedSnapshot(rootGraph, resolvedScope.system.id, {
       label: label || resolvedSystemNode?.label,
       ancestorPath: scope.ancestorPath || [],
       priorGraph,
@@ -131,11 +131,11 @@ async function handleCreateMap({ ctx, args }) {
 
     graphSource = GRAPH_SOURCES.CLAUDE_SCOPED
   } else {
-    scopedGraph = buildScopedGraphFromRoot(rootGraph, resolvedScope.systemId)
+    scopedGraph = buildScopedGraphFromRoot(rootGraph, resolvedScope.system.id)
     graphSource = scopedGraph.meta?.source || GRAPH_SOURCES.SCOPED_MAP
   }
 
-  const nextScope = createScopeDescriptor(rootGraph, resolvedScope.systemId)
+  const nextScope = createScopeDescriptor(rootGraph, resolvedScope.system.id)
   const requestedMapId = mapId ? slugifyMapId(mapId) : null
   const requestedMapEntry = requestedMapId ? findMapById(manifest, requestedMapId) : null
 
@@ -147,7 +147,7 @@ async function handleCreateMap({ ctx, args }) {
     ? existingMapEntry.id
     : requestedMapId
       ? requestedMapId
-      : allocateMapId(manifest, label || resolvedSystemNode?.label || resolvedScope.systemId)
+      : allocateMapId(manifest, label || resolvedSystemNode?.label || resolvedScope.system.id)
   const nextMapEntry = {
     ...(existingMapEntry || createScopedMapFileSet(nextMapId)),
     id: nextMapId,

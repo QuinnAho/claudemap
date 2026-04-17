@@ -96,7 +96,7 @@ async function refreshScopedMaps(projectRoot, manifest, rootGraph, mcpClient, op
       // Scope untouched and we previously had an architect-enriched graph.
       // Preserve it. Just clear any stale flag and update the scope descriptor.
       mapEntry.scope = {
-        ...createScopeDescriptor(rootGraph, resolvedScope.systemId),
+        ...createScopeDescriptor(rootGraph, resolvedScope.system.id),
         stale: false,
         needsRebuild: false,
       }
@@ -104,8 +104,8 @@ async function refreshScopedMaps(projectRoot, manifest, rootGraph, mcpClient, op
       continue
     }
 
-    const nextScope = createScopeDescriptor(rootGraph, resolvedScope.systemId)
-    const scopedGraph = buildScopedGraphFromRoot(rootGraph, resolvedScope.systemId)
+    const nextScope = createScopeDescriptor(rootGraph, resolvedScope.system.id)
+    const scopedGraph = buildScopedGraphFromRoot(rootGraph, resolvedScope.system.id)
 
     mapEntry.scope = {
       ...nextScope,
