@@ -3,7 +3,7 @@ import { parseArgs } from './parse-args.js'
 import { withMcp } from './with-mcp.js'
 import { createLogger } from './log.js'
 import { resolveActiveMap } from '../active-map.js'
-import { ClaudeMapError, success } from '../contracts/errors.js'
+import { ClaudeMapError, success, ERROR_CODES } from '../contracts/errors.js'
 
 export async function runCommand(descriptor, argv) {
   try {
@@ -25,7 +25,7 @@ export async function runCommand(descriptor, argv) {
 
       if (!action) {
         const available = descriptor.actions.map(a => a.name).join(', ')
-        throw new ClaudeMapError('UNKNOWN_ACTION', `Unknown action "${actionName}". Available: ${available}`)
+        throw new ClaudeMapError(ERROR_CODES.UNKNOWN_ACTION, `Unknown action "${actionName}". Available: ${available}`)
       }
 
       const actionIndex = argv.indexOf(actionName)
@@ -102,7 +102,7 @@ export async function runCommand(descriptor, argv) {
       return result
     }
 
-    log.info('COMMAND_OK', result?.data || {})
+    log.info(ERROR_CODES.COMMAND_OK, result?.data || {})
     return result || success()
   } catch (error) {
     if (error instanceof ClaudeMapError) {

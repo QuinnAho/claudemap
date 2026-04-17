@@ -1,13 +1,10 @@
 import fs from 'fs'
-import { ClaudeMapError } from '../contracts/errors.js'
-
-// Shared enrichment-file I/O helpers.
-// Replaces 3 duplicated implementations across setup-claudemap, create-map, update.
+import { ClaudeMapError, ERROR_CODES } from '../contracts/errors.js'
 
 export function loadEnrichmentFileStrict(filePath) {
   if (!fs.existsSync(filePath)) {
     throw new ClaudeMapError(
-      'ENRICHMENT_MISSING',
+      ERROR_CODES.INVALID_ARGUMENT,
       `Enrichment file not found: ${filePath}`,
       'Ensure the @claudemap-architect subagent wrote the file before running this command.',
     )
@@ -17,7 +14,7 @@ export function loadEnrichmentFileStrict(filePath) {
 
   if (!content) {
     throw new ClaudeMapError(
-      'ENRICHMENT_EMPTY',
+      ERROR_CODES.INVALID_ARGUMENT,
       'Enrichment file is empty',
       'The architect subagent may have failed. Check its output and retry.',
     )
