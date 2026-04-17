@@ -17,78 +17,34 @@ import {
   setActiveMapId,
   writeManifest,
 } from '../lib/map-manifest.js'
-import { closeMcpClient, connectMcpClient, renderGraph } from '../lib/mcp-client.js'
+import { renderGraph } from '../lib/mcp-client.js'
 import { GRAPH_SOURCES } from '../lib/contracts/graph-sources.js'
-
-const CURRENT_FILE_PATH = fileURLToPath(import.meta.url)
-
-function resolveProjectRoot(argv) {
-  const optionsWithValues = new Set(['--enrichment-file'])
-  const projectRootArg = argv.find((argument, index) => {
-    if (argument.startsWith('--')) {
-      return false
-    }
-
-    const previousArgument = argv[index - 1]
-    return !optionsWithValues.has(previousArgument)
-  })
-  return path.resolve(
-    projectRootArg || process.env.CLAUDEMAP_PROJECT_ROOT || process.env.INIT_CWD || process.cwd(),
-  )
-}
-
-function hasFlag(argv, flagName) {
-  return argv.includes(`--${flagName}`)
-}
-
-function getOptionValue(argv, optionName) {
-  const optionIndex = argv.indexOf(`--${optionName}`)
-
-  if (optionIndex === -1) {
-    return null
-  }
-
-  return argv[optionIndex + 1] || null
-}
-
-function printUsage() {
-  console.log('ClaudeMap setup')
-  console.log('  setup-claudemap [project-root] [--force-refresh] [--no-render]')
-  console.log('             [--no-start-app] [--open-browser] [--stdio-mcp]')
-  console.log('             [--enrichment-file <file>]')
-}
-
-function shouldStartApp(argv) {
-  if (hasFlag(argv, 'no-start-app')) {
-    return false
-  }
-
-  return true
-}
+import { runCommand, exitOnError } from '../lib/command-harness/run-command.js'
+import { success } from '../lib/contracts/errors.js'
+import { loadEnrichmentFileStrict, cleanupEnrichmentFile } from '../lib/command-harness/enrichment-io.js'
 
 function countSystems(graphData) {
   return graphData.nodes.filter((node) => node.type === 'system').length
 }
 
-function isDirectExecution() {
-  return process.argv[1] && path.resolve(process.argv[1]) === CURRENT_FILE_PATH
-}
-
-export async function main(argv = process.argv.slice(2)) {
-
-  if (hasFlag(argv, 'help') || hasFlag(argv, 'h')) {
-    printUsage()
-    return
+function mcpClientModeLabel(renderResult, preferredLabel) {
+  if (renderResult?.transport === GRAPH_SOURCES.FILE_SHIM && preferredLabel === 'stdio-mcp') {
+    return 'stdio-mcp fallback:file-shim'
   }
 
-  const projectRoot = resolveProjectRoot(argv)
-  const forceRefresh = hasFlag(argv, 'force-refresh')
-  const skipRender = hasFlag(argv, 'no-render')
-  const startApp = shouldStartApp(argv)
-  const openBrowser = hasFlag(argv, 'open-browser')
-  const useStdioMcp = hasFlag(argv, 'stdio-mcp')
-  const enrichmentFile = getOptionValue(argv, 'enrichment-file')
-  const responseText = enrichmentFile ? await loadEnrichmentFileStrict(enrichmentFile) : null
+  return preferredLabel
+}
+
+async function handleSetupClaudemap({ ctx, args }) {
+  const projectRoot = ctx.projectRoot
+  const forceRefresh = args.forceRefresh || false
+  const skipRender = args.noRender || false
+  const startApp = args.startApp !== false
+  const openBrowser = args.openBrowser || false
+  const useStdioMcp = args.stdioMcp || false
+  const enrichmentFile = args.enrichmentFile
+
+  const responseText = enrichmentFile ? loadEnrichmentFileStrict(enrichmentFile) : null
   let manifest = ensureManifestForSetup(projectRoot)
   setActiveMapId(manifest, DEFAULT_MAP_ID)
   manifest = writeManifest(projectRoot, manifest)
@@ -131,17 +87,11 @@ export async function main(argv = process.argv.slice(2)) {
   let renderResult = null
 
   if (!skipRender) {
-    const mcpClient = await connectMcpClient({
-      mode: useStdioMcp ? 'stdio' : GRAPH_SOURCES.FILE_SHIM,
-      graphPath: rootMapPaths.graphPath,
-      statePath: rootMapPaths.statePath,
-    })
-    renderResult = await renderGraph(mcpClient, graphData)
-    await closeMcpClient(mcpClient)
+    renderResult = await renderGraph(ctx.mcp, graphData)
   }
 
   if (enrichmentFile) {
-    await cleanupEnrichmentFile(enrichmentFile)
+    cleanupEnrichmentFile(enrichmentFile)
   }
 
   const launchState = await launchClaudeMapWindow({
@@ -182,59 +132,40 @@ export async function main(argv = process.argv.slice(2)) {
   if (launchState.openedBrowser) {
     console.log('Opened ClaudeMap in the browser')
   }
+
+  return success()
 }
 
-async function readFileIfExists(filePath) {
-  const resolvedPath = path.resolve(filePath)
-  return (await import('fs/promises')).readFile(resolvedPath, 'utf8')
+export const SETUP_CLAUDEMAP_COMMAND = {
+  name: 'setup-claudemap',
+  summary: 'Build a detailed architecture map for the current repository and open it in ClaudeMap.',
+  positional: {
+    name: 'projectRoot',
+    required: false,
+  },
+  flags: [
+    { name: 'force-refresh', type: 'boolean' },
+    { name: 'no-render', type: 'boolean' },
+    { name: 'start-app', type: 'boolean' },
+    { name: 'open-browser', type: 'boolean' },
+    { name: 'stdio-mcp', type: 'boolean' },
+    { name: 'enrichment-file', type: 'string' },
+  ],
+  withMcp: {
+    mode: 'auto',
+    required: false,
+  },
+  handler: handleSetupClaudemap,
 }
 
-async function loadEnrichmentFileStrict(filePath) {
-  const fs = await import('fs/promises')
-  const resolvedPath = path.resolve(filePath)
-  let rawContent
-
-  try {
-    rawContent = await fs.readFile(resolvedPath, 'utf8')
-  } catch (error) {
-    if (error && error.code === 'ENOENT') {
-      throw new Error(
-        `Enrichment file not found: ${resolvedPath}. Save the @claudemap-architect subagent output to that file before running setup-claudemap.`,
-      )
-    }
-
-    throw error
-  }
-
-  if (typeof rawContent !== 'string' || rawContent.trim().length === 0) {
-    throw new Error(
-      `Enrichment file is empty: ${resolvedPath}. The @claudemap-architect subagent must return valid graph JSON before setup-claudemap runs. Refusing to fall back to the heuristic graph silently.`,
-    )
-  }
-
-  return rawContent
+export async function main(argv = process.argv.slice(2)) {
+  return runCommand(SETUP_CLAUDEMAP_COMMAND, argv)
 }
 
-async function cleanupEnrichmentFile(filePath) {
-  try {
-    const fs = await import('fs/promises')
-    await fs.unlink(path.resolve(filePath))
-  } catch {
-    // Best-effort cleanup; ignore failures.
-  }
+function isDirectExecution(fileUrl) {
+  return process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(fileUrl)
 }
 
-function mcpClientModeLabel(renderResult, preferredLabel) {
-  if (renderResult?.transport === GRAPH_SOURCES.FILE_SHIM && preferredLabel === 'stdio-mcp') {
-    return 'stdio-mcp fallback:file-shim'
-  }
-
-  return preferredLabel
-}
-
-if (isDirectExecution()) {
-  main().catch((error) => {
-    console.error(`ClaudeMap failed: ${error.message}`)
-    process.exitCode = 1
-  })
+if (isDirectExecution(import.meta.url)) {
+  main().catch(exitOnError)
 }
