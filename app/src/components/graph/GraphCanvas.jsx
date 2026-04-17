@@ -8,14 +8,12 @@ import { COLOR } from '../../contracts/tokens'
 import { FIT_VIEW, VIEWPORT } from '../../contracts/zoom'
 import { useGraphStore } from '../../store/graphStore'
 import {
-  selectClearHoveredPath,
   selectClearRuntimeEmphasis,
   selectEdges,
   selectFocusRequest,
   selectGuidedFlowRequest,
   selectHealthOverlay,
   selectHighlightedNodes,
-  selectHoveredPathIds,
   selectMapsManifest,
   selectMeta,
   selectNodes,
@@ -25,6 +23,7 @@ import {
   selectSetSelectedNode,
 } from '../../store/selectors'
 import { useGraphLoaded } from '../../hooks/useGraphLoaded'
+import { useHoverPathScheduler } from '../../hooks/useHoverPathScheduler'
 import { useLayout } from '../../hooks/useLayout'
 import SystemNode from './SystemNode'
 import CustomEdge from './CustomEdge'
@@ -82,9 +81,7 @@ export default function GraphCanvas() {
   const selectedNode = useGraphStore(selectSelectedNode)
   const setSelectedNode = useGraphStore(selectSetSelectedNode)
   const highlightedNodes = useGraphStore(selectHighlightedNodes)
-  const hoveredPathIds = useGraphStore(selectHoveredPathIds)
   const setHoveredPathIds = useGraphStore(selectSetHoveredPathIds)
-  const clearHoveredPath = useGraphStore(selectClearHoveredPath)
   const clearRuntimeEmphasis = useGraphStore(selectClearRuntimeEmphasis)
   const focusRequest = useGraphStore(selectFocusRequest)
   const guidedFlowRequest = useGraphStore(selectGuidedFlowRequest)
@@ -96,9 +93,13 @@ export default function GraphCanvas() {
   const hasMountedGraphRef = useRef(false)
   const sceneInteractionLocked = presentationMode !== PRESENTATION_MODES.FREE
   const highlightMode = presentationMode === PRESENTATION_MODES.FREE ? 'subtle' : 'presentation'
-  const leaveTimeoutRef = useRef(null)
-  const hoverFrameRef = useRef(null)
-  const pendingHoverPathRef = useRef([])
+  const {
+    hoveredPathIds,
+    pendingHoverPathRef,
+    scheduleHoverPath,
+    cancelHoverClear,
+    clearHoveredPath,
+  } = useHoverPathScheduler()
   const lastFocusKeyRef = useRef('')
   const lastGuidedFlowKeyRef = useRef('')
   const hasAppliedRuntimeViewportRef = useRef(false)
@@ -149,24 +150,6 @@ export default function GraphCanvas() {
   const isGraphTransitioning = !graphLoaded && hasMountedGraphRef.current
 
   const { childCountByParentId, functionIndexById } = computeChildIndexes(nodes)
-
-  const cancelHoverClear = useCallback((clearPendingPath = true) => {
-    if (leaveTimeoutRef.current !== null) {
-      window.clearTimeout(leaveTimeoutRef.current)
-      leaveTimeoutRef.current = null
-    }
-
-    if (hoverFrameRef.current !== null) {
-      window.cancelAnimationFrame(hoverFrameRef.current)
-      hoverFrameRef.current = null
-    }
-
-    if (clearPendingPath) {
-      pendingHoverPathRef.current = []
-    }
-  }, [])
-
-  useEffect(() => () => cancelHoverClear(), [cancelHoverClear])
 
   useEffect(() => {
     if (zoomLevel === ZOOM_LEVELS.OVERVIEW && hoveredPathIds.length) {
@@ -302,36 +285,6 @@ export default function GraphCanvas() {
 
     return () => window.clearInterval(intervalId)
   }, [focusNodeById, graphReady, guidedFlowRequest])
-
-  const scheduleHoverPath = useCallback(
-    (nextPathIds, options = {}) => {
-      const { delay = MOTION.hoverEnter } = options
-
-      if (
-        areStringArraysEqual(nextPathIds, pendingHoverPathRef.current) ||
-        areStringArraysEqual(nextPathIds, hoveredPathIds)
-      ) {
-        return
-      }
-
-      cancelHoverClear(false)
-      pendingHoverPathRef.current = [...nextPathIds]
-      leaveTimeoutRef.current = window.setTimeout(() => {
-        leaveTimeoutRef.current = null
-        hoverFrameRef.current = window.requestAnimationFrame(() => {
-          hoverFrameRef.current = null
-
-          if (pendingHoverPathRef.current.length) {
-            setHoveredPathIds(pendingHoverPathRef.current)
-          } else {
-            clearHoveredPath()
-          }
-        })
-        leaveTimeoutRef.current = null
-      }, delay)
-    },
-    [cancelHoverClear, clearHoveredPath, hoveredPathIds, setHoveredPathIds],
-  )
 
   const visibleNodes = computeVisibleNodes({
     nodes,
