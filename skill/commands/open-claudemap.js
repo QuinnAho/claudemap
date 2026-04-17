@@ -3,6 +3,7 @@ import fs from 'fs'
 import path from 'path'
 import { launchClaudeMapWindow } from '../lib/launcher.js'
 import { resolveActiveMap } from '../lib/active-map.js'
+import { GRAPH_SOURCES } from '../lib/contracts/graph-sources.js'
 
 const DEFAULT_URL = 'http://127.0.0.1:5173'
 
@@ -34,7 +35,7 @@ function readRuntimeGraph(graphPath) {
       nodeCount: nodes.length,
       systemCount: systems,
       fileCount: files,
-      source: runtimeGraph?.meta?.source || 'unknown',
+      source: runtimeGraph?.meta?.source || GRAPH_SOURCES.UNKNOWN,
       repoName: runtimeGraph?.meta?.repoName || 'unknown',
     }
   } catch {
@@ -43,7 +44,7 @@ function readRuntimeGraph(graphPath) {
       nodeCount: 0,
       systemCount: 0,
       fileCount: 0,
-      source: 'unknown',
+      source: GRAPH_SOURCES.UNKNOWN,
       repoName: 'unknown',
     }
   }

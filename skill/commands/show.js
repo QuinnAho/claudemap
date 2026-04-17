@@ -14,6 +14,8 @@ import {
   showCaption,
 } from '../lib/mcp-client.js'
 import { resolveActiveMap } from '../lib/active-map.js'
+import { GRAPH_SOURCES } from '../lib/contracts/graph-sources.js'
+import { PRESENTATION_MODES } from '../lib/contracts/presentation.js'
 
 function scoreNode(node, query) {
   const normalizedQuery = query.toLowerCase()
@@ -231,7 +233,7 @@ function buildGuidedSteps(graph, node) {
 async function revertToFreeMode(client) {
   // Preserve the scene the command just painted (highlights, focus, guided flow)
   // while dropping guided/locked mode so the user can interact with the graph again.
-  await setPresentationMode(client, 'free', { resetScene: false })
+  await setPresentationMode(client, PRESENTATION_MODES.FREE, { resetScene: false })
 }
 
 function readGraphOrExit(graphPath) {
@@ -270,7 +272,7 @@ async function main() {
     process.env.CLAUDEMAP_PROJECT_ROOT || process.env.INIT_CWD || process.cwd()
   const activeMap = resolveActiveMap(projectRoot)
   const client = await connectMcpClient({
-    mode: useStdioMcp ? 'stdio' : 'file-shim',
+    mode: useStdioMcp ? 'stdio' : GRAPH_SOURCES.FILE_SHIM,
     graphPath: activeMap.graphPath,
     statePath: activeMap.statePath,
   })
@@ -311,14 +313,14 @@ async function main() {
 
   if (action === 'mode') {
     const requestedMode = (commandArgs[0] || '').toLowerCase()
-    const mode = requestedMode === 'locked-demo' ? 'locked' : requestedMode
+    const mode = requestedMode === 'locked-demo' ? PRESENTATION_MODES.LOCKED : requestedMode
 
-    if (!['free', 'guided', 'locked'].includes(mode)) {
+    if (![PRESENTATION_MODES.FREE, PRESENTATION_MODES.GUIDED, PRESENTATION_MODES.LOCKED].includes(mode)) {
       throw new Error('Usage: mode <free|guided|locked>')
     }
 
     await setPresentationMode(client, mode, {
-      lockInput: mode === 'locked',
+      lockInput: mode === PRESENTATION_MODES.LOCKED,
     })
     console.log(`[${activeMap.mapId}] Presentation mode ${mode}`)
     await closeMcpClient(client)
@@ -381,7 +383,7 @@ async function main() {
         nodeId: primaryNode.id,
         nodeIds,
         zoom,
-        mode: options.mode || 'guided',
+        mode: options.mode || PRESENTATION_MODES.GUIDED,
         lockInput: options.lockInput,
         title: options.title || null,
         stepLabel: options.step || null,
@@ -423,7 +425,7 @@ async function main() {
       nodeId: primaryNode.id,
       nodeIds,
       zoom: options.zoom ?? getDefaultZoomForNode(primaryNode),
-      mode: options.mode || 'guided',
+      mode: options.mode || PRESENTATION_MODES.GUIDED,
       lockInput: options.lockInput,
       title: options.title || null,
       stepLabel: options.step || null,

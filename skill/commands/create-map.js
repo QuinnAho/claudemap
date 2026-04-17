@@ -15,6 +15,7 @@ import {
   writeManifest,
 } from '../lib/map-manifest.js'
 import { closeMcpClient, connectMcpClient, readRuntimeGraph, renderGraph } from '../lib/mcp-client.js'
+import { GRAPH_SOURCES } from '../lib/contracts/graph-sources.js'
 import {
   allocateMapId,
   buildScopedGraphFromRoot,
@@ -214,10 +215,10 @@ export async function main(argv = process.argv.slice(2)) {
       )
     }
 
-    graphSource = 'claude-scoped'
+    graphSource = GRAPH_SOURCES.CLAUDE_SCOPED
   } else {
     scopedGraph = buildScopedGraphFromRoot(rootGraph, resolvedScope.systemId)
-    graphSource = scopedGraph.meta?.source || 'scoped-map'
+    graphSource = scopedGraph.meta?.source || GRAPH_SOURCES.SCOPED_MAP
   }
 
   const nextScope = createScopeDescriptor(rootGraph, resolvedScope.systemId)
@@ -246,7 +247,7 @@ export async function main(argv = process.argv.slice(2)) {
   writeCache(projectRoot, scopedGraph, scopedGraph.files, { relativePath: nextMapEntry.cachePath })
 
   const mcpClient = await connectMcpClient({
-    mode: useStdioMcp ? 'stdio' : 'file-shim',
+    mode: useStdioMcp ? 'stdio' : GRAPH_SOURCES.FILE_SHIM,
     graphPath: nextMapPaths.graphPath,
     statePath: nextMapPaths.statePath,
   })
@@ -277,7 +278,7 @@ export async function main(argv = process.argv.slice(2)) {
   console.log(`Active map: ${manifest.activeMapId}`)
   console.log(`Graph source: ${graphSource}`)
 
-  if (graphSource !== 'claude-scoped') {
+  if (graphSource !== GRAPH_SOURCES.CLAUDE_SCOPED) {
     console.log(
       'Note: graph built from root filter. For richer subsystem grouping, rerun with --enrichment-file after an @claudemap-architect pass.',
     )

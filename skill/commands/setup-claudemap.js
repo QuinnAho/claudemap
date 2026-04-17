@@ -18,6 +18,7 @@ import {
   writeManifest,
 } from '../lib/map-manifest.js'
 import { closeMcpClient, connectMcpClient, renderGraph } from '../lib/mcp-client.js'
+import { GRAPH_SOURCES } from '../lib/contracts/graph-sources.js'
 
 const CURRENT_FILE_PATH = fileURLToPath(import.meta.url)
 
@@ -131,7 +132,7 @@ export async function main(argv = process.argv.slice(2)) {
 
   if (!skipRender) {
     const mcpClient = await connectMcpClient({
-      mode: useStdioMcp ? 'stdio' : 'file-shim',
+      mode: useStdioMcp ? 'stdio' : GRAPH_SOURCES.FILE_SHIM,
       graphPath: rootMapPaths.graphPath,
       statePath: rootMapPaths.statePath,
     })
@@ -224,7 +225,7 @@ async function cleanupEnrichmentFile(filePath) {
 }
 
 function mcpClientModeLabel(renderResult, preferredLabel) {
-  if (renderResult?.transport === 'file-shim' && preferredLabel === 'stdio-mcp') {
+  if (renderResult?.transport === GRAPH_SOURCES.FILE_SHIM && preferredLabel === 'stdio-mcp') {
     return 'stdio-mcp fallback:file-shim'
   }
 

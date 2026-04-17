@@ -19,6 +19,7 @@ import {
 } from '../lib/map-manifest.js'
 import { closeMcpClient, connectMcpClient, renderGraph } from '../lib/mcp-client.js'
 import { buildScopedGraphFromRoot } from '../lib/scoped-map.js'
+import { GRAPH_SOURCES } from '../lib/contracts/graph-sources.js'
 
 function resolveProjectRoot(argv) {
   const optionsWithValues = new Set(['--enrichment-file'])
@@ -119,7 +120,7 @@ async function refreshScopedMaps(projectRoot, manifest, rootGraph, mcpClient, op
     const priorCache = readCache(projectRoot, { relativePath: mapEntry.cachePath })
     const scopeTouched = rootRestructured || scopeTouchedByChanges(priorCache, changedPaths)
 
-    if (!scopeTouched && priorCache?.graph?.meta?.source === 'claude-scoped') {
+    if (!scopeTouched && priorCache?.graph?.meta?.source === GRAPH_SOURCES.CLAUDE_SCOPED) {
       // Scope untouched and we previously had an architect-enriched graph.
       // Preserve it. Just clear any stale flag and update the scope descriptor.
       mapEntry.scope = {
@@ -139,7 +140,7 @@ async function refreshScopedMaps(projectRoot, manifest, rootGraph, mcpClient, op
       stale: false,
       // Mark for architect rebuild on next open because we just rebuilt
       // this scoped map from the root filter, which loses scoped-specific grouping.
-      needsRebuild: priorCache?.graph?.meta?.source === 'claude-scoped',
+      needsRebuild: priorCache?.graph?.meta?.source === GRAPH_SOURCES.CLAUDE_SCOPED,
     }
     writeCache(projectRoot, scopedGraph, scopedGraph.files, { relativePath: mapEntry.cachePath })
 
@@ -199,7 +200,7 @@ async function main() {
   const mcpClient = skipRender
     ? null
     : await connectMcpClient({
-        mode: useStdioMcp ? 'stdio' : 'file-shim',
+        mode: useStdioMcp ? 'stdio' : GRAPH_SOURCES.FILE_SHIM,
         graphPath: rootMapPaths.graphPath,
         statePath: rootMapPaths.statePath,
       })

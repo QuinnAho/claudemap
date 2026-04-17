@@ -300,7 +300,7 @@ async function invokeFileShim(client, toolName, payload) {
         statePath,
         buildNextRuntimeEnvelope(runtimeEnvelope, nextGraph, payload.runtime || runtimeEnvelope.runtime, true),
       )
-      return { transport: 'file-shim', toolName, graphPath, statePath }
+      return { transport: GRAPH_SOURCES.FILE_SHIM, toolName, graphPath, statePath }
     }
 
     case 'add_node': {
@@ -310,7 +310,7 @@ async function invokeFileShim(client, toolName, payload) {
         statePath,
         buildNextRuntimeEnvelope(runtimeEnvelope, graph, runtimeEnvelope.runtime, true),
       )
-      return { transport: 'file-shim', toolName, graphPath, statePath }
+      return { transport: GRAPH_SOURCES.FILE_SHIM, toolName, graphPath, statePath }
     }
 
     case 'remove_node': {
@@ -323,7 +323,7 @@ async function invokeFileShim(client, toolName, payload) {
         statePath,
         buildNextRuntimeEnvelope(runtimeEnvelope, graph, runtimeEnvelope.runtime, true),
       )
-      return { transport: 'file-shim', toolName, graphPath, statePath }
+      return { transport: GRAPH_SOURCES.FILE_SHIM, toolName, graphPath, statePath }
     }
 
     case 'update_node': {
@@ -335,7 +335,7 @@ async function invokeFileShim(client, toolName, payload) {
         statePath,
         buildNextRuntimeEnvelope(runtimeEnvelope, graph, runtimeEnvelope.runtime, true),
       )
-      return { transport: 'file-shim', toolName, graphPath, statePath }
+      return { transport: GRAPH_SOURCES.FILE_SHIM, toolName, graphPath, statePath }
     }
 
     case 'add_edge': {
@@ -345,7 +345,7 @@ async function invokeFileShim(client, toolName, payload) {
         statePath,
         buildNextRuntimeEnvelope(runtimeEnvelope, graph, runtimeEnvelope.runtime, true),
       )
-      return { transport: 'file-shim', toolName, graphPath, statePath }
+      return { transport: GRAPH_SOURCES.FILE_SHIM, toolName, graphPath, statePath }
     }
 
     case 'remove_edge': {
@@ -355,7 +355,7 @@ async function invokeFileShim(client, toolName, payload) {
         statePath,
         buildNextRuntimeEnvelope(runtimeEnvelope, graph, runtimeEnvelope.runtime, true),
       )
-      return { transport: 'file-shim', toolName, graphPath, statePath }
+      return { transport: GRAPH_SOURCES.FILE_SHIM, toolName, graphPath, statePath }
     }
 
     case 'apply_graph_patch': {
@@ -366,7 +366,7 @@ async function invokeFileShim(client, toolName, payload) {
         buildNextRuntimeEnvelope(runtimeEnvelope, nextGraph, payload.runtime || runtimeEnvelope.runtime, true),
       )
       return {
-        transport: 'file-shim',
+        transport: GRAPH_SOURCES.FILE_SHIM,
         toolName,
         graphPath,
         statePath,
@@ -389,7 +389,7 @@ async function invokeFileShim(client, toolName, payload) {
           guidedFlow: null,
         }, false),
       )
-      return { transport: 'file-shim', toolName, graphPath, statePath }
+      return { transport: GRAPH_SOURCES.FILE_SHIM, toolName, graphPath, statePath }
     }
 
     case 'clear_highlight': {
@@ -401,7 +401,7 @@ async function invokeFileShim(client, toolName, payload) {
           guidedFlow: null,
         }, false),
       )
-      return { transport: 'file-shim', toolName, graphPath, statePath }
+      return { transport: GRAPH_SOURCES.FILE_SHIM, toolName, graphPath, statePath }
     }
 
     case 'navigate_to': {
@@ -416,7 +416,7 @@ async function invokeFileShim(client, toolName, payload) {
           ),
         }, false),
       )
-      return { transport: 'file-shim', toolName, graphPath, statePath }
+      return { transport: GRAPH_SOURCES.FILE_SHIM, toolName, graphPath, statePath }
     }
 
     case 'guided_flow': {
@@ -432,7 +432,7 @@ async function invokeFileShim(client, toolName, payload) {
           },
         }, false),
       )
-      return { transport: 'file-shim', toolName, graphPath, statePath }
+      return { transport: GRAPH_SOURCES.FILE_SHIM, toolName, graphPath, statePath }
     }
 
     case 'set_health_overlay': {
@@ -443,7 +443,7 @@ async function invokeFileShim(client, toolName, payload) {
           healthOverlay: !!payload.enabled,
         }, false),
       )
-      return { transport: 'file-shim', toolName, graphPath, statePath }
+      return { transport: GRAPH_SOURCES.FILE_SHIM, toolName, graphPath, statePath }
     }
 
     case 'set_presentation_mode': {
@@ -504,7 +504,7 @@ async function invokeFileShim(client, toolName, payload) {
           presentation: nextPresentation,
         }, false),
       )
-      return { transport: 'file-shim', toolName, graphPath, statePath }
+      return { transport: GRAPH_SOURCES.FILE_SHIM, toolName, graphPath, statePath }
     }
 
     case 'present_step': {
@@ -540,7 +540,7 @@ async function invokeFileShim(client, toolName, payload) {
           },
         }, false),
       )
-      return { transport: 'file-shim', toolName, graphPath, statePath }
+      return { transport: GRAPH_SOURCES.FILE_SHIM, toolName, graphPath, statePath }
     }
 
     case 'show_caption': {
@@ -563,7 +563,7 @@ async function invokeFileShim(client, toolName, payload) {
           },
         }, false),
       )
-      return { transport: 'file-shim', toolName, graphPath, statePath }
+      return { transport: GRAPH_SOURCES.FILE_SHIM, toolName, graphPath, statePath }
     }
 
     case 'clear_caption': {
@@ -581,11 +581,11 @@ async function invokeFileShim(client, toolName, payload) {
           },
         }, false),
       )
-      return { transport: 'file-shim', toolName, graphPath, statePath }
+      return { transport: GRAPH_SOURCES.FILE_SHIM, toolName, graphPath, statePath }
     }
 
     default:
-      return { transport: 'file-shim', toolName, graphPath, supported: false }
+      return { transport: GRAPH_SOURCES.FILE_SHIM, toolName, graphPath, supported: false }
   }
 }
 
@@ -605,7 +605,7 @@ async function invokeTool(client, toolName, payload) {
 
 export function createMcpClient(options = {}) {
   return {
-    mode: options.mode || 'file-shim',
+    mode: options.mode || GRAPH_SOURCES.FILE_SHIM,
     graphPath: options.graphPath || DEFAULT_RUNTIME_GRAPH_PATH,
     statePath: options.statePath || DEFAULT_RUNTIME_STATE_PATH,
     callTool: options.callTool,
@@ -717,7 +717,7 @@ export async function setHealthOverlay(mcpClient, enabled) {
   return invokeTool(mcpClient, 'set_health_overlay', { enabled })
 }
 
-export async function setPresentationMode(mcpClient, mode = 'free', options = {}) {
+export async function setPresentationMode(mcpClient, mode = PRESENTATION_MODES.FREE, options = {}) {
   return invokeTool(mcpClient, 'set_presentation_mode', {
     mode,
     lockInput: options.lockInput,
