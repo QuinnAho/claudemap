@@ -1,31 +1,17 @@
 #!/usr/bin/env node
-import fs from 'fs'
 import path from 'path'
+import { fileURLToPath } from 'url'
 import { launchClaudeMapWindow } from '../lib/launcher.js'
-import { resolveActiveMap } from '../lib/active-map.js'
+import { readRuntimeGraph } from '../lib/mcp-client.js'
 import { GRAPH_SOURCES } from '../lib/contracts/graph-sources.js'
+import { runCommand, exitOnError } from '../lib/command-harness/run-command.js'
+import { success } from '../lib/contracts/errors.js'
 
 const DEFAULT_URL = 'http://127.0.0.1:5173'
 
-function hasFlag(argv, flagName) {
-  return argv.includes(`--${flagName}`)
-}
-
-function printUsage() {
-  console.log('ClaudeMap open')
-  console.log('  open-claudemap [project-root] [--open-browser] [--no-start-app]')
-}
-
-function resolveProjectRoot(argv) {
-  const projectRootArg = argv.find((argument) => !argument.startsWith('--'))
-  return path.resolve(
-    projectRootArg || process.env.CLAUDEMAP_PROJECT_ROOT || process.env.INIT_CWD || process.cwd(),
-  )
-}
-
-function readRuntimeGraph(graphPath) {
+function getGraphStats(graphPath) {
   try {
-    const runtimeGraph = JSON.parse(fs.readFileSync(graphPath, 'utf8'))
+    const runtimeGraph = readRuntimeGraph(graphPath)
     const nodes = Array.isArray(runtimeGraph?.nodes) ? runtimeGraph.nodes : []
     const systems = nodes.filter((node) => node.type === 'system').length
     const files = Array.isArray(runtimeGraph?.files) ? runtimeGraph.files.length : 0
@@ -50,30 +36,22 @@ function readRuntimeGraph(graphPath) {
   }
 }
 
-async function main() {
-  const argv = process.argv.slice(2)
-
-  if (hasFlag(argv, 'help') || hasFlag(argv, 'h')) {
-    printUsage()
-    return
-  }
-
-  const projectRoot = resolveProjectRoot(argv)
-  const openBrowser = hasFlag(argv, 'open-browser')
-  const startApp = !hasFlag(argv, 'no-start-app')
-  const activeMap = resolveActiveMap(projectRoot)
-  const runtimeGraph = readRuntimeGraph(activeMap.graphPath)
+async function handleOpenClaudemap({ ctx, args }) {
+  const openBrowser = args.openBrowser || false
+  const startApp = args.startApp !== false
+  const activeMap = ctx.activeMap
+  const graphStats = getGraphStats(activeMap.graphPath)
   const launchState = await launchClaudeMapWindow({
     startIfNeeded: startApp,
     openBrowser,
     url: DEFAULT_URL,
   })
 
-  if (runtimeGraph.exists) {
+  if (graphStats.exists) {
     console.log(
-      `ClaudeMap open - loaded existing ${activeMap.mapId} graph for ${runtimeGraph.repoName} with ${runtimeGraph.systemCount} systems across ${runtimeGraph.fileCount} files`,
+      `ClaudeMap open - loaded existing ${activeMap.mapId} graph for ${graphStats.repoName} with ${graphStats.systemCount} systems across ${graphStats.fileCount} files`,
     )
-    console.log(`Graph source: ${runtimeGraph.source}`)
+    console.log(`Graph source: ${graphStats.source}`)
   } else {
     console.log('ClaudeMap open - app runtime is available, but no graph is loaded yet')
     console.log('Run /setup-claudemap first to analyze a project and render a graph')
@@ -92,9 +70,32 @@ async function main() {
   if (launchState.openedBrowser) {
     console.log('Opened ClaudeMap in the browser')
   }
+
+  return success()
 }
 
-main().catch((error) => {
-  console.error(`ClaudeMap open failed: ${error.message}`)
-  process.exitCode = 1
-})
+export const OPEN_CLAUDEMAP_COMMAND = {
+  name: 'open-claudemap',
+  summary: 'Open the ClaudeMap app for the current project without rebuilding the graph.',
+  positional: {
+    name: 'projectRoot',
+    required: false,
+  },
+  flags: [
+    { name: 'open-browser', type: 'boolean' },
+    { name: 'start-app', type: 'boolean' },
+  ],
+  handler: handleOpenClaudemap,
+}
+
+export async function main(argv = process.argv.slice(2)) {
+  return runCommand(OPEN_CLAUDEMAP_COMMAND, argv)
+}
+
+function isDirectExecution(fileUrl) {
+  return process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(fileUrl)
+}
+
+if (isDirectExecution(import.meta.url)) {
+  main().catch(exitOnError)
+}
