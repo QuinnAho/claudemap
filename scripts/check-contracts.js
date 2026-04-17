@@ -104,6 +104,16 @@ const RULES = [
     reason: 'Raw oklch() color expression in source.',
     suggestion: 'Use a token from app/src/contracts/tokens.js instead.',
   },
+  {
+    name: 'raw-close-mcp',
+    pattern: /\bcloseMcpClient\s*\(/g,
+    reason: 'Raw closeMcpClient() call outside the command harness.',
+    suggestion: 'Acquire the MCP client through withMcp() in skill/lib/command-harness/with-mcp.js; it owns the release.',
+    exemptFiles: [
+      'skill/lib/command-harness/with-mcp.js',
+      'skill/lib/mcp-client.js',
+    ],
+  },
 ]
 
 function toPosix(value) {
@@ -196,6 +206,10 @@ function scanFile(absolutePath) {
   const violations = []
 
   for (const rule of RULES) {
+    if (rule.exemptFiles?.includes(relativePath)) {
+      continue
+    }
+
     rule.pattern.lastIndex = 0
     let match
 

@@ -13,20 +13,19 @@ export async function withMcp({ mode, requireStdio, activeMap, log }, handler) {
     statePath: activeMap.statePath,
   })
 
-  if (requireStdio && client.fallbackReason) {
-    await closeMcpClient(client)
-    throw new ClaudeMapError(
-      ERROR_CODES.MCP_FALLBACK_FORBIDDEN,
-      'stdio MCP transport is required but unavailable',
-      client.fallbackReason,
-    )
-  }
-
-  if (client.fallbackReason) {
-    log.warn(ERROR_CODES.MCP_FALLBACK_FILE_SHIM, { reason: client.fallbackReason })
-  }
-
   try {
+    if (requireStdio && client.fallbackReason) {
+      throw new ClaudeMapError(
+        ERROR_CODES.MCP_FALLBACK_FORBIDDEN,
+        'stdio MCP transport is required but unavailable',
+        client.fallbackReason,
+      )
+    }
+
+    if (client.fallbackReason) {
+      log.warn(ERROR_CODES.MCP_FALLBACK_FILE_SHIM, { reason: client.fallbackReason })
+    }
+
     return await handler(client)
   } finally {
     await closeMcpClient(client)
