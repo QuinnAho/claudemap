@@ -4,9 +4,10 @@ import PresentationOverlay from './PresentationOverlay'
 import { PRESENTATION_MODES } from '../../contracts/presentation'
 import { alpha } from '../../contracts/tokens'
 import { useGraphStore } from '../../store/graphStore'
+import { selectPresentationMode } from '../../store/selectors'
 
 export default function GraphRuntime() {
-  const presentationMode = useGraphStore((state) => state.presentationMode)
+  const presentationMode = useGraphStore(selectPresentationMode)
 
   return (
     <ReactFlowProvider>

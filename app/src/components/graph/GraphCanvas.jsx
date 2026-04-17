@@ -7,6 +7,23 @@ import { PRESENTATION_MODES } from '../../contracts/presentation'
 import { COLOR } from '../../contracts/tokens'
 import { FIT_VIEW, VIEWPORT } from '../../contracts/zoom'
 import { useGraphStore } from '../../store/graphStore'
+import {
+  selectClearHoveredPath,
+  selectClearRuntimeEmphasis,
+  selectEdges,
+  selectFocusRequest,
+  selectGuidedFlowRequest,
+  selectHealthOverlay,
+  selectHighlightedNodes,
+  selectHoveredPathIds,
+  selectMapsManifest,
+  selectMeta,
+  selectNodes,
+  selectPresentationMode,
+  selectSelectedNode,
+  selectSetHoveredPathIds,
+  selectSetSelectedNode,
+} from '../../store/selectors'
 import { useGraphData } from '../../hooks/useGraphData'
 import { useLayout } from '../../hooks/useLayout'
 import SystemNode from './SystemNode'
@@ -56,21 +73,21 @@ function areStringArraysEqual(left = [], right = []) {
 
 export default function GraphCanvas() {
   const { setCenter } = useReactFlow()
-  const nodes = useGraphStore((state) => state.nodes)
-  const edges = useGraphStore((state) => state.edges)
-  const mapsManifest = useGraphStore((state) => state.mapsManifest)
-  const healthOverlay = useGraphStore((state) => state.healthOverlay)
-  const meta = useGraphStore((state) => state.meta)
-  const selectedNode = useGraphStore((state) => state.selectedNode)
-  const setSelectedNode = useGraphStore((state) => state.setSelectedNode)
-  const highlightedNodes = useGraphStore((state) => state.highlightedNodes)
-  const hoveredPathIds = useGraphStore((state) => state.hoveredPathIds)
-  const setHoveredPathIds = useGraphStore((state) => state.setHoveredPathIds)
-  const clearHoveredPath = useGraphStore((state) => state.clearHoveredPath)
-  const clearRuntimeEmphasis = useGraphStore((state) => state.clearRuntimeEmphasis)
-  const focusRequest = useGraphStore((state) => state.focusRequest)
-  const guidedFlowRequest = useGraphStore((state) => state.guidedFlowRequest)
-  const presentationMode = useGraphStore((state) => state.presentationMode)
+  const nodes = useGraphStore(selectNodes)
+  const edges = useGraphStore(selectEdges)
+  const mapsManifest = useGraphStore(selectMapsManifest)
+  const healthOverlay = useGraphStore(selectHealthOverlay)
+  const meta = useGraphStore(selectMeta)
+  const selectedNode = useGraphStore(selectSelectedNode)
+  const setSelectedNode = useGraphStore(selectSetSelectedNode)
+  const highlightedNodes = useGraphStore(selectHighlightedNodes)
+  const hoveredPathIds = useGraphStore(selectHoveredPathIds)
+  const setHoveredPathIds = useGraphStore(selectSetHoveredPathIds)
+  const clearHoveredPath = useGraphStore(selectClearHoveredPath)
+  const clearRuntimeEmphasis = useGraphStore(selectClearRuntimeEmphasis)
+  const focusRequest = useGraphStore(selectFocusRequest)
+  const guidedFlowRequest = useGraphStore(selectGuidedFlowRequest)
+  const presentationMode = useGraphStore(selectPresentationMode)
   const graphLoaded = useGraphData()
   const { zoomLevel, onViewportChange } = useZoomLevel()
   const layoutReady = useLayout(zoomLevel)

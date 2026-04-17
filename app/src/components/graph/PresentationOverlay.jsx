@@ -3,6 +3,10 @@ import { MOTION } from '../../contracts/motion'
 import { PRESENTATION_MODES } from '../../contracts/presentation'
 import { COLOR, alpha } from '../../contracts/tokens'
 import { useGraphStore } from '../../store/graphStore'
+import {
+  selectPresentationCaption,
+  selectPresentationMode,
+} from '../../store/selectors'
 
 function getTypingStepSize(textLength) {
   if (textLength > 280) {
@@ -21,8 +25,8 @@ function getTypingStepSize(textLength) {
 }
 
 export default function PresentationOverlay() {
-  const presentationMode = useGraphStore((state) => state.presentationMode)
-  const presentationCaption = useGraphStore((state) => state.presentationCaption)
+  const presentationMode = useGraphStore(selectPresentationMode)
+  const presentationCaption = useGraphStore(selectPresentationCaption)
   const explanation = presentationCaption?.explanation || presentationCaption?.body || ''
   const [typedExplanation, setTypedExplanation] = useState('')
 

@@ -5,12 +5,17 @@ import { PRESENTATION_MODES } from '../../contracts/presentation'
 import { alpha } from '../../contracts/tokens'
 import { FIT_VIEW } from '../../contracts/zoom'
 import { useGraphStore } from '../../store/graphStore'
+import {
+  selectHealthOverlay,
+  selectPresentationMode,
+  selectSetHealthOverlay,
+} from '../../store/selectors'
 
 export default function ZoomControls() {
   const { zoomIn, zoomOut, fitView } = useReactFlow()
-  const healthOverlay = useGraphStore((state) => state.healthOverlay)
-  const setHealthOverlay = useGraphStore((state) => state.setHealthOverlay)
-  const presentationMode = useGraphStore((state) => state.presentationMode)
+  const healthOverlay = useGraphStore(selectHealthOverlay)
+  const setHealthOverlay = useGraphStore(selectSetHealthOverlay)
+  const presentationMode = useGraphStore(selectPresentationMode)
 
   const islandStyle = {
     backgroundColor: 'var(--bg-card)',

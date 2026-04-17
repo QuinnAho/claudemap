@@ -13,6 +13,16 @@ import {
 import { PRESENTATION_MODES } from '../contracts/presentation'
 import { getSystemPath } from '../lib/graphNodeUtils'
 import { useGraphStore } from '../store/graphStore'
+import {
+  selectEdges,
+  selectFocusRequest,
+  selectHighlightedNodes,
+  selectHoveredPathIds,
+  selectNodes,
+  selectPresentationMode,
+  selectSelectedNode,
+  selectSetGraph,
+} from '../store/selectors'
 import { ZOOM_LEVELS } from './useZoomLevel'
 
 function hasGeometryChanged(currentNodes, nextNodes) {
@@ -100,14 +110,14 @@ function getRevealedFileIds(nodes, selectedNode, focusRequest, highlightedNodes)
 }
 
 export function useLayout(zoomLevel) {
-  const nodes = useGraphStore((state) => state.nodes)
-  const edges = useGraphStore((state) => state.edges)
-  const setGraph = useGraphStore((state) => state.setGraph)
-  const hoveredPathIds = useGraphStore((state) => state.hoveredPathIds)
-  const selectedNode = useGraphStore((state) => state.selectedNode)
-  const highlightedNodes = useGraphStore((state) => state.highlightedNodes)
-  const focusRequest = useGraphStore((state) => state.focusRequest)
-  const presentationMode = useGraphStore((state) => state.presentationMode)
+  const nodes = useGraphStore(selectNodes)
+  const edges = useGraphStore(selectEdges)
+  const setGraph = useGraphStore(selectSetGraph)
+  const hoveredPathIds = useGraphStore(selectHoveredPathIds)
+  const selectedNode = useGraphStore(selectSelectedNode)
+  const highlightedNodes = useGraphStore(selectHighlightedNodes)
+  const focusRequest = useGraphStore(selectFocusRequest)
+  const presentationMode = useGraphStore(selectPresentationMode)
   const [layoutReady, setLayoutReady] = useState(false)
   const cachedTopLevelLayoutRef = useRef({
     topologySignature: null,

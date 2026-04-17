@@ -4,6 +4,11 @@ import { MOTION } from '../../contracts/motion'
 import { FONT, alpha } from '../../contracts/tokens'
 import { setActiveMap } from '../../lib/mapApi'
 import { useGraphStore } from '../../store/graphStore'
+import {
+  selectActiveMapId,
+  selectMapsManifest,
+  selectMeta,
+} from '../../store/selectors'
 
 function getMapDepth(mapEntry) {
   if (!mapEntry?.scope) {
@@ -32,9 +37,9 @@ function getMapDisplayLabel(mapEntry, rootMapLabel) {
 }
 
 export default function MapSelector() {
-  const mapsManifest = useGraphStore((state) => state.mapsManifest)
-  const activeMapId = useGraphStore((state) => state.activeMapId)
-  const meta = useGraphStore((state) => state.meta)
+  const mapsManifest = useGraphStore(selectMapsManifest)
+  const activeMapId = useGraphStore(selectActiveMapId)
+  const meta = useGraphStore(selectMeta)
   const maps = mapsManifest?.maps || []
   const activeMap = maps.find((mapEntry) => mapEntry.id === activeMapId) || maps[0] || null
   const staleMaps = maps.filter((mapEntry) => mapEntry.scope?.stale === true)

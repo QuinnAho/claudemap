@@ -2,10 +2,14 @@ import { useEffect, useState } from 'react'
 import { MOTION } from '../../contracts/motion'
 import { FONT } from '../../contracts/tokens'
 import { useGraphStore } from '../../store/graphStore'
+import {
+  selectMetaLastSyncedAt,
+  selectPresentationMode,
+} from '../../store/selectors'
 
 export default function StatusBar() {
-  const lastSyncedAt = useGraphStore((state) => state.meta.lastSyncedAt)
-  const presentationMode = useGraphStore((state) => state.presentationMode)
+  const lastSyncedAt = useGraphStore(selectMetaLastSyncedAt)
+  const presentationMode = useGraphStore(selectPresentationMode)
   const [currentTime, setCurrentTime] = useState(() => Date.now())
 
   useEffect(() => {

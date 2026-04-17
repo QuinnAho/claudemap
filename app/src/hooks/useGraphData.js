@@ -11,6 +11,13 @@ import {
 import { PRESENTATION_MODES } from '../contracts/presentation'
 import { useGraphStore } from '../store/graphStore'
 import {
+  selectResetForMapChange,
+  selectSetGraph,
+  selectSetMapsManifest,
+  selectSetMeta,
+  selectSetRuntimeControls,
+} from '../store/selectors'
+import {
   FILE_NODE_HEIGHT,
   FILE_NODE_WIDTH,
   getContainerChildPosition,
@@ -357,11 +364,11 @@ async function fetchMapsManifest() {
 }
 
 export function useGraphData() {
-  const setGraph = useGraphStore((state) => state.setGraph)
-  const setMeta = useGraphStore((state) => state.setMeta)
-  const setMapsManifest = useGraphStore((state) => state.setMapsManifest)
-  const setRuntimeControls = useGraphStore((state) => state.setRuntimeControls)
-  const resetForMapChange = useGraphStore((state) => state.resetForMapChange)
+  const setGraph = useGraphStore(selectSetGraph)
+  const setMeta = useGraphStore(selectSetMeta)
+  const setMapsManifest = useGraphStore(selectSetMapsManifest)
+  const setRuntimeControls = useGraphStore(selectSetRuntimeControls)
+  const resetForMapChange = useGraphStore(selectResetForMapChange)
   const [graphLoaded, setGraphLoaded] = useState(false)
   const latestGraphRevisionRef = useRef(null)
   const latestRuntimeSignatureRef = useRef('')

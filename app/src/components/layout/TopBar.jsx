@@ -4,12 +4,17 @@ import { PRESENTATION_MODES } from '../../contracts/presentation'
 import { FONT, alpha } from '../../contracts/tokens'
 import { setActiveMap } from '../../lib/mapApi'
 import { useGraphStore } from '../../store/graphStore'
+import {
+  selectActiveMapId,
+  selectMeta,
+  selectPresentationMode,
+} from '../../store/selectors'
 import MapSelector from './MapSelector'
 
 export default function TopBar() {
-  const presentationMode = useGraphStore((state) => state.presentationMode)
-  const activeMapId = useGraphStore((state) => state.activeMapId)
-  const meta = useGraphStore((state) => state.meta)
+  const presentationMode = useGraphStore(selectPresentationMode)
+  const activeMapId = useGraphStore(selectActiveMapId)
+  const meta = useGraphStore(selectMeta)
   const [isReturningHome, setIsReturningHome] = useState(false)
   const headerText =
     presentationMode !== PRESENTATION_MODES.FREE
