@@ -14,7 +14,6 @@ import {
   selectGuidedFlowRequest,
   selectHealthOverlay,
   selectHighlightedNodes,
-  selectMapsManifest,
   selectMeta,
   selectNodes,
   selectPresentationMode,
@@ -25,6 +24,7 @@ import { useGraphFocusRuntime } from '../../hooks/useGraphFocusRuntime'
 import { useGraphLoaded } from '../../hooks/useGraphLoaded'
 import { useHoverPathScheduler } from '../../hooks/useHoverPathScheduler'
 import { useLayout } from '../../hooks/useLayout'
+import { useScopedMapAffordance } from '../../hooks/useScopedMapAffordance'
 import SystemNode from './SystemNode'
 import CustomEdge from './CustomEdge'
 import FileNode from './FileNode'
@@ -37,7 +37,6 @@ import {
   getTopLevelSystemId,
 } from '../../lib/graphNodeUtils'
 import {
-  areStringArraysEqual,
   computeChildIndexes,
   computeConnectedSystemIds,
   computeExpandedSystemIds,
@@ -47,7 +46,6 @@ import {
   computeStyledNodes,
   computeVisibleNodes,
 } from '../../lib/graphView'
-import { setActiveMap } from '../../lib/mapApi'
 
 const nodeTypes = {
   system: SystemNode,
@@ -67,7 +65,6 @@ const OVERVIEW_FIT_VIEW_OPTIONS = {
 export default function GraphCanvas() {
   const nodes = useGraphStore(selectNodes)
   const edges = useGraphStore(selectEdges)
-  const mapsManifest = useGraphStore(selectMapsManifest)
   const healthOverlay = useGraphStore(selectHealthOverlay)
   const meta = useGraphStore(selectMeta)
   const selectedNode = useGraphStore(selectSelectedNode)
@@ -170,103 +167,7 @@ export default function GraphCanvas() {
     selectedSystemId,
   })
 
-  const getAncestorLabels = useCallback(
-    (nodeId) => {
-      const labels = []
-      let currentNode = nodeById.get(nodeId)
-
-      while (currentNode?.parentId) {
-        const parentNode = nodeById.get(currentNode.parentId)
-
-        if (!parentNode) {
-          break
-        }
-
-        labels.unshift(parentNode.data?.label || parentNode.id)
-        currentNode = parentNode
-      }
-
-      return labels
-    },
-    [nodeById],
-  )
-
-  const switchScopedMap = useCallback(async (mapId) => {
-    try {
-      await setActiveMap(mapId)
-    } catch (error) {
-      console.error('Failed to switch ClaudeMap map:', error)
-    }
-  }, [])
-
-  const findScopedMapEntry = useCallback(
-    (node) => {
-      const manifestMaps = mapsManifest?.maps || []
-      const ancestorPath = getAncestorLabels(node.id)
-
-      return (
-        manifestMaps.find((mapEntry) => {
-          if (mapEntry.id === 'root' || !mapEntry.scope || mapEntry.scope.stale === true) {
-            return false
-          }
-
-          if (mapEntry.scope.rootSystemId === node.id) {
-            return true
-          }
-
-          return (
-            mapEntry.scope.rootSystemLabel === (node.data?.label || node.id) &&
-            areStringArraysEqual(mapEntry.scope.ancestorPath || [], ancestorPath)
-          )
-        }) || null
-      )
-    },
-    [getAncestorLabels, mapsManifest],
-  )
-
-  const buildCreateMapCommand = useCallback(
-    (node) =>
-      `/create-map ${JSON.stringify({
-        scope: {
-          type: 'subsystem',
-          rootSystemId: node.id,
-          rootSystemLabel: node.data?.label || node.id,
-          ancestorPath: getAncestorLabels(node.id),
-          filePathHint: node.data?.filePath || null,
-        },
-        label: node.data?.label || node.id,
-        summary: node.data?.summary || null,
-      })}`,
-    [getAncestorLabels],
-  )
-
-  const buildMapAffordance = useCallback(
-    (node) => {
-      const qualifiesForScopedMap =
-        node.type === 'system' &&
-        node.data?.childType === 'system' &&
-        (node.data?.childCount || 0) > 2
-
-      if (!qualifiesForScopedMap) {
-        return null
-      }
-
-      const scopedMapEntry = findScopedMapEntry(node)
-
-      if (scopedMapEntry) {
-        return {
-          kind: 'open',
-          onClick: () => switchScopedMap(scopedMapEntry.id),
-        }
-      }
-
-      return {
-        kind: 'create',
-        command: buildCreateMapCommand(node),
-      }
-    },
-    [buildCreateMapCommand, findScopedMapEntry, switchScopedMap],
-  )
+  const buildMapAffordance = useScopedMapAffordance(nodeById)
 
   const styledNodes = computeStyledNodes({
     visibleNodes,
