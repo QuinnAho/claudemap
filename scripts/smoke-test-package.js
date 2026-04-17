@@ -3,6 +3,7 @@
 const fs = require('fs')
 const path = require('path')
 const { pathToFileURL } = require('url')
+const { execSync } = require('child_process')
 
 const { installClaudeMap } = require('./install-claudemap.js')
 const { buildClaudeMapArtifact } = require('./package-claudemap-skill.js')
@@ -343,6 +344,104 @@ async function assertScopedPythonEdgeInference() {
   assert(scopedEdge, 'Scoped Python map should infer an edge from dataset loading to vocabulary.')
 }
 
+async function assertRenderedSlashTemplates() {
+  const { renderSlashTemplate } = await import('../skill/lib/command-harness/render-slash-template.js')
+  const [
+    setup,
+    update,
+    open,
+    create,
+    show,
+    slashOnly,
+  ] = await Promise.all([
+    import('../skill/commands/setup-claudemap.js'),
+    import('../skill/commands/update.js'),
+    import('../skill/commands/open-claudemap.js'),
+    import('../skill/commands/create-map.js'),
+    import('../skill/commands/show.js'),
+    import('../skill/lib/command-harness/slash-only-descriptors.js'),
+  ])
+
+  const cases = [
+    setup.SETUP_CLAUDEMAP_COMMAND,
+    update.UPDATE_COMMAND,
+    open.OPEN_CLAUDEMAP_COMMAND,
+    create.CREATE_MAP_COMMAND,
+    show.SHOW_COMMAND,
+    slashOnly.EXPLAIN_SLASH_COMMAND,
+  ]
+
+  for (const descriptor of cases) {
+    const rendered = renderSlashTemplate(descriptor)
+    assert(
+      rendered.includes(`description: ${descriptor.summary}`),
+      `Rendered template for ${descriptor.name} is missing its summary in front matter.`,
+    )
+
+    const flatFlags = descriptor.actions
+      ? descriptor.actions.flatMap((a) => a.flags || [])
+      : descriptor.flags || []
+    for (const flag of flatFlags) {
+      assert(
+        rendered.includes(`--${flag.name}`),
+        `Rendered template for ${descriptor.name} is missing flag --${flag.name}.`,
+      )
+    }
+  }
+
+  const setupRendered = renderSlashTemplate(setup.SETUP_CLAUDEMAP_COMMAND)
+  const createRendered = renderSlashTemplate(create.CREATE_MAP_COMMAND)
+  assert(
+    setupRendered.includes('Does this map look right, or should I refine it?'),
+    'Rendered setup-claudemap template is missing the post-render feedback prompt.',
+  )
+  assert(
+    createRendered.includes('Does this map look right, or should I refine it?'),
+    'Rendered create-map template is missing the post-render feedback prompt.',
+  )
+}
+
+function countMcpChildProcesses() {
+  const ourPid = process.pid
+
+  if (process.platform === 'win32') {
+    try {
+      const out = execSync(
+        `wmic process where (ParentProcessId=${ourPid}) get Name,ProcessId /format:csv`,
+        { stdio: ['ignore', 'pipe', 'ignore'] },
+      ).toString()
+      return out.split('\n').filter((line) => /node\.exe/i.test(line)).length
+    } catch {
+      return 0
+    }
+  }
+
+  try {
+    const out = execSync(`ps --ppid ${ourPid} -o comm=`, {
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }).toString()
+    return out.split('\n').filter((line) => /node/i.test(line)).length
+  } catch {
+    return 0
+  }
+}
+
+async function assertNoLeakedMcpChildren(setupMain, createMapMain, scopedPayload) {
+  const before = countMcpChildProcesses()
+
+  await setupMain([FIXTURE_ROOT, '--no-start-app'])
+  await createMapMain([FIXTURE_ROOT, '--scope-json', scopedPayload])
+
+  // Allow a brief tick for any in-flight child exits to settle.
+  await new Promise((resolve) => setTimeout(resolve, 250))
+
+  const after = countMcpChildProcesses()
+  assert(
+    after <= before,
+    `MCP child processes leaked: before=${before}, after=${after}. withMcp() must close every client on every exit path.`,
+  )
+}
+
 async function main() {
   createFixtureRepo()
   const artifactRoot = await buildArtifact()
@@ -357,6 +456,7 @@ async function main() {
 
   assertInstalledLayout()
   assertPromptTemplates()
+  await assertRenderedSlashTemplates()
 
   const { main: setupMain } = await loadInstalledCommand('setup-claudemap.js')
   const { main: createMapMain } = await loadInstalledCommand('create-map.js')
@@ -385,6 +485,7 @@ async function main() {
   assertScopedManifest(manifestPath, scopedEntry.id)
   await assertStrictEnrichmentFailure(setupMain)
   await assertScopedPythonEdgeInference()
+  await assertNoLeakedMcpChildren(setupMain, createMapMain, scopedPayload)
 
   console.log(`ClaudeMap package smoke test passed`)
   console.log(`Artifact: ${artifactRoot}`)

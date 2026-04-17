@@ -26,27 +26,26 @@ export function renderSlashTemplate(descriptor) {
   if (descriptor.body) {
     lines.push(descriptor.body)
     lines.push('')
-    return lines.join('\n')
-  }
-
-  lines.push('## Usage')
-  lines.push('')
-
-  if (descriptor.actions) {
-    for (const action of descriptor.actions) {
-      const flagsSummary = renderFlagsSummary(action.flags || [])
-      const positionalHint = action.positional?.name || ''
-      lines.push(`${descriptor.name} ${action.name} ${positionalHint} ${flagsSummary}`.trim())
-    }
   } else {
-    const flagsSummary = renderFlagsSummary(descriptor.flags || [])
-    const positionalHint = descriptor.positional?.name
-      ? `[${descriptor.positional.name}]`
-      : ''
-    lines.push(`${descriptor.name} ${positionalHint} ${flagsSummary}`.trim())
-  }
+    lines.push('## Usage')
+    lines.push('')
 
-  lines.push('')
+    if (descriptor.actions) {
+      for (const action of descriptor.actions) {
+        const flagsSummary = renderFlagsSummary(action.flags || [])
+        const positionalHint = action.positional?.name || ''
+        lines.push(`${descriptor.name} ${action.name} ${positionalHint} ${flagsSummary}`.trim())
+      }
+    } else {
+      const flagsSummary = renderFlagsSummary(descriptor.flags || [])
+      const positionalHint = descriptor.positional?.name
+        ? `[${descriptor.positional.name}]`
+        : ''
+      lines.push(`${descriptor.name} ${positionalHint} ${flagsSummary}`.trim())
+    }
+
+    lines.push('')
+  }
 
   const flags = collectFlags(descriptor)
   if (flags.length > 0) {
