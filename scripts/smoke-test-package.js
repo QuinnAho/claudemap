@@ -562,6 +562,64 @@ function assertArtifactManifestManagedPaths(artifactRoot, paths) {
   }
 }
 
+// Assert that a pre-existing partial-install marker blocks a fresh
+// install and that --force-partial lets it proceed. This pins the
+// transactional install contract.
+async function assertTransactionalInstall(artifactRoot) {
+  const paths = await loadPathContracts()
+  const markerPath = path.join(
+    FIXTURE_ROOT,
+    paths.CLAUDE_ROOT_DIR,
+    paths.PARTIAL_INSTALL_MARKER_FILENAME,
+  )
+
+  // Drop a marker into the already-installed fixture, then confirm that
+  // a fresh installClaudeMap call refuses to run.
+  fs.mkdirSync(path.dirname(markerPath), { recursive: true })
+  fs.writeFileSync(
+    markerPath,
+    `${JSON.stringify({ startedAt: 'sentinel', mode: 'install', artifactRoot }, null, 2)}\n`,
+  )
+
+  let refusedError = null
+  try {
+    await installClaudeMap({
+      artifactRoot,
+      buildArtifact: false,
+      dryRun: false,
+      installDependencies: false,
+      mode: 'install',
+      targetRoot: FIXTURE_ROOT,
+    })
+  } catch (error) {
+    refusedError = error
+  }
+
+  assert(refusedError, 'installClaudeMap should refuse when a partial-install marker is present.')
+  assert(
+    /partial-install marker/.test(refusedError.message),
+    `Refusal error message should mention the partial-install marker. Got: ${refusedError.message}`,
+  )
+  assert(fs.existsSync(markerPath), 'Marker should still exist after a refused install.')
+
+  // --force-partial should bypass the guard and the successful install
+  // should remove the marker on exit.
+  await installClaudeMap({
+    artifactRoot,
+    buildArtifact: false,
+    dryRun: false,
+    forcePartial: true,
+    installDependencies: false,
+    mode: 'install',
+    targetRoot: FIXTURE_ROOT,
+  })
+
+  assert(
+    !fs.existsSync(markerPath),
+    'Marker should be removed after a successful --force-partial install.',
+  )
+}
+
 // Exercise bin/claudemap.js end-to-end against the fixture with --dry-run
 // so we verify the published CLI entry delegates correctly to the
 // installer without mutating the fixture or needing npm to run.
@@ -606,6 +664,7 @@ async function main() {
   assertPromptTemplates()
   await assertRenderedSlashTemplates()
   assertBinCliDryRun()
+  await assertTransactionalInstall(artifactRoot)
 
   const { main: setupMain } = await loadInstalledCommand('setup-claudemap.js')
   const { main: createMapMain } = await loadInstalledCommand('create-map.js')

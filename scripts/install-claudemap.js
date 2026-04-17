@@ -13,7 +13,7 @@ async function loadPathContracts() {
 function printUsage() {
   console.log('ClaudeMap installer')
   console.log(
-    '  node scripts/install-claudemap.js <target-repo> [--update] [--artifact <dir>] [--skip-package] [--skip-install] [--dry-run]',
+    '  node scripts/install-claudemap.js <target-repo> [--update] [--artifact <dir>] [--skip-package] [--skip-install] [--dry-run] [--force-partial]',
   )
 }
 
@@ -22,6 +22,7 @@ function parseArgs(argv, defaultArtifactRoot) {
     artifactRoot: defaultArtifactRoot,
     buildArtifact: true,
     dryRun: false,
+    forcePartial: false,
     installDependencies: true,
     mode: 'install',
     targetRoot: null,
@@ -66,6 +67,11 @@ function parseArgs(argv, defaultArtifactRoot) {
     if (argument === '--dry-run') {
       options.dryRun = true
       options.installDependencies = false
+      continue
+    }
+
+    if (argument === '--force-partial') {
+      options.forcePartial = true
       continue
     }
 
@@ -144,6 +150,72 @@ function loadArtifactManifest(artifactRoot, manifestFilename) {
   }
 
   return readJsonFile(manifestPath)
+}
+
+// Transactional install support. The partial-install marker lives at
+// <targetRoot>/<.claude>/<marker-filename> for the duration of the
+// install. It is written at the top of installClaudeMap and removed
+// before the function returns. If an install fails mid-flight, the
+// marker remains on disk; the next install refuses to run until the
+// user either retries and succeeds or passes --force-partial to
+// acknowledge and overwrite.
+
+function getPartialInstallMarkerPath(targetRoot, claudeRootDir, markerFilename) {
+  return path.join(targetRoot, claudeRootDir, markerFilename)
+}
+
+function refuseIfPartialInstallPresent(targetRoot, claudeRootDir, markerFilename, forcePartial) {
+  const markerPath = getPartialInstallMarkerPath(targetRoot, claudeRootDir, markerFilename)
+
+  if (!fs.existsSync(markerPath)) {
+    return
+  }
+
+  if (forcePartial) {
+    console.warn(
+      `Found existing partial-install marker at ${markerPath}. Continuing because --force-partial was passed.`,
+    )
+    return
+  }
+
+  let markerContent = '(unreadable)'
+
+  try {
+    markerContent = fs.readFileSync(markerPath, 'utf8')
+  } catch {
+    // Swallow - we only use the content for the error message.
+  }
+
+  throw new Error(
+    [
+      `Refusing to install: partial-install marker exists at ${markerPath}.`,
+      'A prior install did not complete. Inspect the target and retry, or rerun with --force-partial to overwrite.',
+      `Marker contents: ${markerContent}`,
+    ].join('\n'),
+  )
+}
+
+function writePartialInstallMarker(targetRoot, claudeRootDir, markerFilename, mode, artifactRoot) {
+  const markerPath = getPartialInstallMarkerPath(targetRoot, claudeRootDir, markerFilename)
+  ensureDirectory(path.dirname(markerPath))
+  fs.writeFileSync(
+    markerPath,
+    `${JSON.stringify(
+      {
+        startedAt: new Date().toISOString(),
+        mode,
+        artifactRoot,
+      },
+      null,
+      2,
+    )}\n`,
+  )
+  return markerPath
+}
+
+function removePartialInstallMarker(targetRoot, claudeRootDir, markerFilename) {
+  const markerPath = getPartialInstallMarkerPath(targetRoot, claudeRootDir, markerFilename)
+  fs.rmSync(markerPath, { force: true })
 }
 
 function readInstallRecord(targetRoot, claudeRootDir, installRecordFilename) {
@@ -275,64 +347,99 @@ async function installClaudeMap(options) {
   ensureTargetRepository(options.targetRoot)
   buildArtifactIfNeeded(options, defaultOutputRoot)
 
-  const manifest = loadArtifactManifest(options.artifactRoot, paths.ARTIFACT_MANIFEST_FILENAME)
-  const previousInstallRecord = readInstallRecord(
-    options.targetRoot,
-    paths.CLAUDE_ROOT_DIR,
-    paths.INSTALL_RECORD_FILENAME,
-  )
-  const removedManagedPaths = previousInstallRecord
-    ? removeManagedPaths(options.targetRoot, previousInstallRecord.managedPaths, options.dryRun)
-    : []
-  const installState = installArtifact(
-    options.artifactRoot,
-    options.targetRoot,
-    options.dryRun,
-    paths.CLAUDE_ROOT_DIR,
-  )
-  const recordPath = writeInstallRecord(
-    options.targetRoot,
-    manifest,
-    options.artifactRoot,
-    options.mode,
-    options.dryRun,
-    paths.CLAUDE_ROOT_DIR,
-    paths.INSTALL_RECORD_FILENAME,
-  )
+  // Transactional guard. Dry-run does not touch disk and is excluded
+  // from the marker protocol entirely.
+  if (!options.dryRun) {
+    refuseIfPartialInstallPresent(
+      options.targetRoot,
+      paths.CLAUDE_ROOT_DIR,
+      paths.PARTIAL_INSTALL_MARKER_FILENAME,
+      options.forcePartial,
+    )
 
-  let runtimeInstallRoot = null
-
-  if (options.installDependencies) {
-    runtimeInstallRoot = installDependencies(options.targetRoot, options.dryRun, paths.SKILL_ROOT_REL)
+    writePartialInstallMarker(
+      options.targetRoot,
+      paths.CLAUDE_ROOT_DIR,
+      paths.PARTIAL_INSTALL_MARKER_FILENAME,
+      options.mode,
+      options.artifactRoot,
+    )
   }
 
-  const actionLabel = options.mode === 'update' ? 'updated' : 'installed'
-  console.log(
-    `ClaudeMap ${actionLabel} into ${options.targetRoot}`,
-  )
-  console.log(`Artifact version: ${manifest.version || 'unknown'}`)
-  console.log(`Merged into: ${installState.targetClaudeRoot}`)
-  console.log(`Install record: ${recordPath}`)
-  if (removedManagedPaths.length > 0) {
-    console.log(`Replaced managed paths: ${removedManagedPaths.join(', ')}`)
-  }
+  try {
+    const manifest = loadArtifactManifest(options.artifactRoot, paths.ARTIFACT_MANIFEST_FILENAME)
+    const previousInstallRecord = readInstallRecord(
+      options.targetRoot,
+      paths.CLAUDE_ROOT_DIR,
+      paths.INSTALL_RECORD_FILENAME,
+    )
+    const removedManagedPaths = previousInstallRecord
+      ? removeManagedPaths(options.targetRoot, previousInstallRecord.managedPaths, options.dryRun)
+      : []
+    const installState = installArtifact(
+      options.artifactRoot,
+      options.targetRoot,
+      options.dryRun,
+      paths.CLAUDE_ROOT_DIR,
+    )
+    const recordPath = writeInstallRecord(
+      options.targetRoot,
+      manifest,
+      options.artifactRoot,
+      options.mode,
+      options.dryRun,
+      paths.CLAUDE_ROOT_DIR,
+      paths.INSTALL_RECORD_FILENAME,
+    )
 
-  if (options.dryRun) {
-    console.log('Dry run only: no files were copied and npm install was skipped')
-  } else if (runtimeInstallRoot) {
-    console.log(`Dependencies installed in ${runtimeInstallRoot}`)
-  } else {
-    console.log('Skipped npm install for the bundled runtime')
-  }
+    let runtimeInstallRoot = null
 
-  console.log(`Public commands: ${(manifest.publicCommands || []).join(', ')}`)
+    if (options.installDependencies) {
+      runtimeInstallRoot = installDependencies(options.targetRoot, options.dryRun, paths.SKILL_ROOT_REL)
+    }
 
-  return {
-    installState,
-    manifest,
-    recordPath,
-    removedManagedPaths,
-    runtimeInstallRoot,
+    // Install completed without throwing. Remove the partial-install
+    // marker so the target is no longer flagged as in-flight.
+    if (!options.dryRun) {
+      removePartialInstallMarker(
+        options.targetRoot,
+        paths.CLAUDE_ROOT_DIR,
+        paths.PARTIAL_INSTALL_MARKER_FILENAME,
+      )
+    }
+
+    const actionLabel = options.mode === 'update' ? 'updated' : 'installed'
+    console.log(
+      `ClaudeMap ${actionLabel} into ${options.targetRoot}`,
+    )
+    console.log(`Artifact version: ${manifest.version || 'unknown'}`)
+    console.log(`Merged into: ${installState.targetClaudeRoot}`)
+    console.log(`Install record: ${recordPath}`)
+    if (removedManagedPaths.length > 0) {
+      console.log(`Replaced managed paths: ${removedManagedPaths.join(', ')}`)
+    }
+
+    if (options.dryRun) {
+      console.log('Dry run only: no files were copied and npm install was skipped')
+    } else if (runtimeInstallRoot) {
+      console.log(`Dependencies installed in ${runtimeInstallRoot}`)
+    } else {
+      console.log('Skipped npm install for the bundled runtime')
+    }
+
+    console.log(`Public commands: ${(manifest.publicCommands || []).join(', ')}`)
+
+    return {
+      installState,
+      manifest,
+      recordPath,
+      removedManagedPaths,
+      runtimeInstallRoot,
+    }
+  } catch (error) {
+    // Leave the partial-install marker on disk. The next install will
+    // refuse until the user confirms with --force-partial.
+    throw error
   }
 }
 
