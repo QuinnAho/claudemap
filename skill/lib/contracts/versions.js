@@ -82,3 +82,34 @@ export function runMigrations(schemaName, value) {
 
   return current
 }
+
+// Test-only: run migrations against a custom ladder and target version.
+// Used by versions.test.js to pin the ladder-walking behavior without
+// polluting the production MIGRATIONS registry.
+export function runMigrationsWithLadder(ladder, targetVersion, value, schemaName) {
+  let current = value
+  let currentVersion
+
+  if (!value || typeof value !== 'object') {
+    currentVersion = 1
+  } else if (schemaName === 'cache') {
+    currentVersion = Number.isFinite(value.schemaVersion) ? value.schemaVersion : 1
+  } else {
+    currentVersion = Number.isFinite(value.version) ? value.version : 1
+  }
+
+  let safety = ladder.length + 1
+  while (currentVersion < targetVersion && safety > 0) {
+    safety -= 1
+    const step = ladder.find((entry) => entry.from === currentVersion)
+
+    if (!step) {
+      return current
+    }
+
+    current = step.migrate(current)
+    currentVersion = step.to
+  }
+
+  return current
+}

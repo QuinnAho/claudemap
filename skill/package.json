@@ -17,6 +17,7 @@
     "create-map": "node ./commands/create-map.js",
     "refresh": "node ./commands/update.js",
     "show": "node ./commands/show.js",
-    "snapshot": "node ./commands/snapshot.js"
+    "snapshot": "node ./commands/snapshot.js",
+    "test": "vitest run"
   }
 }

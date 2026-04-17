@@ -12,6 +12,9 @@ const TEMP_BUILD_CONFIG_PATH = path.join(APP_ROOT, '.claudemap-build.json')
 async function loadPathContracts() {
   return import('../skill/lib/contracts/paths.js')
 }
+async function loadSchemaValidators() {
+  return import('../skill/lib/contracts/schemas/index.js')
+}
 
 function readRepositoryUrl() {
   const packageJson = JSON.parse(fs.readFileSync(PACKAGE_JSON_PATH, 'utf8'))
@@ -123,10 +126,11 @@ function buildApp() {
 }
 
 async function main() {
-  const [{ GRAPH_SOURCES }, { PRESENTATION_MODES }, paths] = await Promise.all([
+  const [{ GRAPH_SOURCES }, { PRESENTATION_MODES }, paths, schemas] = await Promise.all([
     import('../skill/lib/contracts/graph-sources.js'),
     import('../skill/lib/contracts/presentation.js'),
     loadPathContracts(),
+    loadSchemaValidators(),
   ])
   const contracts = { GRAPH_SOURCES, PRESENTATION_MODES }
   const outputRoot = path.join(REPO_ROOT, paths.DOCS_DIR_REL)
@@ -135,7 +139,11 @@ async function main() {
   const runtimeManifestPath = path.join(APP_ROOT, 'public', paths.MAPS_MANIFEST_FILENAME)
   const seededSelfMapPath = path.join(REPO_ROOT, paths.SEED_MAP_REL)
   const pagesConfig = getGitHubPagesConfig()
-  const seededSelfMap = readJsonFile(seededSelfMapPath)
+  const seededSelfMap = schemas.validateWithWarning(
+    schemas.SCHEMA_NAMES.GRAPH,
+    readJsonFile(seededSelfMapPath),
+    { path: seededSelfMapPath },
+  )
   const originalGraph = fs.existsSync(runtimeGraphPath)
     ? fs.readFileSync(runtimeGraphPath, 'utf8')
     : null

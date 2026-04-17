@@ -64,3 +64,38 @@ export function validateWithWarning(schemaName, value, context) {
 }
 
 export { validateCache, validateGraph, validateInstallRecord, validateManifest, validateRuntimeEnvelope }
+
+// Loose predicates for runtime filtering. These match the app's original
+// behavior: they check minimal structural requirements without enforcing
+// the full schema. Use these in contexts where graceful degradation is
+// preferred over strict validation (e.g., fetch response filtering).
+//
+// For strict validation, use validate() or the individual validate*()
+// functions which return { ok, errors, value }.
+
+export function isGraphPayload(value) {
+  return Boolean(value && Array.isArray(value.nodes) && Array.isArray(value.edges))
+}
+
+export function isRuntimeEnvelope(value) {
+  return Boolean(value && typeof value.graphRevision === 'number' && value.runtime)
+}
+
+export function isMapsManifest(value) {
+  return Boolean(value && Array.isArray(value.maps))
+}
+
+// Strict predicates that wrap the full validators. Use these when you want
+// a boolean result but also want to enforce the complete schema.
+
+export function isValidGraph(value) {
+  return validateGraph(value).ok
+}
+
+export function isValidRuntimeEnvelope(value) {
+  return validateRuntimeEnvelope(value).ok
+}
+
+export function isValidManifest(value) {
+  return validateManifest(value).ok
+}

@@ -7,12 +7,18 @@ import {
 } from '../contracts/paths'
 import { PRESENTATION_MODES } from '../contracts/presentation'
 
+// Unified shape predicates - imported from skill/lib/contracts/schemas/
+// so the app and skill share a single source of truth (Phase 7 follow-up).
+import {
+  isGraphPayload,
+  isMapsManifest,
+  isRuntimeEnvelope,
+} from '../../../skill/lib/contracts/schemas/index.js'
+
+export { isGraphPayload, isMapsManifest, isRuntimeEnvelope }
+
 // Pure helpers for runtime data loading. No React, no store. Imported by
 // useRuntimeGraph (loader pipeline) and by future tests/inspectors.
-
-export function isGraphPayload(value) {
-  return value && Array.isArray(value.nodes) && Array.isArray(value.edges)
-}
 
 export function createDefaultRuntimeEnvelope() {
   return {
@@ -38,10 +44,6 @@ export function createDefaultRuntimeEnvelope() {
   }
 }
 
-export function isRuntimeEnvelope(value) {
-  return value && typeof value.graphRevision === 'number' && value.runtime
-}
-
 export function createLegacyManifest() {
   return {
     version: 1,
@@ -58,10 +60,6 @@ export function createLegacyManifest() {
       },
     ],
   }
-}
-
-export function isMapsManifest(value) {
-  return value && Array.isArray(value.maps)
 }
 
 export function getActiveMapEntry(manifest) {
