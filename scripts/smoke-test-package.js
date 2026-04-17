@@ -6,7 +6,10 @@ const { pathToFileURL } = require('url')
 const { execSync } = require('child_process')
 
 const { installClaudeMap } = require('./install-claudemap.js')
-const { buildClaudeMapArtifact } = require('./package-claudemap-skill.js')
+const {
+  buildClaudeMapArtifact,
+  createAppExclusionRules,
+} = require('./package-claudemap-skill.js')
 
 async function loadPathContracts() {
   return import('../skill/lib/contracts/paths.js')
@@ -442,8 +445,150 @@ async function assertNoLeakedMcpChildren(setupMain, createMapMain, scopedPayload
   )
 }
 
+// Walks createAppExclusionRules and asserts every rule fires at least
+// once against a sample input. This pins the declarative rule shape so a
+// rule cannot be added without an accompanying example that exercises it.
+async function assertAppExclusionRules() {
+  const paths = await loadPathContracts()
+  const rules = createAppExclusionRules(paths)
+
+  const samples = [
+    { name: 'node_modules', candidate: 'node_modules/foo' },
+    { name: 'dist', candidate: 'dist/assets/x.js' },
+    { name: 'maps-manifest', candidate: `public/${paths.MAPS_MANIFEST_FILENAME}` },
+    { name: 'legacy-runtime-graphs', candidate: `public/${paths.RUNTIME_GRAPH_FILENAME}` },
+    { name: 'graph-directory', candidate: `public/${paths.GRAPH_DIR_NAME}/x.json` },
+  ]
+
+  for (const rule of rules) {
+    const sample = samples.find((entry) => entry.name === rule.name)
+    assert(sample, `No exclusion-rule sample defined for: ${rule.name}`)
+    assert(
+      rule.matches(sample.candidate),
+      `Exclusion rule ${rule.name} failed to match its own sample: ${sample.candidate}`,
+    )
+  }
+
+  // Paths that should NOT be excluded - one representative for each rule's
+  // near-miss. Exclusion rules were historically an or-chained boolean and
+  // a bug in any one arm silently over-excluded adjacent paths. These
+  // negative assertions pin the boundary.
+  const nonExcluded = [
+    'src/App.jsx',
+    'public/favicon.svg',
+    'public/assets/logo.png',
+  ]
+
+  for (const candidate of nonExcluded) {
+    for (const rule of rules) {
+      assert(
+        !rule.matches(candidate),
+        `Exclusion rule ${rule.name} wrongly matched: ${candidate}`,
+      )
+    }
+  }
+}
+
+// Lightweight shape validation for the packaged runtime graph + state +
+// manifest. Formal schemas land in Phase 6; until then, assert the top-
+// level keys every consumer assumes exist. A missing key here means the
+// packager wrote a shape callers cannot read.
+function assertPackagedGraphShapes(artifactRoot, paths) {
+  const skillRoot = path.join(artifactRoot, paths.SKILL_ROOT_REL)
+  const packagedGraphPath = path.join(skillRoot, 'app', 'public', paths.RUNTIME_GRAPH_REL)
+  const packagedStatePath = path.join(skillRoot, 'app', 'public', paths.RUNTIME_STATE_REL)
+  const packagedManifestPath = path.join(skillRoot, 'app', 'public', paths.MAPS_MANIFEST_FILENAME)
+
+  const graph = readJson(packagedGraphPath)
+  for (const key of ['meta', 'nodes', 'edges', 'files']) {
+    assert(
+      Object.prototype.hasOwnProperty.call(graph, key),
+      `Packaged runtime graph missing top-level key: ${key}`,
+    )
+  }
+  assert(graph.meta && typeof graph.meta === 'object', 'Packaged runtime graph meta is not an object')
+  assert(typeof graph.meta.source === 'string', 'Packaged runtime graph meta.source must be a string')
+
+  const state = readJson(packagedStatePath)
+  for (const key of ['graphRevision', 'updatedAt', 'graphMeta', 'runtime']) {
+    assert(
+      Object.prototype.hasOwnProperty.call(state, key),
+      `Packaged runtime state missing top-level key: ${key}`,
+    )
+  }
+  assert(state.runtime && typeof state.runtime === 'object', 'Packaged runtime state runtime is not an object')
+  assert(
+    state.runtime.presentation && typeof state.runtime.presentation === 'object',
+    'Packaged runtime state runtime.presentation is not an object',
+  )
+
+  const manifest = readJson(packagedManifestPath)
+  for (const key of ['version', 'activeMapId', 'maps']) {
+    assert(
+      Object.prototype.hasOwnProperty.call(manifest, key),
+      `Packaged maps manifest missing top-level key: ${key}`,
+    )
+  }
+  assert(Array.isArray(manifest.maps) && manifest.maps.length > 0, 'Packaged maps manifest has no map entries')
+}
+
+// The artifact manifest's managedPaths list is derived from command
+// descriptors. Assert each slash-command .md file actually landed at the
+// path the artifact manifest claims, and that the install record path,
+// agents file, and skill root are all present.
+function assertArtifactManifestManagedPaths(artifactRoot, paths) {
+  const artifactManifest = readJson(path.join(artifactRoot, paths.ARTIFACT_MANIFEST_FILENAME))
+  const managed = artifactManifest.managedPaths || []
+
+  assert(managed.includes(paths.SKILL_ROOT_REL), 'managedPaths missing skill root')
+  assert(
+    managed.includes(`${paths.AGENTS_ROOT_REL}/${paths.ARCHITECT_AGENT_FILENAME}`),
+    'managedPaths missing architect agent',
+  )
+  assert(
+    managed.includes(`${paths.CLAUDE_ROOT_DIR}/${paths.INSTALL_RECORD_FILENAME}`),
+    'managedPaths missing install record path',
+  )
+
+  const slashMd = managed.filter((p) => p.startsWith(`${paths.COMMANDS_ROOT_REL}/`))
+  assert(slashMd.length > 0, 'managedPaths has no slash-command entries')
+
+  for (const relativePath of slashMd) {
+    const absolutePath = path.join(artifactRoot, relativePath)
+    assert(
+      fs.existsSync(absolutePath),
+      `managedPaths lists ${relativePath} but the artifact does not contain it`,
+    )
+  }
+}
+
+// Exercise bin/claudemap.js end-to-end against the fixture with --dry-run
+// so we verify the published CLI entry delegates correctly to the
+// installer without mutating the fixture or needing npm to run.
+function assertBinCliDryRun() {
+  const cliPath = path.join(REPO_ROOT, 'bin', 'claudemap.js')
+  assert(fs.existsSync(cliPath), `CLI entry missing: ${cliPath}`)
+
+  const result = require('child_process').spawnSync(
+    process.execPath,
+    [cliPath, 'install', FIXTURE_ROOT, '--dry-run', '--skip-install'],
+    { stdio: ['ignore', 'pipe', 'pipe'] },
+  )
+
+  assert(
+    result.status === 0,
+    `bin/claudemap.js dry-run failed (exit ${result.status}): ${result.stderr?.toString() || ''}`,
+  )
+  const stdout = result.stdout?.toString() || ''
+  assert(
+    stdout.includes('Dry run only'),
+    `bin/claudemap.js dry-run did not print the dry-run marker. stdout:\n${stdout}`,
+  )
+}
+
 async function main() {
   createFixtureRepo()
+  await assertAppExclusionRules()
   const artifactRoot = await buildArtifact()
   await installClaudeMap({
     artifactRoot,
@@ -454,9 +599,13 @@ async function main() {
     targetRoot: FIXTURE_ROOT,
   })
 
+  const paths = await loadPathContracts()
+  assertPackagedGraphShapes(artifactRoot, paths)
+  assertArtifactManifestManagedPaths(artifactRoot, paths)
   assertInstalledLayout()
   assertPromptTemplates()
   await assertRenderedSlashTemplates()
+  assertBinCliDryRun()
 
   const { main: setupMain } = await loadInstalledCommand('setup-claudemap.js')
   const { main: createMapMain } = await loadInstalledCommand('create-map.js')

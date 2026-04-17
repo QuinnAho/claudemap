@@ -53,6 +53,19 @@ export const PACKAGE_ARTIFACT_DIR_REL = 'artifacts/claudemap-skill'
 export const NPM_BUNDLE_DIR_REL = '.npm-bundle'
 export const NPM_BUNDLE_SUBDIR = 'claudemap'
 
+// Identity for the packaged artifact on disk and in install records.
+export const ARTIFACT_NAME = 'claudemap'
+
+// Published CLI entry point. Relative to the repo root. bin/claudemap.js
+// delegates to scripts/install-claudemap.js at runtime.
+export const CLI_BIN_REL = 'bin/claudemap.js'
+
+// Transactional install marker. Written under CLAUDE_ROOT_DIR when an
+// install begins and removed on success. Its presence indicates a
+// partial install; a subsequent install refuses to proceed until it is
+// cleared (by completing, or manual deletion after the user verifies).
+export const PARTIAL_INSTALL_MARKER_FILENAME = '.partial-install'
+
 // Static-site output directory at the repo root.
 export const DOCS_DIR_REL = 'docs'
 
