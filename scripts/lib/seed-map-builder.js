@@ -248,7 +248,7 @@ const LEAF_ASSIGNMENTS = [
       'skill/commands/setup-claudemap.js',
       'skill/commands/show.js',
       'skill/commands/snapshot.js',
-      'skill/commands/update.js',
+      'skill/commands/refresh.js',
     ],
   },
   {
@@ -349,7 +349,7 @@ const FILE_SUMMARIES = {
   'skill/commands/setup-claudemap.js': 'Builds the root map from a repo snapshot',
   'skill/commands/show.js': 'Drives highlights, focus, and presentation state',
   'skill/commands/snapshot.js': 'Writes a repo snapshot JSON',
-  'skill/commands/update.js': 'Refreshes root and scoped maps after changes',
+  'skill/commands/refresh.js': 'Refreshes root and scoped maps after changes',
   'skill/lib/active-map.js': 'Resolves the current map entry and its paths',
   'skill/lib/cache.js': 'Persists graph snapshots beside the repo',
   'skill/lib/differ.js': 'Diffs file manifests and graph payloads',

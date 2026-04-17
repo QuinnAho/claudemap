@@ -244,7 +244,7 @@ async function loadCommandDescriptors() {
     slashOnly,
   ] = await Promise.all([
     import('../skill/commands/setup-claudemap.js'),
-    import('../skill/commands/update.js'),
+    import('../skill/commands/refresh.js'),
     import('../skill/commands/open-claudemap.js'),
     import('../skill/commands/create-map.js'),
     import('../skill/commands/show.js'),
@@ -358,7 +358,7 @@ async function writeArtifactManifest(artifactRoot, paths, skillRoot, commandsRoo
       'setup-claudemap': toPosix(path.join(skillRoot, 'skill', 'commands', 'setup-claudemap.js')),
       'open-claudemap': toPosix(path.join(skillRoot, 'skill', 'commands', 'open-claudemap.js')),
       'create-map': toPosix(path.join(skillRoot, 'skill', 'commands', 'create-map.js')),
-      refresh: toPosix(path.join(skillRoot, 'skill', 'commands', 'update.js')),
+      refresh: toPosix(path.join(skillRoot, 'skill', 'commands', 'refresh.js')),
       show: toPosix(path.join(skillRoot, 'skill', 'commands', 'show.js')),
     },
     subagents: {

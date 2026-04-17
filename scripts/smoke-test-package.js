@@ -366,7 +366,7 @@ async function assertRenderedSlashTemplates() {
     slashOnly,
   ] = await Promise.all([
     import('../skill/commands/setup-claudemap.js'),
-    import('../skill/commands/update.js'),
+    import('../skill/commands/refresh.js'),
     import('../skill/commands/open-claudemap.js'),
     import('../skill/commands/create-map.js'),
     import('../skill/commands/show.js'),

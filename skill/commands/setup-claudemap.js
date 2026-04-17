@@ -167,7 +167,7 @@ Steps:
 10. Report the analyzed file count, system count, graph source, render transport, and app readiness.
 11. End with a short feedback prompt after the graph opens, for example: \`Does this map look right, or should I refine it?\`
 12. If the user says the map is good, stop there.
-13. If the user asks for refinement, reuse the current root cache graph from \`claudemap-cache.json\` as context, send that graph plus the requested changes back through \`@claudemap-architect\`, **wait for that Task call to fully return**, save the refined JSON to the same \`tmp/claudemap-enrichment.json\` path, and only then run \`.claude/skills/claudemap-runtime/skill/commands/update.js\` with \`--enrichment-file\` instead of telling the user to rerun setup from scratch. The update command applies the same strict enrichment validation as setup.
+13. If the user asks for refinement, reuse the current root cache graph from \`claudemap-cache.json\` as context, send that graph plus the requested changes back through \`@claudemap-architect\`, **wait for that Task call to fully return**, save the refined JSON to the same \`tmp/claudemap-enrichment.json\` path, and only then run \`.claude/skills/claudemap-runtime/skill/commands/refresh.js\` with \`--enrichment-file\` instead of telling the user to rerun setup from scratch. The refresh command applies the same strict enrichment validation as setup.
 14. After the refined graph renders, ask the same short feedback prompt again.`,
   positional: {
     name: 'projectRoot',

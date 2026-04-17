@@ -27,7 +27,6 @@ npm run build
 ## Pull Requests
 
 - Describe the problem, the change, and any tradeoffs.
-- List the commands you ran to verify the change.
 - Include screenshots or a short video for visible UI/site changes.
 - Update docs when setup, publishing, or command behavior changes.
 

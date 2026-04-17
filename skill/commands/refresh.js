@@ -301,7 +301,7 @@ export const UPDATE_COMMAND = {
 
 Steps:
 1. Treat the current working directory as the target project root unless the user gave a different path.
-2. Resolve the bundled command script at \`.claude/skills/claudemap-runtime/skill/commands/update.js\`.
+2. Resolve the bundled command script at \`.claude/skills/claudemap-runtime/skill/commands/refresh.js\`.
 3. Run the refresh command with Node for the target project root.
 4. Report added, removed, and changed file counts plus the refresh mode and scoped map refresh summary.
 5. Preserve any cached Claude-authored graph unless the user explicitly asks for a force refresh.

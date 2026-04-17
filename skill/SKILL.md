@@ -47,7 +47,7 @@ Execution rules:
 11. End the graph-generation flow with a short feedback prompt such as: `Does this map look right, or should I refine it?`
 12. If the user says the map is good, stop there.
 13. If the user asks for refinement, reuse the current target project's `claudemap-cache.json` graph and file snapshot as context when available instead of starting from a blank prompt again.
-14. For refinement passes, send the existing graph plus the user's requested changes back through `@claudemap-architect`, save the refined JSON to `${CLAUDE_SKILL_DIR}/tmp/claudemap-enrichment.json`, and run `${CLAUDE_SKILL_DIR}/skill/commands/update.js` with `--enrichment-file` so the graph iterates in place.
+14. For refinement passes, send the existing graph plus the user's requested changes back through `@claudemap-architect`, save the refined JSON to `${CLAUDE_SKILL_DIR}/tmp/claudemap-enrichment.json`, and run `${CLAUDE_SKILL_DIR}/skill/commands/refresh.js` with `--enrichment-file` so the graph iterates in place.
 15. After the refined graph renders, ask the same short feedback prompt again.
 
 `/create-map` runs an architect-first scoped pipeline:
@@ -77,5 +77,5 @@ Important details:
 - If a cached Claude-authored graph already exists, do not replace it with a heuristic regeneration unless the user explicitly asks for `--force-refresh`.
 - If the user only wants to reopen the existing map UI, use `/open-claudemap` instead of rerunning setup.
 - Follow-up refreshes should use the `/refresh` command shipped in `.claude/commands/refresh.md`.
-- Graph refinements should prefer `${CLAUDE_SKILL_DIR}/skill/commands/update.js --enrichment-file ...` over rerunning setup so the current graph context is reused.
+- Graph refinements should prefer `${CLAUDE_SKILL_DIR}/skill/commands/refresh.js --enrichment-file ...` over rerunning setup so the current graph context is reused.
 - `/show` should be treated as a presentation-direction command, not just a low-level transport wrapper.
