@@ -42,6 +42,17 @@ Already using ClaudeMap? Update the install with:
 npx @quinnaho/claudemap update
 ```
 
+### Codex users
+
+ClaudeMap also supports [Codex](https://github.com/openai/codex). Pass `--assistant codex` to install the Codex-flavored skill (TOML agent under `.codex/agents/`, skill under `.agents/skills/`, no slash commands):
+
+```bash
+cd <your-repo>
+npx @quinnaho/claudemap install --assistant codex
+```
+
+See [CODEX.md](CODEX.md) for details on the Codex layout, command invocation, and the cross-assistant switch guard.
+
 ## Commands
 
 | Command | What it does |

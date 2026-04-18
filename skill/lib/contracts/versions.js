@@ -10,7 +10,7 @@ import { SCHEMA_NAMES } from './schemas/index.js'
 export const MANIFEST_VERSION = 1
 export const GRAPH_VERSION = 1
 export const RUNTIME_STATE_VERSION = 1
-export const INSTALL_RECORD_VERSION = 1
+export const INSTALL_RECORD_VERSION = 2 // v2: added assistant field
 export const CACHE_VERSION = 1
 
 // Sentinel used when a graph has never been assigned a revision.
@@ -48,7 +48,29 @@ const MIGRATIONS = {
   [SCHEMA_NAMES.MANIFEST]: [],
   [SCHEMA_NAMES.GRAPH]: [],
   [SCHEMA_NAMES.RUNTIME_ENVELOPE]: [],
-  [SCHEMA_NAMES.INSTALL_RECORD]: [],
+  [SCHEMA_NAMES.INSTALL_RECORD]: [
+    {
+      // v1 → v2: Add assistant field, inferred from managedPaths prefixes.
+      // If managedPaths contain .codex/ paths but not .claude/, infer Codex;
+      // otherwise default to Claude for backwards compatibility.
+      from: 1,
+      to: 2,
+      migrate(value) {
+        const paths = value.managedPaths || []
+        const hasCodexPaths = paths.some((p) => p.startsWith('.codex/') || p.startsWith('.agents/'))
+        const hasClaudePaths = paths.some((p) => p.startsWith('.claude/'))
+
+        // If only Codex paths exist, infer Codex; otherwise Claude
+        const assistant = hasCodexPaths && !hasClaudePaths ? 'codex' : 'claude'
+
+        return {
+          ...value,
+          assistant,
+          version: 2,
+        }
+      },
+    },
+  ],
   [SCHEMA_NAMES.CACHE]: [],
 }
 

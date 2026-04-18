@@ -27,7 +27,11 @@ const REPO_ROOT = path.resolve(__dirname, '..')
 const ARTIFACTS_ROOT = path.join(REPO_ROOT, 'artifacts')
 const SMOKE_ROOT = path.join(ARTIFACTS_ROOT, 'smoke')
 const ARTIFACT_OUTPUT_ROOT = path.join(SMOKE_ROOT, 'artifact')
+const CODEX_ARTIFACT_OUTPUT_ROOT = path.join(SMOKE_ROOT, 'artifact-codex')
+const DUAL_ARTIFACT_OUTPUT_ROOT = path.join(SMOKE_ROOT, 'artifact-dual')
 const FIXTURE_ROOT = path.join(SMOKE_ROOT, 'package-fixture')
+const CODEX_FIXTURE_ROOT = path.join(SMOKE_ROOT, 'package-fixture-codex')
+const CROSS_ASSISTANT_FIXTURE_ROOT = path.join(SMOKE_ROOT, 'package-fixture-cross-assistant')
 const GRAPH_DIR = path.join(
   FIXTURE_ROOT,
   '.claude',
@@ -733,6 +737,268 @@ async function assertSchemaDriftDetection() {
   }
 }
 
+// Build a Codex-specific artifact and assert its layout.
+async function buildCodexArtifact() {
+  removeAndRecreate(CODEX_ARTIFACT_OUTPUT_ROOT)
+  const result = await buildClaudeMapArtifact({
+    outputRoot: CODEX_ARTIFACT_OUTPUT_ROOT,
+    zip: false,
+    assistant: 'codex',
+  })
+
+  assert(result.assistant === 'codex', `Expected assistant=codex, got ${result.assistant}`)
+  assert(
+    fs.existsSync(result.artifactRoot),
+    `Codex artifact not found: ${result.artifactRoot}`,
+  )
+  return result.artifactRoot
+}
+
+// Verify the on-disk layout of a Codex artifact. Codex uses two top-
+// level dirs (.codex/ and .agents/), a .toml agent file, an embedded-
+// commands SKILL.md, and a self-location config in the skill root.
+function assertCodexArtifact(artifactRoot) {
+  const codexRoot = path.join(artifactRoot, '.codex')
+  const agentsRoot = path.join(artifactRoot, '.agents')
+  const skillRoot = path.join(agentsRoot, 'skills', 'claudemap-runtime')
+
+  assert(fs.existsSync(codexRoot), `Codex artifact missing .codex/: ${codexRoot}`)
+  assert(fs.existsSync(agentsRoot), `Codex artifact missing .agents/: ${agentsRoot}`)
+  assert(fs.existsSync(skillRoot), `Codex artifact missing skill root: ${skillRoot}`)
+
+  const agentFile = path.join(codexRoot, 'agents', 'claudemap-architect.toml')
+  assert(fs.existsSync(agentFile), `Codex artifact missing .toml agent: ${agentFile}`)
+
+  const agentContent = fs.readFileSync(agentFile, 'utf8')
+  assert(
+    /name\s*=\s*"claudemap-architect"/.test(agentContent),
+    'Codex agent .toml missing name field',
+  )
+  assert(
+    /developer_instructions\s*=\s*"""/.test(agentContent),
+    'Codex agent .toml missing developer_instructions block',
+  )
+
+  const skillMd = path.join(skillRoot, 'SKILL.md')
+  assert(fs.existsSync(skillMd), `Codex SKILL.md missing: ${skillMd}`)
+  const skillContent = fs.readFileSync(skillMd, 'utf8')
+  assert(
+    skillContent.includes('Available Commands'),
+    'Codex SKILL.md is missing embedded Available Commands section',
+  )
+  assert(
+    skillContent.includes('Subagent Invocation (Codex)'),
+    'Codex SKILL.md is missing Subagent Invocation section',
+  )
+
+  const selfLocationConfig = path.join(skillRoot, '.claudemap-config.json')
+  assert(fs.existsSync(selfLocationConfig), `Codex self-location config missing: ${selfLocationConfig}`)
+  const selfLocation = readJson(selfLocationConfig)
+  assert(
+    selfLocation.skillRootRel === '.agents/skills/claudemap-runtime',
+    `Codex self-location has wrong skillRootRel: ${selfLocation.skillRootRel}`,
+  )
+  assert(selfLocation.assistant === 'codex', 'Codex self-location missing assistant=codex')
+
+  // No slash commands directory.
+  const commandsDir = path.join(codexRoot, 'commands')
+  assert(
+    !fs.existsSync(commandsDir),
+    `Codex artifact should not contain .codex/commands/: ${commandsDir}`,
+  )
+
+  // Manifest content.
+  const manifest = readJson(path.join(artifactRoot, 'claudemap-artifact.json'))
+  assert(manifest.assistant === 'codex', 'Codex manifest missing assistant=codex')
+  assert(
+    Array.isArray(manifest.installRoots) &&
+      manifest.installRoots.includes('.agents') &&
+      manifest.installRoots.includes('.codex'),
+    'Codex manifest installRoots missing .agents or .codex',
+  )
+  assert(
+    manifest.managedPaths.includes('.codex/agents/claudemap-architect.toml'),
+    'Codex manifest managedPaths missing architect agent',
+  )
+  assert(
+    manifest.managedPaths.includes('.codex/claudemap-install.json'),
+    'Codex manifest managedPaths missing install record',
+  )
+  assert(
+    manifest.managedPaths.includes('.agents/skills/claudemap-runtime'),
+    'Codex manifest managedPaths missing skill root',
+  )
+  assert(
+    !manifest.managedPaths.some((p) => p.startsWith('.claude/')),
+    'Codex manifest managedPaths should not contain .claude/ paths',
+  )
+}
+
+// Build and assert a dual artifact (--assistant all). This produces
+// two separate per-assistant artifact directories side by side.
+async function assertDualArtifact() {
+  removeAndRecreate(DUAL_ARTIFACT_OUTPUT_ROOT)
+  const result = await buildClaudeMapArtifact({
+    outputRoot: DUAL_ARTIFACT_OUTPUT_ROOT,
+    zip: false,
+    assistant: 'all',
+  })
+
+  assert(result.assistant === 'all', `Expected assistant=all, got ${result.assistant}`)
+  assert(result.artifacts && result.artifacts.claude && result.artifacts.codex, 'Dual result missing per-assistant artifacts')
+  assert(
+    fs.existsSync(result.artifacts.claude.artifactRoot),
+    `Dual Claude artifact missing: ${result.artifacts.claude.artifactRoot}`,
+  )
+  assert(
+    fs.existsSync(result.artifacts.codex.artifactRoot),
+    `Dual Codex artifact missing: ${result.artifacts.codex.artifactRoot}`,
+  )
+  assert(
+    path.basename(result.artifacts.claude.artifactRoot) === 'claudemap',
+    'Dual Claude artifact should use claudemap/ dir name',
+  )
+  assert(
+    path.basename(result.artifacts.codex.artifactRoot) === 'claudemap-codex',
+    'Dual Codex artifact should use claudemap-codex/ dir name',
+  )
+
+  // Each artifact's manifest should record its own assistant.
+  const claudeManifest = readJson(
+    path.join(result.artifacts.claude.artifactRoot, 'claudemap-artifact.json'),
+  )
+  const codexManifest = readJson(
+    path.join(result.artifacts.codex.artifactRoot, 'claudemap-artifact.json'),
+  )
+  assert(claudeManifest.assistant === 'claude', 'Dual Claude manifest missing assistant=claude')
+  assert(codexManifest.assistant === 'codex', 'Dual Codex manifest missing assistant=codex')
+}
+
+// Install a Codex artifact into a fresh fixture and verify the target
+// layout, install record, and managed-paths contract.
+async function assertCodexInstall(codexArtifactRoot) {
+  removeAndRecreate(CODEX_FIXTURE_ROOT)
+  writeJson(path.join(CODEX_FIXTURE_ROOT, 'package.json'), {
+    name: 'claudemap-codex-smoke-fixture',
+    private: true,
+    type: 'module',
+  })
+
+  const result = await installClaudeMap({
+    artifactRoot: codexArtifactRoot,
+    buildArtifact: false,
+    dryRun: false,
+    installDependencies: false,
+    mode: 'install',
+    targetRoot: CODEX_FIXTURE_ROOT,
+    assistant: 'codex',
+  })
+
+  assert(result.assistantType === 'codex', `Expected install assistantType=codex, got ${result.assistantType}`)
+
+  const installedSkill = path.join(
+    CODEX_FIXTURE_ROOT,
+    '.agents',
+    'skills',
+    'claudemap-runtime',
+  )
+  const installedAgent = path.join(
+    CODEX_FIXTURE_ROOT,
+    '.codex',
+    'agents',
+    'claudemap-architect.toml',
+  )
+  const installedRecord = path.join(
+    CODEX_FIXTURE_ROOT,
+    '.codex',
+    'claudemap-install.json',
+  )
+
+  assert(fs.existsSync(installedSkill), `Codex install missing skill root: ${installedSkill}`)
+  assert(fs.existsSync(installedAgent), `Codex install missing architect .toml: ${installedAgent}`)
+  assert(fs.existsSync(installedRecord), `Codex install missing install record: ${installedRecord}`)
+
+  const record = readJson(installedRecord)
+  assert(record.assistant === 'codex', 'Codex install record missing assistant=codex')
+  assert(record.version === 2, 'Codex install record should be version 2')
+
+  // Should not have created .claude/ anywhere.
+  assert(
+    !fs.existsSync(path.join(CODEX_FIXTURE_ROOT, '.claude')),
+    'Codex install should not create .claude/ in the target',
+  )
+}
+
+// Claude-installed fixture must get an install record with assistant=claude.
+function assertClaudeInstallRecordAssistant() {
+  const record = readJson(
+    path.join(FIXTURE_ROOT, '.claude', 'claudemap-install.json'),
+  )
+  assert(record.assistant === 'claude', 'Claude install record must have assistant=claude')
+}
+
+// Refuse to install a Codex artifact on top of an existing Claude install
+// unless --force-assistant-switch is set.
+async function assertCrossAssistantGuard(claudeArtifactRoot, codexArtifactRoot) {
+  removeAndRecreate(CROSS_ASSISTANT_FIXTURE_ROOT)
+  writeJson(path.join(CROSS_ASSISTANT_FIXTURE_ROOT, 'package.json'), {
+    name: 'claudemap-cross-assistant-fixture',
+    private: true,
+    type: 'module',
+  })
+
+  // Install Claude first.
+  await installClaudeMap({
+    artifactRoot: claudeArtifactRoot,
+    buildArtifact: false,
+    dryRun: false,
+    installDependencies: false,
+    mode: 'install',
+    targetRoot: CROSS_ASSISTANT_FIXTURE_ROOT,
+    assistant: 'claude',
+  })
+
+  // Attempt Codex install without force -> must throw.
+  let guardError = null
+  try {
+    await installClaudeMap({
+      artifactRoot: codexArtifactRoot,
+      buildArtifact: false,
+      dryRun: false,
+      installDependencies: false,
+      mode: 'install',
+      targetRoot: CROSS_ASSISTANT_FIXTURE_ROOT,
+      assistant: 'codex',
+    })
+  } catch (error) {
+    guardError = error
+  }
+
+  assert(guardError, 'Cross-assistant guard should refuse a Codex install over an existing Claude install')
+  assert(
+    /refusing to install a codex artifact over it/i.test(guardError.message) ||
+      /already has a claude install/i.test(guardError.message),
+    `Cross-assistant guard error should mention the existing assistant. Got: ${guardError.message}`,
+  )
+
+  // With --force-assistant-switch, the install should succeed.
+  await installClaudeMap({
+    artifactRoot: codexArtifactRoot,
+    buildArtifact: false,
+    dryRun: false,
+    installDependencies: false,
+    mode: 'install',
+    targetRoot: CROSS_ASSISTANT_FIXTURE_ROOT,
+    assistant: 'codex',
+    forceAssistantSwitch: true,
+  })
+
+  const codexRecord = readJson(
+    path.join(CROSS_ASSISTANT_FIXTURE_ROOT, '.codex', 'claudemap-install.json'),
+  )
+  assert(codexRecord.assistant === 'codex', 'After forced switch, install record should be for codex')
+}
+
 async function main() {
   createFixtureRepo()
   await assertAppExclusionRules()
@@ -786,8 +1052,20 @@ async function main() {
   await assertScopedPythonEdgeInference()
   await assertNoLeakedMcpChildren(setupMain, createMapMain, scopedPayload)
 
+  assertClaudeInstallRecordAssistant()
+
+  // Codex-specific assertions. Build a Codex artifact, inspect its
+  // layout, exercise the installer against a fresh fixture, and verify
+  // the cross-assistant guard on a separate fixture.
+  const codexArtifactRoot = await buildCodexArtifact()
+  assertCodexArtifact(codexArtifactRoot)
+  await assertDualArtifact()
+  await assertCodexInstall(codexArtifactRoot)
+  await assertCrossAssistantGuard(artifactRoot, codexArtifactRoot)
+
   console.log(`ClaudeMap package smoke test passed`)
   console.log(`Artifact: ${artifactRoot}`)
+  console.log(`Codex artifact: ${codexArtifactRoot}`)
   console.log(`Fixture repo: ${FIXTURE_ROOT}`)
 }
 

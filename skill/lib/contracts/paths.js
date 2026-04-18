@@ -7,6 +7,49 @@
 // Names ending in *_REL are POSIX-relative (forward slashes, no leading slash);
 // callers compose them with path.join against whichever root applies.
 
+// ---------------------------------------------------------------------------
+// Assistant Types
+// ---------------------------------------------------------------------------
+// ClaudeMap supports multiple AI coding assistants. Each has different
+// conventions for where skills, agents, and config live.
+
+export const ASSISTANT_TYPES = Object.freeze({
+  CLAUDE: 'claude',
+  CODEX: 'codex',
+})
+
+// Configuration for each assistant type.
+// - rootDir: primary config/install record directory
+// - skillsPath: where skills are discovered (may differ from rootDir!)
+// - agentsPath: where agent definitions live
+// - commandsPath: where slash commands live (null if not supported)
+// - agentExt: file extension for agent definitions
+export const ASSISTANT_CONFIGS = Object.freeze({
+  [ASSISTANT_TYPES.CLAUDE]: {
+    rootDir: '.claude',
+    skillsPath: '.claude/skills',
+    agentsPath: '.claude/agents',
+    commandsPath: '.claude/commands',
+    agentExt: '.md',
+  },
+  [ASSISTANT_TYPES.CODEX]: {
+    // Codex uses TWO roots by design:
+    // - .agents/skills/ is the hardcoded discovery path for skills
+    // - .codex/ is for config, agents, and install records
+    rootDir: '.codex',
+    skillsPath: '.agents/skills',
+    agentsPath: '.codex/agents',
+    commandsPath: null, // Codex deprecated slash commands
+    agentExt: '.toml',
+  },
+})
+
+// ---------------------------------------------------------------------------
+// Legacy Constants (backwards compatibility)
+// ---------------------------------------------------------------------------
+// These exports are maintained for backwards compatibility. New code should
+// use resolveAssistantPaths() for assistant-aware path resolution.
+
 // Root directory Claude Code writes into, at the top of a target repo.
 export const CLAUDE_ROOT_DIR = '.claude'
 
@@ -78,3 +121,122 @@ export const APP_PUBLIC_GRAPH_STATE_REL = `${APP_PUBLIC_GRAPH_REL}/${RUNTIME_STA
 export const PROMPTS_DIR_REL = 'skill/prompts'
 export const ENRICHMENT_PROMPT_FILENAME = 'enrichment.txt'
 export const SCOPED_ENRICHMENT_PROMPT_FILENAME = 'scoped-enrichment.txt'
+
+// ---------------------------------------------------------------------------
+// Assistant-Aware Path Resolution
+// ---------------------------------------------------------------------------
+
+/**
+ * Resolve all paths for a specific assistant type.
+ *
+ * @param {string} assistantType - One of ASSISTANT_TYPES values ('claude' | 'codex')
+ * @returns {Object} Object containing all resolved paths for the assistant
+ * @throws {Error} If assistantType is not recognized
+ */
+export function resolveAssistantPaths(assistantType) {
+  const config = ASSISTANT_CONFIGS[assistantType]
+  if (!config) {
+    const validTypes = Object.values(ASSISTANT_TYPES).join(', ')
+    throw new Error(`Unknown assistant type: ${assistantType}. Valid types: ${validTypes}`)
+  }
+
+  const skillRootRel = `${config.skillsPath}/${RUNTIME_SKILL_NAME}`
+  const agentBasename = assistantType === ASSISTANT_TYPES.CODEX
+    ? ARCHITECT_AGENT_FILENAME.replace('.md', config.agentExt)
+    : ARCHITECT_AGENT_FILENAME
+
+  return {
+    // Base config
+    assistantType,
+    rootDir: config.rootDir,
+    skillsPath: config.skillsPath,
+    agentsPath: config.agentsPath,
+    commandsPath: config.commandsPath,
+    agentExt: config.agentExt,
+
+    // Composed skill paths
+    skillRootRel,
+    runtimeGraphRel: `${skillRootRel}/${APP_PUBLIC_GRAPH_REL}/${RUNTIME_GRAPH_FILENAME}`,
+    runtimeStateRel: `${skillRootRel}/${APP_PUBLIC_GRAPH_REL}/${RUNTIME_STATE_FILENAME}`,
+
+    // Agent paths
+    architectAgentFilename: agentBasename,
+    architectAgentRel: `${config.agentsPath}/${agentBasename}`,
+
+    // Commands (Claude only)
+    commandsRootRel: config.commandsPath,
+
+    // Install/artifact metadata paths (always in rootDir)
+    installRecordRel: `${config.rootDir}/${INSTALL_RECORD_FILENAME}`,
+    artifactManifestRel: `${config.rootDir}/${ARTIFACT_MANIFEST_FILENAME}`,
+    partialInstallMarkerRel: `${config.rootDir}/${PARTIAL_INSTALL_MARKER_FILENAME}`,
+
+    // Self-location config (Codex only, written at install time)
+    skillConfigRel: assistantType === ASSISTANT_TYPES.CODEX
+      ? `${skillRootRel}/.claudemap-config.json`
+      : null,
+
+    // All managed paths for this assistant (for install record)
+    getManagedPaths() {
+      const paths = [
+        skillRootRel,
+        `${config.agentsPath}/${agentBasename}`,
+        `${config.rootDir}/${INSTALL_RECORD_FILENAME}`,
+        `${config.rootDir}/${ARTIFACT_MANIFEST_FILENAME}`,
+      ]
+      if (config.commandsPath) {
+        paths.push(config.commandsPath)
+      }
+      return paths
+    },
+  }
+}
+
+/**
+ * Auto-detect assistant type from environment or target directory.
+ *
+ * Detection order:
+ * 1. CLAUDE_SKILL_DIR env var present → Claude
+ * 2. Existing .codex/ dir without .claude/ → Codex
+ * 3. Existing .claude/ dir → Claude
+ * 4. Default → Claude (backwards compatibility)
+ *
+ * @param {string} targetRoot - Path to the target repository
+ * @param {Object} deps - Optional dependencies for testing
+ * @param {Object} deps.fs - fs module (defaults to Node's fs)
+ * @param {Object} deps.path - path module (defaults to Node's path)
+ * @param {Object} deps.env - environment variables (defaults to process.env)
+ * @returns {string} One of ASSISTANT_TYPES values
+ */
+export function detectAssistant(targetRoot, deps = {}) {
+  const env = deps.env || process.env
+
+  // 1. Check for CLAUDE_SKILL_DIR env var (Claude is running)
+  if (env.CLAUDE_SKILL_DIR) {
+    return ASSISTANT_TYPES.CLAUDE
+  }
+
+  // 2. Check for existing installations
+  let fs, pathMod
+  try {
+    fs = deps.fs || require('fs')
+    pathMod = deps.path || require('path')
+  } catch {
+    // If we can't import fs (e.g., browser), default to Claude
+    return ASSISTANT_TYPES.CLAUDE
+  }
+
+  const codexConfig = ASSISTANT_CONFIGS[ASSISTANT_TYPES.CODEX]
+  const claudeConfig = ASSISTANT_CONFIGS[ASSISTANT_TYPES.CLAUDE]
+
+  const hasCodex = fs.existsSync(pathMod.join(targetRoot, codexConfig.rootDir))
+  const hasClaude = fs.existsSync(pathMod.join(targetRoot, claudeConfig.rootDir))
+
+  // If only Codex exists, return Codex
+  if (hasCodex && !hasClaude) {
+    return ASSISTANT_TYPES.CODEX
+  }
+
+  // 3. Default to Claude for backwards compatibility
+  return ASSISTANT_TYPES.CLAUDE
+}

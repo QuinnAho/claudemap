@@ -9,8 +9,12 @@ const REPO_ROOT = path.resolve(__dirname, '..')
 // Contract modules are the canonical source of truth.
 // Smoke tests assert fixed on-disk shapes and may contain the literal values.
 // The skill packager embeds slash-command .md templates that reference paths.
+// Contract-shape tests assert that the contract constant has its expected
+// literal value, or feed literal fixtures to a validator that checks against
+// the contract — both patterns require the literal to appear in source.
 const EXEMPT_FILES = [
   'skill/lib/contracts/paths.js',
+  'skill/lib/contracts/paths.test.js',
   'skill/lib/contracts/presentation.js',
   'skill/lib/contracts/graph-sources.js',
   'skill/lib/contracts/versions.js',
@@ -23,6 +27,7 @@ const EXEMPT_FILES = [
   'app/src/contracts/motion.js',
   'app/src/contracts/zoom.js',
   'app/src/contracts/index.js',
+  'app/src/lib/runtimeAssets.test.js',
   'scripts/smoke-test-package.js',
   'scripts/package-claudemap-skill.js',
   'scripts/check-contracts.js',

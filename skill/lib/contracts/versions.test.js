@@ -18,11 +18,11 @@ import { SCHEMA_NAMES } from './schemas/index.js'
 // no production shape has reached version 2 yet.
 
 describe('version constants', () => {
-  it('exports version 1 for all shapes', () => {
+  it('exports expected versions for all shapes', () => {
     expect(MANIFEST_VERSION).toBe(1)
     expect(GRAPH_VERSION).toBe(1)
     expect(RUNTIME_STATE_VERSION).toBe(1)
-    expect(INSTALL_RECORD_VERSION).toBe(1)
+    expect(INSTALL_RECORD_VERSION).toBe(2) // v2: added assistant field
     expect(CACHE_VERSION).toBe(1)
   })
 
@@ -176,5 +176,100 @@ describe('runMigrationsWithLadder (synthetic ladder)', () => {
     const ladder = []
     const result = runMigrationsWithLadder(ladder, 1, null, 'manifest')
     expect(result).toBe(null)
+  })
+})
+
+// Install record migration: v1 → v2 adds assistant field
+describe('runMigrations for install-record', () => {
+  it('migrates v1 record with .claude/ paths to Claude assistant', () => {
+    const v1Record = {
+      artifact: 'claudemap',
+      artifactVersion: '1.0.0',
+      installedAt: '2024-01-01T00:00:00Z',
+      managedPaths: ['.claude/skills/claudemap-runtime', '.claude/agents/claudemap-architect.md'],
+      mode: 'install',
+      version: 1,
+    }
+    const result = runMigrations(SCHEMA_NAMES.INSTALL_RECORD, v1Record)
+
+    expect(result.version).toBe(2)
+    expect(result.assistant).toBe('claude')
+    expect(result.artifact).toBe('claudemap')
+    expect(result.managedPaths).toEqual(v1Record.managedPaths)
+  })
+
+  it('migrates v1 record with .codex/.agents/ paths to Codex assistant', () => {
+    const v1Record = {
+      artifact: 'claudemap',
+      artifactVersion: '1.0.0',
+      installedAt: '2024-01-01T00:00:00Z',
+      managedPaths: ['.agents/skills/claudemap-runtime', '.codex/agents/claudemap-architect.toml'],
+      mode: 'install',
+      version: 1,
+    }
+    const result = runMigrations(SCHEMA_NAMES.INSTALL_RECORD, v1Record)
+
+    expect(result.version).toBe(2)
+    expect(result.assistant).toBe('codex')
+  })
+
+  it('defaults to Claude when both .claude/ and .codex/ paths exist', () => {
+    const v1Record = {
+      artifact: 'claudemap',
+      artifactVersion: '1.0.0',
+      installedAt: '2024-01-01T00:00:00Z',
+      managedPaths: ['.claude/skills/foo', '.codex/agents/bar'],
+      mode: 'install',
+      version: 1,
+    }
+    const result = runMigrations(SCHEMA_NAMES.INSTALL_RECORD, v1Record)
+
+    expect(result.version).toBe(2)
+    expect(result.assistant).toBe('claude')
+  })
+
+  it('defaults to Claude when no recognized paths exist', () => {
+    const v1Record = {
+      artifact: 'claudemap',
+      artifactVersion: '1.0.0',
+      installedAt: '2024-01-01T00:00:00Z',
+      managedPaths: ['some/other/path'],
+      mode: 'install',
+      version: 1,
+    }
+    const result = runMigrations(SCHEMA_NAMES.INSTALL_RECORD, v1Record)
+
+    expect(result.version).toBe(2)
+    expect(result.assistant).toBe('claude')
+  })
+
+  it('returns v2 record unchanged', () => {
+    const v2Record = {
+      artifact: 'claudemap',
+      artifactVersion: '1.0.0',
+      installedAt: '2024-01-01T00:00:00Z',
+      managedPaths: ['.claude/skills/claudemap-runtime'],
+      mode: 'install',
+      assistant: 'claude',
+      version: 2,
+    }
+    const result = runMigrations(SCHEMA_NAMES.INSTALL_RECORD, v2Record)
+
+    expect(result).toBe(v2Record)
+  })
+
+  it('treats pre-versioned record as v1 and migrates to v2', () => {
+    const preVersionedRecord = {
+      artifact: 'claudemap',
+      artifactVersion: '1.0.0',
+      installedAt: '2024-01-01T00:00:00Z',
+      managedPaths: ['.claude/skills/claudemap-runtime'],
+      mode: 'install',
+      // no version field
+    }
+    const result = runMigrations(SCHEMA_NAMES.INSTALL_RECORD, preVersionedRecord)
+
+    expect(result.version).toBe(2)
+    expect(result.assistant).toBe('claude')
   })
 })

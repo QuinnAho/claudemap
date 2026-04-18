@@ -10,6 +10,14 @@ async function loadPathContracts() {
   return import('../skill/lib/contracts/paths.js')
 }
 
+async function loadAgentConverter() {
+  return import('./lib/agent-converter.js')
+}
+
+async function loadCodexSkillGenerator() {
+  return import('./lib/codex-skill-generator.js')
+}
+
 // APP_EXCLUSION_RULES drives copyArtifactFiles' filter for the app/
 // tree. Each rule is an object literal so the smoke test can walk the
 // list and assert every rule fires. The previous implementation was a
@@ -63,13 +71,14 @@ function createAppExclusionRules(paths) {
 
 function printUsage() {
   console.log('ClaudeMap skill packager')
-  console.log('  node scripts/package-claudemap-skill.js [--output <dir>] [--zip]')
+  console.log('  node scripts/package-claudemap-skill.js [--output <dir>] [--zip] [--assistant claude|codex|all]')
 }
 
 function parseArgs(argv, defaultOutputRoot) {
   const options = {
     outputRoot: defaultOutputRoot,
     zip: false,
+    assistant: 'claude',
   }
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -93,6 +102,22 @@ function parseArgs(argv, defaultOutputRoot) {
       }
 
       options.outputRoot = path.resolve(nextValue)
+      index += 1
+      continue
+    }
+
+    if (argument === '--assistant') {
+      const nextValue = argv[index + 1]
+
+      if (!nextValue) {
+        throw new Error('Missing value for --assistant')
+      }
+
+      if (!['claude', 'codex', 'all'].includes(nextValue)) {
+        throw new Error(`Invalid --assistant value: ${nextValue}. Valid: claude, codex, all`)
+      }
+
+      options.assistant = nextValue
       index += 1
       continue
     }
@@ -284,94 +309,128 @@ async function writeSlashCommands(artifactRoot, commandsRoot) {
   }
 }
 
-function writeNavigationDocs(artifactRoot, skillRoot) {
-  writeTextFile(
-    path.join(artifactRoot, skillRoot, 'NAVIGATION.md'),
-    `# ClaudeMap Navigation
-
-## Quick Start
-
-1. Run \`/setup-claudemap\`
-2. Ask Claude to explain a system, file, or flow
-3. Run \`/refresh\` after edits
-
-## Public Commands
-
-Use these first:
+function writeNavigationDocs(artifactRoot, skillRoot, assistantPaths) {
+  const skillRel = toPosix(skillRoot)
+  const agentsRel = assistantPaths.agentsPath
+  const agentFile = `${agentsRel}/${assistantPaths.architectAgentFilename}`
+  const commandsSection = assistantPaths.commandsPath
+    ? `Use these first:
 
 - \`/setup-claudemap\`: build a detailed architecture map for the current project
 - \`/open-claudemap\`: reopen the existing map UI without rebuilding the graph
 - \`/create-map\`: create or refresh a scoped subsystem map from the current root graph
 - \`/refresh\`: refresh the current graph after code changes
 - \`/explain\`: run a guided walkthrough against the live graph
-- \`/show\`: direct the live map for focus, highlights, presentation, health, and flow
+- \`/show\`: direct the live map for focus, highlights, presentation, health, and flow`
+    : `Codex does not use slash commands. Invoke ClaudeMap by asking the skill directly
+(see the "Available Commands" section of SKILL.md for supported operations):
+
+- \`setup-claudemap\`: build a detailed architecture map for the current project
+- \`open-claudemap\`: reopen the existing map UI without rebuilding the graph
+- \`create-map\`: create or refresh a scoped subsystem map from the current root graph
+- \`refresh\`: refresh the current graph after code changes
+- \`explain\`: run a guided walkthrough against the live graph
+- \`show\`: direct the live map for focus, highlights, presentation, health, and flow`
+
+  writeTextFile(
+    path.join(artifactRoot, skillRoot, 'NAVIGATION.md'),
+    `# ClaudeMap Navigation
+
+## Quick Start
+
+1. Run \`setup-claudemap\`
+2. Ask the assistant to explain a system, file, or flow
+3. Run \`refresh\` after edits
+
+## Public Commands
+
+${commandsSection}
 
 ## Mental Model
 
 ClaudeMap works in three stages:
 
 1. Snapshot the repository
-2. Ask \`@claudemap-architect\` for a detailed, human-intuitive graph
+2. Ask \`claudemap-architect\` for a detailed, human-intuitive graph
 3. Render and control that graph in the bundled UI
 
 ## Internal Runtime Layout
 
-- \`.claude/skills/claudemap-runtime/SKILL.md\`: internal runtime skill definition
-- \`.claude/skills/claudemap-runtime/skill/commands/\`: Node command entrypoints
-- \`.claude/skills/claudemap-runtime/skill/lib/\`: shared runtime libraries
-- \`.claude/skills/claudemap-runtime/skill/prompts/\`: enrichment prompt assets
-- \`.claude/skills/claudemap-runtime/app/\`: bundled map app
-- \`.claude/agents/claudemap-architect.md\`: bundled architecture-mapping subagent
+- \`${skillRel}/SKILL.md\`: internal runtime skill definition
+- \`${skillRel}/skill/commands/\`: Node command entrypoints
+- \`${skillRel}/skill/lib/\`: shared runtime libraries
+- \`${skillRel}/skill/prompts/\`: enrichment prompt assets
+- \`${skillRel}/app/\`: bundled map app
+- \`${agentFile}\`: bundled architecture-mapping subagent
 `,
   )
 }
 
-async function buildManagedPaths(paths, skillRoot, commandsRoot, agentsRoot) {
+async function buildManagedPaths(paths, assistantPaths) {
   const { slashFileName } = await import(
     '../skill/lib/command-harness/render-slash-template.js'
   )
   const descriptors = await loadCommandDescriptors()
 
-  // Derive slash-command entries from descriptors so the managedPaths list
-  // stays in lockstep with whatever the packager actually writes.
-  const slashManagedPaths = descriptors
-    .filter((descriptor) => !descriptor.noSlashTemplate)
-    .map((descriptor) => toPosix(path.join(commandsRoot, slashFileName(descriptor))))
-
-  return [
-    toPosix(skillRoot),
-    toPosix(path.join(agentsRoot, paths.ARCHITECT_AGENT_FILENAME)),
-    ...slashManagedPaths,
-    toPosix(path.join(paths.CLAUDE_ROOT_DIR, paths.INSTALL_RECORD_FILENAME)),
+  // The artifact manifest (claudemap-artifact.json) is NOT in managedPaths
+  // because it lives only at the packager's artifact root, not in the
+  // installed tree. Installer copies just the assistant's install-root
+  // directories (e.g., .claude/ or .codex/ + .agents/).
+  const managedPaths = [
+    toPosix(assistantPaths.skillRootRel),
+    toPosix(assistantPaths.architectAgentRel),
+    toPosix(assistantPaths.installRecordRel),
   ]
+
+  // Slash commands only exist for Claude.
+  if (assistantPaths.commandsRootRel) {
+    // Derive slash-command entries from descriptors so the managedPaths list
+    // stays in lockstep with whatever the packager actually writes.
+    const slashManagedPaths = descriptors
+      .filter((descriptor) => !descriptor.noSlashTemplate)
+      .map((descriptor) => toPosix(path.join(assistantPaths.commandsRootRel, slashFileName(descriptor))))
+    managedPaths.push(...slashManagedPaths)
+  }
+
+  return managedPaths
 }
 
-async function writeArtifactManifest(artifactRoot, paths, skillRoot, commandsRoot, agentsRoot) {
-  const managedPaths = await buildManagedPaths(paths, skillRoot, commandsRoot, agentsRoot)
+async function writeArtifactManifest(artifactRoot, paths, assistantPaths) {
+  const { slashFileName } = await import('../skill/lib/command-harness/render-slash-template.js')
+  const managedPaths = await buildManagedPaths(paths, assistantPaths)
+
+  const skillRel = assistantPaths.skillRootRel
+
+  const slashCommands = {}
+  if (assistantPaths.commandsRootRel) {
+    const descriptors = await loadCommandDescriptors()
+    for (const descriptor of descriptors) {
+      if (descriptor.noSlashTemplate) continue
+      slashCommands[descriptor.name] = toPosix(
+        path.join(assistantPaths.commandsRootRel, slashFileName(descriptor)),
+      )
+    }
+  }
+
+  const isCodex = assistantPaths.assistantType === 'codex'
 
   writeJsonFile(path.join(artifactRoot, paths.ARTIFACT_MANIFEST_FILENAME), {
     name: paths.ARTIFACT_NAME,
     version: require(path.join(REPO_ROOT, 'package.json')).version,
+    assistant: assistantPaths.assistantType,
     generatedAt: new Date().toISOString(),
     entrypoints: {
-      skill: toPosix(path.join(skillRoot, 'SKILL.md')),
-      'setup-claudemap': toPosix(path.join(skillRoot, 'skill', 'commands', 'setup-claudemap.js')),
-      'open-claudemap': toPosix(path.join(skillRoot, 'skill', 'commands', 'open-claudemap.js')),
-      'create-map': toPosix(path.join(skillRoot, 'skill', 'commands', 'create-map.js')),
-      refresh: toPosix(path.join(skillRoot, 'skill', 'commands', 'refresh.js')),
-      show: toPosix(path.join(skillRoot, 'skill', 'commands', 'show.js')),
+      skill: toPosix(path.join(skillRel, 'SKILL.md')),
+      'setup-claudemap': toPosix(path.join(skillRel, 'skill', 'commands', 'setup-claudemap.js')),
+      'open-claudemap': toPosix(path.join(skillRel, 'skill', 'commands', 'open-claudemap.js')),
+      'create-map': toPosix(path.join(skillRel, 'skill', 'commands', 'create-map.js')),
+      refresh: toPosix(path.join(skillRel, 'skill', 'commands', 'refresh.js')),
+      show: toPosix(path.join(skillRel, 'skill', 'commands', 'show.js')),
     },
     subagents: {
-      claudemapArchitect: toPosix(path.join(agentsRoot, paths.ARCHITECT_AGENT_FILENAME)),
+      claudemapArchitect: toPosix(assistantPaths.architectAgentRel),
     },
-    slashCommands: {
-      'setup-claudemap': toPosix(path.join(commandsRoot, 'setup-claudemap.md')),
-      explain: toPosix(path.join(commandsRoot, 'explain.md')),
-      'create-map': toPosix(path.join(commandsRoot, 'create-map.md')),
-      'open-claudemap': toPosix(path.join(commandsRoot, 'open-claudemap.md')),
-      refresh: toPosix(path.join(commandsRoot, 'refresh.md')),
-      show: toPosix(path.join(commandsRoot, 'show.md')),
-    },
+    slashCommands,
     publicCommands: [
       'setup-claudemap',
       'open-claudemap',
@@ -381,24 +440,52 @@ async function writeArtifactManifest(artifactRoot, paths, skillRoot, commandsRoo
       'show',
     ],
     managedPaths,
+    installRoots: installRootsFor(assistantPaths),
     internalRuntime: {
-      skillRoot: toPosix(skillRoot),
-      navigationDoc: toPosix(path.join(skillRoot, 'NAVIGATION.md')),
-      sharedSubagent: toPosix(path.join(agentsRoot, paths.ARCHITECT_AGENT_FILENAME)),
+      skillRoot: toPosix(skillRel),
+      navigationDoc: toPosix(path.join(skillRel, 'NAVIGATION.md')),
+      sharedSubagent: toPosix(assistantPaths.architectAgentRel),
     },
-    notes: [
-      'Install the bundled .claude directory into your target project root with scripts/install-claudemap.js, or copy it manually.',
-      'The public surface is .claude/commands/*.md. The skill bundle under .claude/skills/claudemap-runtime is shared runtime infrastructure for those commands.',
-      'The packaged runtime ships with the current seeded ClaudeMap self-map so /open-claudemap can render immediately after install.',
-      'The installer script automatically runs npm install inside .claude/skills/claudemap-runtime. Manual installs still need that step.',
-      'Claude Code loads project subagents from .claude/agents at session start. Restart the session or use /agents after installing the artifact if needed.',
-      'If ClaudeMap is later packaged as a plugin instead of a project drop-in, subagent files should live in the plugin agents/ directory rather than .claude/agents/.',
-    ],
+    notes: notesFor(assistantPaths, isCodex),
   })
 }
 
-function ensureCleanArtifactLocation(outputRoot, artifactName) {
-  const artifactRoot = path.join(outputRoot, artifactName)
+// Returns the top-level directories the installer should copy from the
+// artifact to the target repo. Claude uses a single `.claude/`; Codex
+// uses both `.codex/` (config/agents) and `.agents/` (skill discovery).
+function installRootsFor(assistantPaths) {
+  if (assistantPaths.assistantType === 'codex') {
+    // Preserve order: .agents first so the skill bundle lands before
+    // the config that points at it.
+    return ['.agents', assistantPaths.rootDir]
+  }
+  return [assistantPaths.rootDir]
+}
+
+function notesFor(assistantPaths, isCodex) {
+  if (isCodex) {
+    return [
+      'Install the bundled directories (.codex/ and .agents/) into your target project root with scripts/install-claudemap.js, or copy them manually.',
+      'Codex discovers skills from .agents/skills/; agent definitions and the install record live under .codex/.',
+      'Codex deprecated slash commands. The equivalent operations are documented in the skill\'s SKILL.md under "Available Commands".',
+      'The packaged runtime ships with the current seeded ClaudeMap self-map so open-claudemap can render immediately after install.',
+      'The installer script automatically runs npm install inside the skill runtime directory. Manual installs still need that step.',
+      'The skill writes .claudemap-config.json on install for self-location; Codex does not set a dedicated skill-dir env var.',
+    ]
+  }
+
+  return [
+    'Install the bundled .claude directory into your target project root with scripts/install-claudemap.js, or copy it manually.',
+    'The public surface is .claude/commands/*.md. The skill bundle under .claude/skills/claudemap-runtime is shared runtime infrastructure for those commands.',
+    'The packaged runtime ships with the current seeded ClaudeMap self-map so /open-claudemap can render immediately after install.',
+    'The installer script automatically runs npm install inside .claude/skills/claudemap-runtime. Manual installs still need that step.',
+    'Claude Code loads project subagents from .claude/agents at session start. Restart the session or use /agents after installing the artifact if needed.',
+    'If ClaudeMap is later packaged as a plugin instead of a project drop-in, subagent files should live in the plugin agents/ directory rather than .claude/agents/.',
+  ]
+}
+
+function ensureCleanArtifactLocation(outputRoot, artifactDirName) {
+  const artifactRoot = path.join(outputRoot, artifactDirName)
 
   fs.mkdirSync(outputRoot, { recursive: true })
   fs.rmSync(artifactRoot, { recursive: true, force: true })
@@ -416,8 +503,24 @@ function createShouldExcludeApp(paths) {
   }
 }
 
-function copyArtifactFiles(artifactRoot, paths, skillRoot, agentsRoot) {
-  copyFile('skill/SKILL.md', artifactRoot, path.join(skillRoot, 'SKILL.md'))
+async function copyArtifactFiles(artifactRoot, paths, assistantPaths) {
+  const skillRoot = assistantPaths.skillRootRel
+  const agentsRoot = assistantPaths.agentsPath
+
+  // SKILL.md: Claude copies source as-is; Codex generates an embedded
+  // commands version via codex-skill-generator.
+  if (assistantPaths.assistantType === 'codex') {
+    const { writeCodexSkill } = await loadCodexSkillGenerator()
+    const descriptors = await loadCommandDescriptors()
+    writeCodexSkill(
+      path.join(REPO_ROOT, 'skill', 'SKILL.md'),
+      path.join(artifactRoot, skillRoot, 'SKILL.md'),
+      descriptors,
+    )
+  } else {
+    copyFile('skill/SKILL.md', artifactRoot, path.join(skillRoot, 'SKILL.md'))
+  }
+
   copyFile('package.json', artifactRoot, path.join(skillRoot, 'package.json'))
 
   if (fs.existsSync(path.join(REPO_ROOT, 'package-lock.json'))) {
@@ -428,8 +531,22 @@ function copyArtifactFiles(artifactRoot, paths, skillRoot, agentsRoot) {
   copyDirectoryInto('app', artifactRoot, path.join(skillRoot, 'app'), createShouldExcludeApp(paths))
   copyDirectoryInto('contracts', artifactRoot, path.join(skillRoot, 'contracts'))
 
-  if (fs.existsSync(path.join(REPO_ROOT, 'agents'))) {
-    copyDirectoryInto('agents', artifactRoot, agentsRoot)
+  // Agents: Claude uses .md directly; Codex converts to .toml.
+  const sourceAgentsDir = path.join(REPO_ROOT, 'agents')
+  if (fs.existsSync(sourceAgentsDir)) {
+    if (assistantPaths.assistantType === 'codex') {
+      const { convertAgentFile } = await loadAgentConverter()
+      const entries = fs.readdirSync(sourceAgentsDir, { withFileTypes: true })
+      for (const entry of entries) {
+        if (!entry.isFile() || !entry.name.endsWith('.md')) continue
+        const sourcePath = path.join(sourceAgentsDir, entry.name)
+        const targetName = entry.name.replace(/\.md$/, '.toml')
+        const targetPath = path.join(artifactRoot, agentsRoot, targetName)
+        convertAgentFile(sourcePath, targetPath)
+      }
+    } else {
+      copyDirectoryInto('agents', artifactRoot, agentsRoot)
+    }
   }
 }
 
@@ -451,12 +568,25 @@ function copyDirectoryInto(relativeSourcePath, artifactRoot, relativeTargetPath,
   })
 }
 
+// Write the Codex self-location config. Codex skills do not get a
+// dedicated CLAUDE_SKILL_DIR-equivalent env var, so we persist the
+// skill directory path inside the skill bundle so runtime code can
+// find itself without relying on cwd.
+function writeCodexSelfLocationConfig(artifactRoot, assistantPaths) {
+  if (!assistantPaths.skillConfigRel) return
+  writeJsonFile(path.join(artifactRoot, assistantPaths.skillConfigRel), {
+    version: 1,
+    skillRootRel: assistantPaths.skillRootRel,
+    assistant: assistantPaths.assistantType,
+  })
+}
+
 function powershellQuote(value) {
   return `'${String(value).replace(/'/g, "''")}'`
 }
 
-function createWindowsZip(artifactRoot, outputRoot) {
-  const zipPath = path.join(outputRoot, 'claudemap-skill.zip')
+function createWindowsZip(artifactRoot, outputRoot, zipName) {
+  const zipPath = path.join(outputRoot, zipName)
   const wildcardPath = `${artifactRoot}\\*`
 
   fs.rmSync(zipPath, { force: true })
@@ -468,13 +598,13 @@ function createWindowsZip(artifactRoot, outputRoot) {
   })
 
   if (result.status !== 0) {
-    throw new Error('Failed to create claudemap-skill.zip')
+    throw new Error(`Failed to create ${zipName}`)
   }
 
   return zipPath
 }
 
-function maybeCreateZip(artifactRoot, outputRoot, zipRequested) {
+function maybeCreateZip(artifactRoot, outputRoot, zipRequested, zipName) {
   if (!zipRequested) {
     return null
   }
@@ -484,7 +614,48 @@ function maybeCreateZip(artifactRoot, outputRoot, zipRequested) {
     return null
   }
 
-  return createWindowsZip(artifactRoot, outputRoot)
+  return createWindowsZip(artifactRoot, outputRoot, zipName)
+}
+
+// Artifact directory name per assistant. Claude keeps ARTIFACT_NAME
+// unchanged for backwards compatibility; Codex is suffixed so both
+// variants can coexist under one output root.
+function artifactDirNameFor(paths, assistantType) {
+  if (assistantType === 'codex') {
+    return `${paths.ARTIFACT_NAME}-codex`
+  }
+  return paths.ARTIFACT_NAME
+}
+
+// Build a single per-assistant artifact. buildClaudeMapArtifact is the
+// public entry point that handles the `all` dispatch; this function
+// always targets exactly one assistant.
+async function buildAssistantArtifact(assistantType, paths, contracts, normalizedOptions) {
+  const assistantPaths = paths.resolveAssistantPaths(assistantType)
+  const dirName = artifactDirNameFor(paths, assistantType)
+  const artifactRoot = ensureCleanArtifactLocation(normalizedOptions.outputRoot, dirName)
+  const defaultSeedMapPath = path.join(REPO_ROOT, paths.SEED_MAP_REL)
+
+  await copyArtifactFiles(artifactRoot, paths, assistantPaths)
+  writeRuntimePlaceholders(artifactRoot, contracts, paths, assistantPaths.skillRootRel, defaultSeedMapPath)
+
+  if (assistantPaths.commandsRootRel) {
+    await writeSlashCommands(artifactRoot, assistantPaths.commandsRootRel)
+  }
+
+  if (assistantType === 'codex') {
+    writeCodexSelfLocationConfig(artifactRoot, assistantPaths)
+  }
+
+  writeNavigationDocs(artifactRoot, assistantPaths.skillRootRel, assistantPaths)
+  await writeArtifactManifest(artifactRoot, paths, assistantPaths)
+
+  const zipName = assistantType === 'codex' ? 'claudemap-skill-codex.zip' : 'claudemap-skill.zip'
+  return {
+    artifactRoot,
+    assistant: assistantType,
+    zipPath: maybeCreateZip(artifactRoot, normalizedOptions.outputRoot, normalizedOptions.zip, zipName),
+  }
 }
 
 async function buildClaudeMapArtifact(options = {}) {
@@ -493,22 +664,37 @@ async function buildClaudeMapArtifact(options = {}) {
   const normalizedOptions = {
     outputRoot: options.outputRoot || defaultOutputRoot,
     zip: options.zip === true,
+    assistant: options.assistant || 'claude',
   }
   const contracts = await loadContracts()
-  const skillRoot = path.join(paths.CLAUDE_ROOT_DIR, paths.SKILLS_SUBDIR, paths.RUNTIME_SKILL_NAME)
-  const commandsRoot = path.join(paths.CLAUDE_ROOT_DIR, paths.COMMANDS_SUBDIR)
-  const agentsRoot = path.join(paths.CLAUDE_ROOT_DIR, paths.AGENTS_SUBDIR)
-  const defaultSeedMapPath = path.join(REPO_ROOT, paths.SEED_MAP_REL)
-  const artifactRoot = ensureCleanArtifactLocation(normalizedOptions.outputRoot, paths.ARTIFACT_NAME)
-  copyArtifactFiles(artifactRoot, paths, skillRoot, agentsRoot)
-  writeRuntimePlaceholders(artifactRoot, contracts, paths, skillRoot, defaultSeedMapPath)
-  await writeSlashCommands(artifactRoot, commandsRoot)
-  writeNavigationDocs(artifactRoot, skillRoot)
-  await writeArtifactManifest(artifactRoot, paths, skillRoot, commandsRoot, agentsRoot)
 
+  if (normalizedOptions.assistant === 'all') {
+    const claudeResult = await buildAssistantArtifact('claude', paths, contracts, normalizedOptions)
+    const codexResult = await buildAssistantArtifact('codex', paths, contracts, normalizedOptions)
+    return {
+      // Backwards-compat: top-level fields describe the Claude artifact
+      // (the default) so existing callers that use `.artifactRoot` and
+      // `.zipPath` keep working.
+      artifactRoot: claudeResult.artifactRoot,
+      zipPath: claudeResult.zipPath,
+      assistant: 'all',
+      artifacts: {
+        claude: claudeResult,
+        codex: codexResult,
+      },
+    }
+  }
+
+  const result = await buildAssistantArtifact(
+    normalizedOptions.assistant,
+    paths,
+    contracts,
+    normalizedOptions,
+  )
   return {
-    artifactRoot,
-    zipPath: maybeCreateZip(artifactRoot, normalizedOptions.outputRoot, normalizedOptions.zip),
+    artifactRoot: result.artifactRoot,
+    zipPath: result.zipPath,
+    assistant: result.assistant,
   }
 }
 
@@ -522,17 +708,31 @@ async function main(argv = process.argv.slice(2)) {
     return
   }
 
-  const { artifactRoot, zipPath } = await buildClaudeMapArtifact(options)
+  const result = await buildClaudeMapArtifact(options)
 
-  console.log(`ClaudeMap skill artifact ready at ${artifactRoot}`)
-  if (zipPath) {
-    console.log(`Zip archive ready at ${zipPath}`)
+  if (result.assistant === 'all') {
+    console.log(`ClaudeMap skill artifacts ready:`)
+    console.log(`  Claude: ${result.artifacts.claude.artifactRoot}`)
+    console.log(`  Codex:  ${result.artifacts.codex.artifactRoot}`)
+    if (result.artifacts.claude.zipPath) {
+      console.log(`Zip (Claude): ${result.artifacts.claude.zipPath}`)
+    }
+    if (result.artifacts.codex.zipPath) {
+      console.log(`Zip (Codex):  ${result.artifacts.codex.zipPath}`)
+    }
+    return
+  }
+
+  console.log(`ClaudeMap skill artifact (${result.assistant}) ready at ${result.artifactRoot}`)
+  if (result.zipPath) {
+    console.log(`Zip archive ready at ${result.zipPath}`)
   }
 }
 
 module.exports = {
   buildClaudeMapArtifact,
   createAppExclusionRules,
+  artifactDirNameFor,
 }
 
 if (require.main === module) {

@@ -15,7 +15,7 @@ async function main() {
   const outputRoot = path.join(REPO_ROOT, paths.NPM_BUNDLE_DIR_REL)
   const result = spawnSync(
     process.execPath,
-    [PACKAGE_SCRIPT_PATH, '--output', outputRoot],
+    [PACKAGE_SCRIPT_PATH, '--output', outputRoot, '--assistant', 'all'],
     {
       cwd: REPO_ROOT,
       stdio: 'inherit',
@@ -26,7 +26,11 @@ async function main() {
     throw new Error('Failed to prepare npm bundle')
   }
 
-  console.log(`ClaudeMap npm bundle ready at ${path.join(outputRoot, paths.NPM_BUNDLE_SUBDIR)}`)
+  const claudeBundle = path.join(outputRoot, paths.NPM_BUNDLE_SUBDIR)
+  const codexBundle = path.join(outputRoot, `${paths.NPM_BUNDLE_SUBDIR}-codex`)
+  console.log(`ClaudeMap npm bundle ready:`)
+  console.log(`  claude: ${claudeBundle}`)
+  console.log(`  codex:  ${codexBundle}`)
 }
 
 main().catch((error) => {

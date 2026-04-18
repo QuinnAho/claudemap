@@ -17,7 +17,7 @@ async function loadSchemas() {
 function printUsage() {
   console.log('ClaudeMap installer')
   console.log(
-    '  node scripts/install-claudemap.js <target-repo> [--update] [--artifact <dir>] [--skip-package] [--skip-install] [--dry-run] [--force-partial]',
+    '  node scripts/install-claudemap.js <target-repo> [--update] [--artifact <dir>] [--skip-package] [--skip-install] [--dry-run] [--force-partial] [--assistant claude|codex|auto] [--force-assistant-switch]',
   )
 }
 
@@ -30,6 +30,8 @@ function parseArgs(argv, defaultArtifactRoot) {
     installDependencies: true,
     mode: 'install',
     targetRoot: null,
+    assistant: 'auto',
+    forceAssistantSwitch: false,
   }
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -76,6 +78,27 @@ function parseArgs(argv, defaultArtifactRoot) {
 
     if (argument === '--force-partial') {
       options.forcePartial = true
+      continue
+    }
+
+    if (argument === '--assistant') {
+      const nextValue = argv[index + 1]
+
+      if (!nextValue) {
+        throw new Error('Missing value for --assistant')
+      }
+
+      if (!['claude', 'codex', 'auto'].includes(nextValue)) {
+        throw new Error(`Invalid --assistant value: ${nextValue}. Valid: claude, codex, auto`)
+      }
+
+      options.assistant = nextValue
+      index += 1
+      continue
+    }
+
+    if (argument === '--force-assistant-switch') {
+      options.forceAssistantSwitch = true
       continue
     }
 
@@ -137,13 +160,22 @@ function runCommand(command, args, workingDirectory, options = {}) {
   }
 }
 
+// Note: building the artifact inside the installer currently only
+// targets Claude. Callers that need a Codex or dual build should run
+// the packager directly with --assistant and then point the installer
+// at the pre-built artifact via --artifact.
 function buildArtifactIfNeeded(options, defaultOutputRoot) {
   if (!options.buildArtifact || options.dryRun) {
     return
   }
 
   const packageScriptPath = path.join(REPO_ROOT, 'scripts', 'package-claudemap-skill.js')
-  runCommand(getNodeCommand(), [packageScriptPath, '--output', defaultOutputRoot], REPO_ROOT)
+  const assistantArg = options.assistant && options.assistant !== 'auto' ? options.assistant : 'claude'
+  runCommand(
+    getNodeCommand(),
+    [packageScriptPath, '--output', defaultOutputRoot, '--assistant', assistantArg],
+    REPO_ROOT,
+  )
 }
 
 function loadArtifactManifest(artifactRoot, manifestFilename) {
@@ -156,20 +188,81 @@ function loadArtifactManifest(artifactRoot, manifestFilename) {
   return readJsonFile(manifestPath)
 }
 
+// Reconcile --assistant (possibly 'auto'), the manifest's assistant field,
+// and any existing install record on the target. Returns a concrete
+// assistant type ('claude' or 'codex') or throws on conflict.
+function resolveInstallAssistant(options, manifest, paths, existingAssistant) {
+  const manifestAssistant = manifest.assistant || 'claude'
+
+  if (!['claude', 'codex'].includes(manifestAssistant)) {
+    throw new Error(`Artifact manifest has invalid assistant: ${manifestAssistant}`)
+  }
+
+  // If the user passed an explicit --assistant, it must match the manifest.
+  if (options.assistant !== 'auto' && options.assistant !== manifestAssistant) {
+    throw new Error(
+      `--assistant ${options.assistant} does not match artifact manifest assistant: ${manifestAssistant}. ` +
+        `Build the artifact for ${options.assistant} first, or pass --assistant ${manifestAssistant}.`,
+    )
+  }
+
+  // Cross-assistant guard: refuse to swap assistants on top of an
+  // existing install unless the caller acknowledges with
+  // --force-assistant-switch. This prevents accidental double-installs
+  // leaving stale files from the previous assistant's tree.
+  if (
+    existingAssistant &&
+    existingAssistant !== manifestAssistant &&
+    !options.forceAssistantSwitch
+  ) {
+    throw new Error(
+      `Target already has a ${existingAssistant} install; refusing to install a ${manifestAssistant} artifact over it. ` +
+        `Uninstall the existing ${existingAssistant} install first, or pass --force-assistant-switch to proceed.`,
+    )
+  }
+
+  return manifestAssistant
+}
+
+// Locate any existing ClaudeMap install on the target, regardless of
+// which assistant it was installed for. Returns 'claude', 'codex', or null.
+function detectExistingAssistant(targetRoot, paths) {
+  const candidates = ['claude', 'codex']
+
+  for (const assistantType of candidates) {
+    const assistantPaths = paths.resolveAssistantPaths(assistantType)
+    const recordPath = path.join(targetRoot, assistantPaths.installRecordRel)
+
+    if (!fs.existsSync(recordPath)) continue
+
+    try {
+      const record = readJsonFile(recordPath)
+      // Trust the record's assistant field if present; otherwise infer
+      // from which location we found it.
+      return record.assistant || assistantType
+    } catch {
+      // Corrupt record; assume the location implies the assistant.
+      return assistantType
+    }
+  }
+
+  return null
+}
+
 // Transactional install support. The partial-install marker lives at
-// <targetRoot>/<.claude>/<marker-filename> for the duration of the
-// install. It is written at the top of installClaudeMap and removed
+// <targetRoot>/<assistant-root>/<marker-filename> for the duration of
+// the install. It is written at the top of installClaudeMap and removed
 // before the function returns. If an install fails mid-flight, the
 // marker remains on disk; the next install refuses to run until the
 // user either retries and succeeds or passes --force-partial to
 // acknowledge and overwrite.
 
-function getPartialInstallMarkerPath(targetRoot, claudeRootDir, markerFilename) {
-  return path.join(targetRoot, claudeRootDir, markerFilename)
+function getPartialInstallMarkerPath(targetRoot, assistantRootDir, markerFilename) {
+  return path.join(targetRoot, assistantRootDir, markerFilename)
 }
 
-function refuseIfPartialInstallPresent(targetRoot, claudeRootDir, markerFilename, forcePartial) {
-  const markerPath = getPartialInstallMarkerPath(targetRoot, claudeRootDir, markerFilename)
+function refuseIfPartialInstallPresent(targetRoot, assistantRootDir, markerFilename, forcePartial) {
+  const markerPath = getPartialInstallMarkerPath(targetRoot, assistantRootDir, markerFilename)
 
   if (!fs.existsSync(markerPath)) {
     return
@@ -199,8 +292,8 @@ function refuseIfPartialInstallPresent(targetRoot, claudeRootDir, markerFilename
   )
 }
 
-function writePartialInstallMarker(targetRoot, claudeRootDir, markerFilename, mode, artifactRoot) {
-  const markerPath = getPartialInstallMarkerPath(targetRoot, claudeRootDir, markerFilename)
+function writePartialInstallMarker(targetRoot, assistantRootDir, markerFilename, mode, artifactRoot) {
+  const markerPath = getPartialInstallMarkerPath(targetRoot, assistantRootDir, markerFilename)
   ensureDirectory(path.dirname(markerPath))
   fs.writeFileSync(
     markerPath,
@@ -217,13 +310,13 @@ function writePartialInstallMarker(targetRoot, claudeRootDir, markerFilename, mo
   return markerPath
 }
 
-function removePartialInstallMarker(targetRoot, claudeRootDir, markerFilename) {
-  const markerPath = getPartialInstallMarkerPath(targetRoot, claudeRootDir, markerFilename)
+function removePartialInstallMarker(targetRoot, assistantRootDir, markerFilename) {
+  const markerPath = getPartialInstallMarkerPath(targetRoot, assistantRootDir, markerFilename)
   fs.rmSync(markerPath, { force: true })
 }
 
-function readInstallRecord(targetRoot, claudeRootDir, installRecordFilename, schemas) {
-  const recordPath = path.join(targetRoot, claudeRootDir, installRecordFilename)
+function readInstallRecord(targetRoot, assistantRootDir, installRecordFilename, schemas) {
+  const recordPath = path.join(targetRoot, assistantRootDir, installRecordFilename)
 
   if (!fs.existsSync(recordPath)) {
     return null
@@ -286,50 +379,73 @@ function removeManagedPaths(targetRoot, managedPaths, dryRun) {
   return removedPaths
 }
 
-function installArtifact(artifactRoot, targetRoot, dryRun, claudeRootDir) {
-  const sourceClaudeRoot = path.join(artifactRoot, claudeRootDir)
-  const targetClaudeRoot = path.join(targetRoot, claudeRootDir)
+// Copy each install root directory from the artifact to the target.
+// Claude installs have one root (.claude); Codex installs have two
+// (.agents and .codex).
+function installArtifact(artifactRoot, targetRoot, dryRun, installRoots) {
+  const results = []
 
-  if (!fs.existsSync(sourceClaudeRoot)) {
-    throw new Error(`ClaudeMap artifact is missing ${claudeRootDir}: ${sourceClaudeRoot}`)
-  }
+  for (const rootDir of installRoots) {
+    const sourceRoot = path.join(artifactRoot, rootDir)
+    const targetRootPath = path.join(targetRoot, rootDir)
 
-  if (dryRun) {
-    return {
-      createdClaudeDir: !fs.existsSync(targetClaudeRoot),
-      targetClaudeRoot,
+    if (!fs.existsSync(sourceRoot)) {
+      throw new Error(`ClaudeMap artifact is missing ${rootDir}: ${sourceRoot}`)
     }
+
+    if (dryRun) {
+      results.push({
+        rootDir,
+        createdDir: !fs.existsSync(targetRootPath),
+        targetRootPath,
+      })
+      continue
+    }
+
+    ensureDirectory(targetRootPath)
+    fs.cpSync(sourceRoot, targetRootPath, {
+      force: true,
+      recursive: true,
+    })
+
+    results.push({
+      rootDir,
+      createdDir: false,
+      targetRootPath,
+    })
   }
 
-  ensureDirectory(targetClaudeRoot)
-  fs.cpSync(sourceClaudeRoot, targetClaudeRoot, {
-    force: true,
-    recursive: true,
-  })
-
-  return {
-    createdClaudeDir: false,
-    targetClaudeRoot,
-  }
+  return results
 }
 
-function writeInstallRecord(targetRoot, manifest, artifactRoot, mode, dryRun, claudeRootDir, installRecordFilename) {
-  const recordPath = path.join(targetRoot, claudeRootDir, installRecordFilename)
+function writeInstallRecord(
+  targetRoot,
+  manifest,
+  artifactRoot,
+  mode,
+  dryRun,
+  assistantPaths,
+  assistantType,
+) {
+  const recordPath = path.join(targetRoot, assistantPaths.installRecordRel)
   const record = {
     artifact: manifest.name,
     artifactVersion: manifest.version || 'unknown',
     artifactRoot: artifactRoot,
+    assistant: assistantType,
     generatedAt: manifest.generatedAt || null,
     installedAt: new Date().toISOString(),
     managedPaths: manifest.managedPaths || [],
     mode,
     publicCommands: manifest.publicCommands || [],
+    version: 2,
   }
 
   if (dryRun) {
     return recordPath
   }
 
+  ensureDirectory(path.dirname(recordPath))
   fs.writeFileSync(recordPath, `${JSON.stringify(record, null, 2)}\n`)
   return recordPath
 }
@@ -357,83 +473,114 @@ async function installClaudeMap(options) {
   const schemas = await loadSchemas()
   const defaultOutputRoot = path.join(REPO_ROOT, paths.PACKAGE_ARTIFACT_DIR_REL)
 
-  ensureTargetRepository(options.targetRoot)
-  buildArtifactIfNeeded(options, defaultOutputRoot)
+  // Default assistant for callers that don't pass it (e.g., tests).
+  const mergedOptions = {
+    assistant: 'auto',
+    forceAssistantSwitch: false,
+    ...options,
+  }
+
+  ensureTargetRepository(mergedOptions.targetRoot)
+  buildArtifactIfNeeded(mergedOptions, defaultOutputRoot)
+
+  const manifest = loadArtifactManifest(mergedOptions.artifactRoot, paths.ARTIFACT_MANIFEST_FILENAME)
+  const existingAssistant = detectExistingAssistant(mergedOptions.targetRoot, paths)
+  const assistantType = resolveInstallAssistant(mergedOptions, manifest, paths, existingAssistant)
+  const assistantPaths = paths.resolveAssistantPaths(assistantType)
 
   // Transactional guard. Dry-run does not touch disk and is excluded
   // from the marker protocol entirely.
-  if (!options.dryRun) {
+  if (!mergedOptions.dryRun) {
     refuseIfPartialInstallPresent(
-      options.targetRoot,
-      paths.CLAUDE_ROOT_DIR,
+      mergedOptions.targetRoot,
+      assistantPaths.rootDir,
       paths.PARTIAL_INSTALL_MARKER_FILENAME,
-      options.forcePartial,
+      mergedOptions.forcePartial,
     )
 
     writePartialInstallMarker(
-      options.targetRoot,
-      paths.CLAUDE_ROOT_DIR,
+      mergedOptions.targetRoot,
+      assistantPaths.rootDir,
       paths.PARTIAL_INSTALL_MARKER_FILENAME,
-      options.mode,
-      options.artifactRoot,
+      mergedOptions.mode,
+      mergedOptions.artifactRoot,
     )
   }
 
   try {
-    const manifest = loadArtifactManifest(options.artifactRoot, paths.ARTIFACT_MANIFEST_FILENAME)
     const previousInstallRecord = readInstallRecord(
-      options.targetRoot,
-      paths.CLAUDE_ROOT_DIR,
+      mergedOptions.targetRoot,
+      assistantPaths.rootDir,
       paths.INSTALL_RECORD_FILENAME,
       schemas,
     )
     const removedManagedPaths = previousInstallRecord
-      ? removeManagedPaths(options.targetRoot, previousInstallRecord.managedPaths, options.dryRun)
+      ? removeManagedPaths(
+          mergedOptions.targetRoot,
+          previousInstallRecord.managedPaths,
+          mergedOptions.dryRun,
+        )
       : []
-    const installState = installArtifact(
-      options.artifactRoot,
-      options.targetRoot,
-      options.dryRun,
-      paths.CLAUDE_ROOT_DIR,
+
+    // Determine install roots from the manifest if present, falling
+    // back to the assistant's defaults. This keeps the installer robust
+    // against older manifests that don't record installRoots.
+    const installRoots = Array.isArray(manifest.installRoots) && manifest.installRoots.length > 0
+      ? manifest.installRoots
+      : assistantType === 'codex'
+        ? ['.agents', assistantPaths.rootDir]
+        : [assistantPaths.rootDir]
+
+    const installStates = installArtifact(
+      mergedOptions.artifactRoot,
+      mergedOptions.targetRoot,
+      mergedOptions.dryRun,
+      installRoots,
     )
     const recordPath = writeInstallRecord(
-      options.targetRoot,
+      mergedOptions.targetRoot,
       manifest,
-      options.artifactRoot,
-      options.mode,
-      options.dryRun,
-      paths.CLAUDE_ROOT_DIR,
-      paths.INSTALL_RECORD_FILENAME,
+      mergedOptions.artifactRoot,
+      mergedOptions.mode,
+      mergedOptions.dryRun,
+      assistantPaths,
+      assistantType,
     )
 
     let runtimeInstallRoot = null
 
-    if (options.installDependencies) {
-      runtimeInstallRoot = installDependencies(options.targetRoot, options.dryRun, paths.SKILL_ROOT_REL)
+    if (mergedOptions.installDependencies) {
+      runtimeInstallRoot = installDependencies(
+        mergedOptions.targetRoot,
+        mergedOptions.dryRun,
+        assistantPaths.skillRootRel,
+      )
     }
 
     // Install completed without throwing. Remove the partial-install
     // marker so the target is no longer flagged as in-flight.
-    if (!options.dryRun) {
+    if (!mergedOptions.dryRun) {
       removePartialInstallMarker(
-        options.targetRoot,
-        paths.CLAUDE_ROOT_DIR,
+        mergedOptions.targetRoot,
+        assistantPaths.rootDir,
         paths.PARTIAL_INSTALL_MARKER_FILENAME,
       )
     }
 
-    const actionLabel = options.mode === 'update' ? 'updated' : 'installed'
+    const actionLabel = mergedOptions.mode === 'update' ? 'updated' : 'installed'
     console.log(
-      `ClaudeMap ${actionLabel} into ${options.targetRoot}`,
+      `ClaudeMap ${actionLabel} into ${mergedOptions.targetRoot} (assistant: ${assistantType})`,
     )
     console.log(`Artifact version: ${manifest.version || 'unknown'}`)
-    console.log(`Merged into: ${installState.targetClaudeRoot}`)
+    for (const state of installStates) {
+      console.log(`Merged into: ${state.targetRootPath}`)
+    }
     console.log(`Install record: ${recordPath}`)
     if (removedManagedPaths.length > 0) {
       console.log(`Replaced managed paths: ${removedManagedPaths.join(', ')}`)
     }
 
-    if (options.dryRun) {
+    if (mergedOptions.dryRun) {
       console.log('Dry run only: no files were copied and npm install was skipped')
     } else if (runtimeInstallRoot) {
       console.log(`Dependencies installed in ${runtimeInstallRoot}`)
@@ -444,7 +591,11 @@ async function installClaudeMap(options) {
     console.log(`Public commands: ${(manifest.publicCommands || []).join(', ')}`)
 
     return {
-      installState,
+      assistantType,
+      installStates,
+      // Backwards-compat alias for single-root install shape used by the
+      // previous smoke test.
+      installState: installStates[0],
       manifest,
       recordPath,
       removedManagedPaths,

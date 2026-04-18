@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+const fs = require('fs')
 const path = require('path')
 const { spawnSync } = require('child_process')
 
@@ -12,8 +13,8 @@ async function loadPathContracts() {
 
 function printUsage() {
   console.log('ClaudeMap CLI')
-  console.log('  claudemap [install] [target-repo] [--skip-install] [--dry-run]')
-  console.log('  claudemap update [target-repo] [--skip-install] [--dry-run]')
+  console.log('  claudemap [install] [target-repo] [--skip-install] [--dry-run] [--assistant claude|codex|auto]')
+  console.log('  claudemap update [target-repo] [--skip-install] [--dry-run] [--assistant claude|codex|auto]')
 }
 
 function hasHelpFlag(argv) {
@@ -21,13 +22,73 @@ function hasHelpFlag(argv) {
 }
 
 function hasPositionalTarget(argv) {
-  return argv.some((argument, index) => {
+  // A positional is any non-flag arg, skipping arg values that belong to
+  // known value-taking flags. --assistant consumes the following arg.
+  const valueFlags = new Set(['--assistant', '--artifact'])
+
+  for (let index = 0; index < argv.length; index += 1) {
+    const argument = argv[index]
+
     if (index === 0 && ['install', 'update'].includes(argument)) {
-      return false
+      continue
     }
 
-    return !argument.startsWith('--')
-  })
+    if (valueFlags.has(argument)) {
+      index += 1 // skip the value
+      continue
+    }
+
+    if (!argument.startsWith('--')) {
+      return true
+    }
+  }
+
+  return false
+}
+
+function extractAssistantFlag(argv) {
+  const index = argv.indexOf('--assistant')
+  if (index === -1 || index === argv.length - 1) return null
+  return argv[index + 1]
+}
+
+function extractPositionalTarget(argv) {
+  const valueFlags = new Set(['--assistant', '--artifact'])
+  for (let index = 0; index < argv.length; index += 1) {
+    const argument = argv[index]
+    if (index === 0 && ['install', 'update'].includes(argument)) continue
+    if (valueFlags.has(argument)) { index += 1; continue }
+    if (!argument.startsWith('--')) return argument
+  }
+  return null
+}
+
+function resolveBundledArtifactRoot(paths, assistantFlag, targetRoot) {
+  const bundleDir = path.join(PACKAGE_ROOT, paths.NPM_BUNDLE_DIR_REL)
+  const claudeBundle = path.join(bundleDir, paths.NPM_BUNDLE_SUBDIR)
+  const codexBundle = path.join(bundleDir, `${paths.NPM_BUNDLE_SUBDIR}-codex`)
+
+  const resolveType = () => {
+    if (assistantFlag && assistantFlag !== 'auto') return assistantFlag
+    return paths.detectAssistant(targetRoot)
+  }
+
+  const assistantType = resolveType()
+  const bundle = assistantType === 'codex' ? codexBundle : claudeBundle
+
+  if (!fs.existsSync(bundle)) {
+    // Fallback: older tarballs only ship the Claude bundle. If the user
+    // explicitly asked for codex but only the Claude bundle is present,
+    // fail loudly rather than silently installing the wrong flavor.
+    if (assistantType === 'codex' && fs.existsSync(claudeBundle)) {
+      throw new Error(
+        `Codex bundle not found at ${codexBundle}. This ClaudeMap build only ships the Claude artifact. Reinstall from a newer tarball.`,
+      )
+    }
+    throw new Error(`Bundled ClaudeMap artifact not found at ${bundle}.`)
+  }
+
+  return bundle
 }
 
 function normalizeArgs(argv, bundledArtifactRoot) {
@@ -60,7 +121,12 @@ async function main() {
   }
 
   const paths = await loadPathContracts()
-  const bundledArtifactRoot = path.join(PACKAGE_ROOT, paths.NPM_BUNDLE_DIR_REL, paths.NPM_BUNDLE_SUBDIR)
+  const assistantFlag = extractAssistantFlag(argv)
+  const positionalTarget = extractPositionalTarget(argv)
+  const targetRoot = positionalTarget
+    ? path.resolve(process.cwd(), positionalTarget)
+    : process.cwd()
+  const bundledArtifactRoot = resolveBundledArtifactRoot(paths, assistantFlag, targetRoot)
 
   const result = spawnSync(process.execPath, [INSTALL_SCRIPT_PATH, ...normalizeArgs(argv, bundledArtifactRoot)], {
     cwd: process.cwd(),
