@@ -11,6 +11,8 @@ import {
   SKILLS_SUBDIR,
   COMMANDS_SUBDIR,
   AGENTS_SUBDIR,
+  RUNTIME_SKILL_NAMES,
+  LEGACY_RUNTIME_SKILL_NAMES,
   RUNTIME_SKILL_NAME,
   SKILL_ROOT_REL,
   COMMANDS_ROOT_REL,
@@ -63,7 +65,7 @@ describe('ASSISTANT_CONFIGS', () => {
     // .agents/skills is the hardcoded discovery path
     expect(config.skillsPath).toBe('.agents/skills')
     expect(config.agentsPath).toBe('.codex/agents')
-    // No slash commands for Codex
+    // No repo-defined slash-command directory for Codex
     expect(config.commandsPath).toBe(null)
     expect(config.agentExt).toBe('.toml')
   })
@@ -91,9 +93,12 @@ describe('resolveAssistantPaths', () => {
     })
 
     it('returns correct skill paths', () => {
+      expect(paths.skillName).toBe('claudemap-runtime')
+      expect(paths.skillMention).toBe('$claudemap-runtime')
       expect(paths.skillRootRel).toBe('.claude/skills/claudemap-runtime')
       expect(paths.runtimeGraphRel).toContain('.claude/skills/claudemap-runtime')
       expect(paths.runtimeStateRel).toContain('.claude/skills/claudemap-runtime')
+      expect(paths.legacySkillRootRels).toEqual([])
     })
 
     it('returns correct agent paths', () => {
@@ -138,9 +143,12 @@ describe('resolveAssistantPaths', () => {
     })
 
     it('returns correct skill paths under .agents/skills', () => {
-      expect(paths.skillRootRel).toBe('.agents/skills/claudemap-runtime')
-      expect(paths.runtimeGraphRel).toContain('.agents/skills/claudemap-runtime')
-      expect(paths.runtimeStateRel).toContain('.agents/skills/claudemap-runtime')
+      expect(paths.skillName).toBe('codexmap-runtime')
+      expect(paths.skillMention).toBe('$codexmap-runtime')
+      expect(paths.skillRootRel).toBe('.agents/skills/codexmap-runtime')
+      expect(paths.runtimeGraphRel).toContain('.agents/skills/codexmap-runtime')
+      expect(paths.runtimeStateRel).toContain('.agents/skills/codexmap-runtime')
+      expect(paths.legacySkillRootRels).toEqual(['.agents/skills/claudemap-runtime'])
     })
 
     it('returns correct agent paths with .toml extension', () => {
@@ -148,7 +156,7 @@ describe('resolveAssistantPaths', () => {
       expect(paths.architectAgentRel).toBe('.codex/agents/claudemap-architect.toml')
     })
 
-    it('returns null for commandsRootRel (Codex deprecated slash commands)', () => {
+    it('returns null for commandsRootRel (Codex has no repo-defined slash-command directory)', () => {
       expect(paths.commandsRootRel).toBe(null)
     })
 
@@ -159,19 +167,19 @@ describe('resolveAssistantPaths', () => {
     })
 
     it('returns skillConfigRel for self-location', () => {
-      expect(paths.skillConfigRel).toBe('.agents/skills/claudemap-runtime/.claudemap-config.json')
+      expect(paths.skillConfigRel).toBe('.agents/skills/codexmap-runtime/.claudemap-config.json')
     })
 
     it('getManagedPaths spans both roots and excludes commands', () => {
       const managed = paths.getManagedPaths()
       // Skill in .agents/skills
-      expect(managed).toContain('.agents/skills/claudemap-runtime')
+      expect(managed).toContain('.agents/skills/codexmap-runtime')
       // Agent in .codex
       expect(managed).toContain('.codex/agents/claudemap-architect.toml')
       // Metadata in .codex
       expect(managed).toContain('.codex/claudemap-install.json')
       expect(managed).toContain('.codex/claudemap-artifact.json')
-      // No commands
+      // No repo-defined slash-command files
       expect(managed.some((p) => p.includes('commands'))).toBe(false)
     })
   })
@@ -267,6 +275,9 @@ describe('legacy exports', () => {
   })
 
   it('RUNTIME_SKILL_NAME is defined', () => {
+    expect(RUNTIME_SKILL_NAMES[ASSISTANT_TYPES.CLAUDE]).toBe('claudemap-runtime')
+    expect(RUNTIME_SKILL_NAMES[ASSISTANT_TYPES.CODEX]).toBe('codexmap-runtime')
+    expect(LEGACY_RUNTIME_SKILL_NAMES[ASSISTANT_TYPES.CODEX]).toEqual(['claudemap-runtime'])
     expect(RUNTIME_SKILL_NAME).toBe('claudemap-runtime')
   })
 

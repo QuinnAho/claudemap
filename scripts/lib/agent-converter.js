@@ -76,19 +76,26 @@ function convertAgentMdToToml(mdContent) {
     lines.push(`description = "${escapedDesc}"`)
   }
 
-  // Optional fields with type mapping
-  if (frontmatter.tools) {
-    // tools is comma-separated in Claude, array in Codex
-    const tools = frontmatter.tools.split(',').map((t) => t.trim())
-    lines.push(`tools = [${tools.map((t) => `"${t}"`).join(', ')}]`)
-  }
-
+  // Optional fields. Codex's custom-agent TOML schema accepts a
+  // narrow set of top-level keys: name, description,
+  // developer_instructions, model, model_reasoning_effort,
+  // sandbox_mode, nickname_candidates, plus [mcp_servers.*] and
+  // [[skills.config]] tables. Claude-only fields (tools, maxTurns,
+  // color) are dropped — emitting them causes Codex to fail loading
+  // the agent (e.g. attempting to coerce `tools = [...]` into its
+  // internal tool-config enum variants like WebSearchToolConfigInput).
   if (frontmatter.model) {
-    // Map Claude model names to Codex equivalents
+    // Map Claude model names to Codex equivalents. Codex signed in with a
+    // ChatGPT account rejects the older `gpt-4o` family ("The 'gpt-4o'
+    // model is not supported when using Codex with a ChatGPT account").
+    // The current supported identifiers are gpt-5.4, gpt-5.4-mini,
+    // gpt-5.3-codex, gpt-5.3-codex-spark, and gpt-5.2. We pick the
+    // flagship gpt-5.4 for sonnet/opus (reasoning-heavy work like the
+    // architect subagent) and gpt-5.4-mini for haiku (fast/cheap).
     const modelMap = {
-      sonnet: 'gpt-4o', // or leave as-is if Codex supports same names
-      opus: 'gpt-4',
-      haiku: 'gpt-4o-mini',
+      sonnet: 'gpt-5.4',
+      opus: 'gpt-5.4',
+      haiku: 'gpt-5.4-mini',
     }
     const codexModel = modelMap[frontmatter.model] || frontmatter.model
     lines.push(`model = "${codexModel}"`)
@@ -97,14 +104,6 @@ function convertAgentMdToToml(mdContent) {
   if (frontmatter.effort) {
     // Map effort to model_reasoning_effort
     lines.push(`model_reasoning_effort = "${frontmatter.effort}"`)
-  }
-
-  if (frontmatter.maxTurns) {
-    lines.push(`max_turns = ${frontmatter.maxTurns}`)
-  }
-
-  if (frontmatter.color) {
-    lines.push(`color = "${frontmatter.color}"`)
   }
 
   // Developer instructions (the body of the markdown)

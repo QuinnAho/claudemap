@@ -4,6 +4,15 @@
 // The Vite tokens plugin (app/vite/tokens-plugin.js) mirrors these into
 // CSS custom properties at build time so CSS rules can read var(--name).
 // Do not edit globals.css :root block by hand; regenerate from here.
+//
+// Brand-sensitive slots (`accent`, `accentPronounced`) are resolved from
+// the active brand at module eval time by reading <html data-brand="…">.
+// The CSS var override in tokens.generated.css handles any rule that
+// references var(--accent) directly; this module handles every JS call
+// through `alpha()`, which composes rgba() strings from raw hex and so
+// cannot go through the CSS variable.
+
+import { BRANDS, DEFAULT_BRAND_ID } from './branding.js'
 
 // ---------- Color primitives (raw hex, used only to build palettes below) ----------
 
@@ -68,10 +77,37 @@ function hexToRgb(hex) {
   return [(value >> 16) & 255, (value >> 8) & 255, value & 255]
 }
 
+// Resolve the active brand's accent hex pair once at module eval. The
+// packager stamps <html data-brand="…"> before any script runs, so the
+// attribute is already present by the time this module is imported. In
+// non-DOM contexts (tests, SSR) fall back to the default brand, which
+// matches HEX.accent for ClaudeMap.
+const RESOLVED_BRAND_ACCENT = (() => {
+  const fallback = BRANDS[DEFAULT_BRAND_ID]
+  if (typeof document === 'undefined') {
+    return { base: fallback.accent.base, pronounced: fallback.accent.pronounced }
+  }
+  const brandId = document.documentElement.getAttribute('data-brand')
+  const brand = BRANDS[brandId] || fallback
+  return { base: brand.accent.base, pronounced: brand.accent.pronounced }
+})()
+
 // Public helper: compose an rgba() string from a known color name.
 // Usage: alpha('accent', OPACITY.soft), alpha('white', OPACITY.faint).
+//
+// `accent` and `accentPronounced` are brand-sensitive and resolve through
+// RESOLVED_BRAND_ACCENT above so CodexMap-branded sessions get blue hex
+// in the composed rgba() strings. Every other color key reads from the
+// brand-neutral HEX table.
 export function alpha(colorName, opacityValue) {
-  const hex = HEX[colorName]
+  let hex
+  if (colorName === 'accent') {
+    hex = RESOLVED_BRAND_ACCENT.base
+  } else if (colorName === 'accentPronounced') {
+    hex = RESOLVED_BRAND_ACCENT.pronounced
+  } else {
+    hex = HEX[colorName]
+  }
   if (!hex) {
     throw new Error(`alpha(): unknown color "${colorName}"`)
   }

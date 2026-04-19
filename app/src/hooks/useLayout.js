@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { computeLayout } from '../lib/layoutEngine'
+import { buildTopLevelLayoutEdges, dedupeBidirectionalLayoutEdges } from '../lib/layoutEdges'
+import { computeSemanticTopLevelLayout } from '../lib/semanticTopLevelLayout'
 import { buildSystemTreeLayout, getGraphLayoutSignature } from '../lib/systemTreeLayout'
 import { buildTopLevelLayoutModel, reflowTopLevelLayout } from '../lib/topLevelLayout'
 import {
@@ -338,11 +340,21 @@ export function useLayout(zoomLevel) {
         .map((node) => node.id),
     )
     const systemNodeIds = new Set(canonicalTopLevelNodes.map((node) => node.id))
-    const systemEdges = edges.filter(
-      (edge) => systemNodeIds.has(edge.source) && systemNodeIds.has(edge.target),
+    const topLevelLayoutEdges = buildTopLevelLayoutEdges(
+      edges,
+      nodeById,
+      systemNodeIds,
     )
+    const layoutSystemEdges = dedupeBidirectionalLayoutEdges(topLevelLayoutEdges)
+    const semanticTopLevelNodes = computeSemanticTopLevelLayout(
+      canonicalTopLevelNodes,
+      layoutSystemEdges,
+    )
+    const layoutPromise = semanticTopLevelNodes
+      ? Promise.resolve(semanticTopLevelNodes)
+      : computeLayout(canonicalTopLevelNodes, layoutSystemEdges)
 
-    computeLayout(canonicalTopLevelNodes, systemEdges).then((positionedSystemNodes) => {
+    layoutPromise.then((positionedSystemNodes) => {
       if (cancelled) {
         return
       }

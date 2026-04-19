@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { ArrowUpRight, Sparkles } from 'lucide-react'
 import { MOTION } from '../../contracts/motion'
 import { copyTextToClipboard } from '../../hooks/useClipboard'
+import { getBrand } from '../../lib/brand'
 
 export default function MapAffordance({ affordance }) {
   const [copied, setCopied] = useState(false)
@@ -33,9 +34,9 @@ export default function MapAffordance({ affordance }) {
       return
     }
 
-    const copiedCommand = await copyTextToClipboard(affordance.command)
+    const copiedPrompt = await copyTextToClipboard(affordance.prompt)
 
-    if (!copiedCommand) {
+    if (!copiedPrompt) {
       return
     }
 
@@ -52,14 +53,18 @@ export default function MapAffordance({ affordance }) {
 
   const isOpen = affordance.kind === 'open'
   const Icon = isOpen ? ArrowUpRight : Sparkles
-  const label = isOpen ? 'Open map' : copied ? 'Copied! Paste into Claude' : 'Create map?'
+  const label = isOpen
+    ? 'Open map'
+    : copied
+      ? `Copied! Paste into ${getBrand().pasteTargetLabel}`
+      : 'Create map?'
 
   return (
     <button
       className="map-affordance"
       onClick={handleClick}
       data-copied={copied ? 'true' : undefined}
-      title={isOpen ? 'Open this scoped ClaudeMap' : affordance.command}
+      title={isOpen ? `Open this scoped ${getBrand().displayName}` : affordance.prompt}
       type="button"
     >
       <Icon size={11} />

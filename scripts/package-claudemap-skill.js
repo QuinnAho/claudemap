@@ -18,6 +18,10 @@ async function loadCodexSkillGenerator() {
   return import('./lib/codex-skill-generator.js')
 }
 
+async function loadBrandingContracts() {
+  return import('../app/src/contracts/branding.js')
+}
+
 // APP_EXCLUSION_RULES drives copyArtifactFiles' filter for the app/
 // tree. Each rule is an object literal so the smoke test can walk the
 // list and assert every rule fires. The previous implementation was a
@@ -66,7 +70,30 @@ function createAppExclusionRules(paths) {
         )
       },
     },
+    {
+      name: 'unit-test-files',
+      reason: 'Test sources are development-only and must not ship with the packaged runtime.',
+      matches(relativePath) {
+        return isTestSourcePath(relativePath)
+      },
+    },
   ]
+}
+
+// Test-source matcher shared by the skill and app filters. We match
+// both `*.test.js`/`*.test.jsx` (co-located unit tests) and any file
+// under a `__tests__/` folder, which is the other convention the
+// repo uses. `.mjs`/`.ts` variants are included for forward-compat
+// in case a test is ever renamed; the current tree has none, but the
+// packager should not be the reason a renamed test leaks.
+function isTestSourcePath(relativePath) {
+  if (/\.test\.(js|jsx|mjs|ts|tsx)$/.test(relativePath)) {
+    return true
+  }
+  if (relativePath === '__tests__' || relativePath.startsWith('__tests__/') || relativePath.includes('/__tests__/')) {
+    return true
+  }
+  return false
 }
 
 function printUsage() {
@@ -313,6 +340,18 @@ function writeNavigationDocs(artifactRoot, skillRoot, assistantPaths) {
   const skillRel = toPosix(skillRoot)
   const agentsRel = assistantPaths.agentsPath
   const agentFile = `${agentsRel}/${assistantPaths.architectAgentFilename}`
+  const skillMention = assistantPaths.skillMention || '$claudemap-runtime'
+  const quickStartSteps = assistantPaths.commandsPath
+    ? [
+        '1. Run `setup-claudemap`',
+        '2. Ask the assistant to explain a system, file, or flow',
+        '3. Run `refresh` after edits',
+      ]
+    : [
+        `1. Use \`/skills\` or mention \`${skillMention}\`, then run \`setup-claudemap\``,
+        '2. Ask the assistant to explain a system, file, or flow',
+        '3. Run `refresh` after edits',
+      ]
   const commandsSection = assistantPaths.commandsPath
     ? `Use these first:
 
@@ -322,8 +361,9 @@ function writeNavigationDocs(artifactRoot, skillRoot, assistantPaths) {
 - \`/refresh\`: refresh the current graph after code changes
 - \`/explain\`: run a guided walkthrough against the live graph
 - \`/show\`: direct the live map for focus, highlights, presentation, health, and flow`
-    : `Codex does not use slash commands. Invoke ClaudeMap by asking the skill directly
-(see the "Available Commands" section of SKILL.md for supported operations):
+    : `Codex supports built-in slash commands, but ClaudeMap is exposed through the skills system rather than custom slash-command files.
+Use \`/skills\` or mention \`${skillMention}\` to invoke it explicitly.
+(See the "Available Commands" section of SKILL.md for supported operations):
 
 - \`setup-claudemap\`: build a detailed architecture map for the current project
 - \`open-claudemap\`: reopen the existing map UI without rebuilding the graph
@@ -338,9 +378,7 @@ function writeNavigationDocs(artifactRoot, skillRoot, assistantPaths) {
 
 ## Quick Start
 
-1. Run \`setup-claudemap\`
-2. Ask the assistant to explain a system, file, or flow
-3. Run \`refresh\` after edits
+${quickStartSteps.join('\n')}
 
 ## Public Commands
 
@@ -382,7 +420,7 @@ async function buildManagedPaths(paths, assistantPaths) {
     toPosix(assistantPaths.installRecordRel),
   ]
 
-  // Slash commands only exist for Claude.
+  // Repo-defined slash-command files only exist for Claude.
   if (assistantPaths.commandsRootRel) {
     // Derive slash-command entries from descriptors so the managedPaths list
     // stays in lockstep with whatever the packager actually writes.
@@ -467,7 +505,7 @@ function notesFor(assistantPaths, isCodex) {
     return [
       'Install the bundled directories (.codex/ and .agents/) into your target project root with scripts/install-claudemap.js, or copy them manually.',
       'Codex discovers skills from .agents/skills/; agent definitions and the install record live under .codex/.',
-      'Codex deprecated slash commands. The equivalent operations are documented in the skill\'s SKILL.md under "Available Commands".',
+      'Codex supports built-in slash commands, but ClaudeMap\'s repo-specific operations are surfaced through the skill\'s SKILL.md under "Available Commands" rather than a custom .codex/commands directory.',
       'The packaged runtime ships with the current seeded ClaudeMap self-map so open-claudemap can render immediately after install.',
       'The installer script automatically runs npm install inside the skill runtime directory. Manual installs still need that step.',
       'The skill writes .claudemap-config.json on install for self-location; Codex does not set a dedicated skill-dir env var.',
@@ -493,7 +531,9 @@ function ensureCleanArtifactLocation(outputRoot, artifactDirName) {
 }
 
 function shouldExcludeSkill(relativePath) {
-  return relativePath === 'SKILL.md'
+  if (relativePath === 'SKILL.md') return true
+  if (isTestSourcePath(relativePath)) return true
+  return false
 }
 
 function createShouldExcludeApp(paths) {
@@ -516,6 +556,11 @@ async function copyArtifactFiles(artifactRoot, paths, assistantPaths) {
       path.join(REPO_ROOT, 'skill', 'SKILL.md'),
       path.join(artifactRoot, skillRoot, 'SKILL.md'),
       descriptors,
+      {
+        skillName: assistantPaths.skillName,
+        skillMention: assistantPaths.skillMention,
+        skillRootRel: assistantPaths.skillRootRel,
+      },
     )
   } else {
     copyFile('skill/SKILL.md', artifactRoot, path.join(skillRoot, 'SKILL.md'))
@@ -566,6 +611,35 @@ function copyDirectoryInto(relativeSourcePath, artifactRoot, relativeTargetPath,
       return !shouldExclude(relativePath)
     },
   })
+}
+
+// Rebrand the packaged index.html so the correct brand is active
+// before first paint. Sets <html data-brand="...">, <title>, and the
+// favicon href from the resolved brand descriptor. Claude uses the
+// default brand so this is a no-op for Claude artifacts; we always
+// call it so the code path stays uniform and future brands need no
+// extra wiring.
+function stampBrandInIndexHtml(artifactRoot, skillRootRel, brand, defaultBrandId) {
+  const indexPath = path.join(artifactRoot, skillRootRel, 'app', 'index.html')
+  if (!fs.existsSync(indexPath)) return
+  if (brand.id === defaultBrandId) return
+
+  let html = fs.readFileSync(indexPath, 'utf8')
+
+  // <html ...> — inject data-brand if missing, replace if present.
+  html = html.replace(/<html\b([^>]*)>/i, (_, attrs) => {
+    const stripped = attrs.replace(/\sdata-brand="[^"]*"/i, '')
+    return `<html${stripped} data-brand="${brand.id}">`
+  })
+
+  html = html.replace(/<title>[^<]*<\/title>/i, `<title>${brand.displayName}</title>`)
+
+  html = html.replace(
+    /<link\s+rel="icon"[^>]*>/i,
+    `<link rel="icon" type="image/svg+xml" href="${brand.faviconPath}" />`,
+  )
+
+  fs.writeFileSync(indexPath, html)
 }
 
 // Write the Codex self-location config. Codex skills do not get a
@@ -643,12 +717,27 @@ async function buildAssistantArtifact(assistantType, paths, contracts, normalize
     await writeSlashCommands(artifactRoot, assistantPaths.commandsRootRel)
   }
 
+  const branding = await loadBrandingContracts()
+  const brand = branding.resolveBrandById(assistantPaths.brandId)
+  stampBrandInIndexHtml(artifactRoot, assistantPaths.skillRootRel, brand, branding.DEFAULT_BRAND_ID)
+
   if (assistantType === 'codex') {
     writeCodexSelfLocationConfig(artifactRoot, assistantPaths)
   }
 
   writeNavigationDocs(artifactRoot, assistantPaths.skillRootRel, assistantPaths)
   await writeArtifactManifest(artifactRoot, paths, assistantPaths)
+
+  // Tier 1 deep-rebrand: run last so every packaged text file the
+  // whitelist names is present when we rewrite it. Only Codex. The
+  // Claude flavor keeps its own brand names unchanged.
+  if (assistantType === 'codex') {
+    const { buildCodexRebrandWhitelist, applyCodexDeepRebrand } = await loadCodexSkillGenerator()
+    applyCodexDeepRebrand(
+      artifactRoot,
+      buildCodexRebrandWhitelist(assistantPaths.skillRootRel, assistantPaths.architectAgentRel),
+    )
+  }
 
   const zipName = assistantType === 'codex' ? 'claudemap-skill-codex.zip' : 'claudemap-skill.zip'
   return {

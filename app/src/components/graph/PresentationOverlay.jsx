@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { MOTION } from '../../contracts/motion'
 import { PRESENTATION_MODES } from '../../contracts/presentation'
-import { COLOR, alpha } from '../../contracts/tokens'
+import { alpha } from '../../contracts/tokens'
 import { useGraphStore } from '../../store/graphStore'
 import {
   selectPresentationCaption,
@@ -81,7 +81,7 @@ export default function PresentationOverlay() {
             maxWidth: '56ch',
             fontSize: 'clamp(17px, 2vw, 22px)',
             lineHeight: 1.6,
-            color: COLOR.text.presentation,
+            color: 'var(--text-presentation)',
             fontFamily: 'inherit',
             fontWeight: 500,
             textShadow: `0 10px 28px ${alpha('black', 0.62)}`,

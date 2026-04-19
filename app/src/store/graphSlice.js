@@ -1,4 +1,5 @@
 import { GRAPH_SOURCES } from '../contracts/graph-sources'
+import { getBrand } from '../lib/brand'
 
 // Graph slice: nodes, edges, manifest, meta. The "data that came from disk" half
 // of the store. Setters here never mutate UI-local or runtime-driven fields.
@@ -12,7 +13,7 @@ export const graphSliceInitialState = {
   graphLoaded: false,
   meta: {
     repoName: 'claudemap',
-    creditLabel: 'ClaudeMap graph',
+    creditLabel: `${getBrand().displayName} graph`,
     source: GRAPH_SOURCES.RUNTIME,
     lastSyncedAt: Date.now(),
   },

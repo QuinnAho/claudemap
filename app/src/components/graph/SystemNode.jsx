@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import { Handle, Position } from '@xyflow/react'
 import { ChevronDown } from 'lucide-react'
-import { COLOR, alpha } from '../../contracts/tokens'
+import { alpha } from '../../contracts/tokens'
 import { getNodeIcon } from './nodeIcons'
 import MapAffordance from './MapAffordance'
+import NodeHandles from './NodeHandles'
 import { SYSTEM_NODE_HEADER_HEIGHT, SYSTEM_NODE_MIN_HEIGHT } from './systemNodeSizing'
 import FloatingDescription from './FloatingDescription'
 
@@ -60,7 +60,7 @@ export default function SystemNode({ data }) {
   const baseStyle = {
     width: '100%',
     height: '100%',
-    backgroundColor: isExpanded ? alpha('white', 0.01) : surfaceColor,
+    backgroundColor: surfaceColor,
     border: `1px solid ${borderColor}`,
     borderRadius: '12px',
     minHeight: `${SYSTEM_NODE_MIN_HEIGHT}px`,
@@ -90,8 +90,7 @@ export default function SystemNode({ data }) {
       onMouseLeave={() => setIsHovered(false)}
       style={{ width: '100%', height: '100%', position: 'relative', overflow: 'visible' }}
     >
-      <Handle type="target" position={Position.Top} style={hiddenHandleStyle} />
-      <Handle type="source" position={Position.Bottom} style={hiddenHandleStyle} />
+      <NodeHandles style={hiddenHandleStyle} />
 
       <FloatingDescription text={data.summary} visible={showDescription} position="above" />
       {data.mapAffordance ? (
@@ -159,7 +158,7 @@ export default function SystemNode({ data }) {
                   fontWeight: 600,
                   color:
                     data.isSelected || isPresentationHighlight
-                      ? COLOR.text.highlight
+                      ? 'var(--text-highlight)'
                       : 'var(--text-primary)',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',

@@ -7,6 +7,7 @@ import {
   computeVisibleNodes,
   computeRewrittenVisibleEdges,
   computeConnectedSystemIds,
+  computeStyledEdges,
 } from './graphView'
 import { buildNodeByIdMap } from './graphNodeUtils'
 import { PRESENTATION_MODES } from '../contracts/presentation'
@@ -399,5 +400,30 @@ describe('computeConnectedSystemIds', () => {
     })
 
     expect(result.size).toBe(0)
+  })
+})
+
+describe('computeStyledEdges', () => {
+  it('assigns handles from final visible node geometry', () => {
+    const nodes = [
+      { id: 'system-a', type: 'system', position: { x: 0, y: 0 }, width: 180, height: 72 },
+      { id: 'system-b', type: 'system', position: { x: 240, y: 130 }, width: 180, height: 72 },
+    ]
+    const nodeById = buildNodeByIdMap(nodes)
+
+    const result = computeStyledEdges({
+      visibleEdges: [{ id: 'a-to-b', source: 'system-a', target: 'system-b' }],
+      nodeById,
+      presentationMode: PRESENTATION_MODES.FREE,
+      selectedSystemId: null,
+      hasExplicitHighlights: false,
+      highlightMode: 'subtle',
+      presentationSystemIds: new Set(),
+      explicitHighlightedNodeIds: new Set(),
+      highlightedSystemIds: new Set(),
+    })
+
+    expect(result[0].sourceHandle).toBe('source-bottom')
+    expect(result[0].targetHandle).toBe('target-top')
   })
 })

@@ -160,11 +160,19 @@ function runCommand(command, args, workingDirectory, options = {}) {
   }
 }
 
-// Note: building the artifact inside the installer currently only
-// targets Claude. Callers that need a Codex or dual build should run
-// the packager directly with --assistant and then point the installer
-// at the pre-built artifact via --artifact.
-function buildArtifactIfNeeded(options, defaultOutputRoot) {
+// Resolve the directory name the packager writes to for a given
+// assistant. Claude artifacts land at {outputRoot}/{NPM_BUNDLE_SUBDIR}
+// and Codex artifacts at {outputRoot}/{NPM_BUNDLE_SUBDIR}-codex.
+function resolveFlavorArtifactRoot(paths, outputRoot, assistantType) {
+  const suffix = assistantType === 'codex' ? '-codex' : ''
+  return path.join(outputRoot, `${paths.NPM_BUNDLE_SUBDIR}${suffix}`)
+}
+
+// Build the artifact and point options.artifactRoot at the flavor-aware
+// directory the packager actually wrote to. Without this, --assistant
+// codex without --artifact reads a stale Claude manifest from
+// {outputRoot}/claudemap/ and fails the manifest/assistant guard.
+function buildArtifactIfNeeded(options, defaultOutputRoot, paths) {
   if (!options.buildArtifact || options.dryRun) {
     return
   }
@@ -176,6 +184,7 @@ function buildArtifactIfNeeded(options, defaultOutputRoot) {
     [packageScriptPath, '--output', defaultOutputRoot, '--assistant', assistantArg],
     REPO_ROOT,
   )
+  options.artifactRoot = resolveFlavorArtifactRoot(paths, defaultOutputRoot, assistantArg)
 }
 
 function loadArtifactManifest(artifactRoot, manifestFilename) {
@@ -379,6 +388,67 @@ function removeManagedPaths(targetRoot, managedPaths, dryRun) {
   return removedPaths
 }
 
+function shouldRemoveLegacyRuntimeRoot(absolutePath) {
+  const configPath = path.join(absolutePath, '.claudemap-config.json')
+
+  if (fs.existsSync(configPath)) {
+    try {
+      const config = readJsonFile(configPath)
+      if (config.assistant === 'codex' || /(^|\/)claudemap-runtime$/.test(config.skillRootRel || '')) {
+        return true
+      }
+    } catch {
+      return true
+    }
+  }
+
+  const skillPath = path.join(absolutePath, 'SKILL.md')
+  if (!fs.existsSync(skillPath)) {
+    return false
+  }
+
+  try {
+    const skillContent = fs.readFileSync(skillPath, 'utf8')
+    return (
+      /^name:\s*claudemap-runtime\s*$/m.test(skillContent) &&
+      skillContent.includes('Codex Workflow') &&
+      skillContent.includes('claudemap-architect')
+    )
+  } catch {
+    return false
+  }
+}
+
+function removeLegacyRuntimeSkillRoots(targetRoot, assistantPaths, dryRun) {
+  if (!Array.isArray(assistantPaths.legacySkillRootRels)) {
+    return []
+  }
+
+  const removedPaths = []
+
+  for (const legacySkillRootRel of assistantPaths.legacySkillRootRels) {
+    if (legacySkillRootRel === assistantPaths.skillRootRel) {
+      continue
+    }
+
+    const absoluteLegacyRoot = resolveManagedPath(targetRoot, legacySkillRootRel)
+    if (!fs.existsSync(absoluteLegacyRoot) || !shouldRemoveLegacyRuntimeRoot(absoluteLegacyRoot)) {
+      continue
+    }
+
+    removedPaths.push(legacySkillRootRel)
+
+    if (!dryRun) {
+      fs.rmSync(absoluteLegacyRoot, {
+        force: true,
+        recursive: true,
+      })
+    }
+  }
+
+  return removedPaths
+}
+
 // Copy each install root directory from the artifact to the target.
 // Claude installs have one root (.claude); Codex installs have two
 // (.agents and .codex).
@@ -481,7 +551,7 @@ async function installClaudeMap(options) {
   }
 
   ensureTargetRepository(mergedOptions.targetRoot)
-  buildArtifactIfNeeded(mergedOptions, defaultOutputRoot)
+  buildArtifactIfNeeded(mergedOptions, defaultOutputRoot, paths)
 
   const manifest = loadArtifactManifest(mergedOptions.artifactRoot, paths.ARTIFACT_MANIFEST_FILENAME)
   const existingAssistant = detectExistingAssistant(mergedOptions.targetRoot, paths)
@@ -521,6 +591,11 @@ async function installClaudeMap(options) {
           mergedOptions.dryRun,
         )
       : []
+    const removedLegacySkillRoots = removeLegacyRuntimeSkillRoots(
+      mergedOptions.targetRoot,
+      assistantPaths,
+      mergedOptions.dryRun,
+    )
 
     // Determine install roots from the manifest if present, falling
     // back to the assistant's defaults. This keeps the installer robust
@@ -550,10 +625,11 @@ async function installClaudeMap(options) {
     let runtimeInstallRoot = null
 
     if (mergedOptions.installDependencies) {
+      const installedSkillRootRel = manifest.internalRuntime?.skillRoot || assistantPaths.skillRootRel
       runtimeInstallRoot = installDependencies(
         mergedOptions.targetRoot,
         mergedOptions.dryRun,
-        assistantPaths.skillRootRel,
+        installedSkillRootRel,
       )
     }
 
@@ -576,8 +652,9 @@ async function installClaudeMap(options) {
       console.log(`Merged into: ${state.targetRootPath}`)
     }
     console.log(`Install record: ${recordPath}`)
-    if (removedManagedPaths.length > 0) {
-      console.log(`Replaced managed paths: ${removedManagedPaths.join(', ')}`)
+    const replacedPaths = [...removedManagedPaths, ...removedLegacySkillRoots]
+    if (replacedPaths.length > 0) {
+      console.log(`Replaced managed paths: ${replacedPaths.join(', ')}`)
     }
 
     if (mergedOptions.dryRun) {

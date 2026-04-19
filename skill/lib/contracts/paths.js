@@ -18,11 +18,22 @@ export const ASSISTANT_TYPES = Object.freeze({
   CODEX: 'codex',
 })
 
+// Brand identifiers used by the app to pick palette + display name.
+// The packaged index.html carries <html data-brand="..."> so the right
+// brand is active before first paint. Kept here (not in the app's
+// branding.js) because the packager must resolve a brand id from an
+// assistant type at build time and both tiers need to agree.
+export const BRAND_IDS = Object.freeze({
+  CLAUDEMAP: 'claudemap',
+  CODEXMAP: 'codexmap',
+})
+
 // Configuration for each assistant type.
 // - rootDir: primary config/install record directory
 // - skillsPath: where skills are discovered (may differ from rootDir!)
 // - agentsPath: where agent definitions live
-// - commandsPath: where slash commands live (null if not supported)
+// - commandsPath: where repo-defined slash-command docs live
+//   (null when the assistant has no repo-defined slash-command directory)
 // - agentExt: file extension for agent definitions
 export const ASSISTANT_CONFIGS = Object.freeze({
   [ASSISTANT_TYPES.CLAUDE]: {
@@ -39,7 +50,7 @@ export const ASSISTANT_CONFIGS = Object.freeze({
     rootDir: '.codex',
     skillsPath: '.agents/skills',
     agentsPath: '.codex/agents',
-    commandsPath: null, // Codex deprecated slash commands
+    commandsPath: null, // Codex has no repo-defined slash-command directory
     agentExt: '.toml',
   },
 })
@@ -58,8 +69,20 @@ export const SKILLS_SUBDIR = 'skills'
 export const COMMANDS_SUBDIR = 'commands'
 export const AGENTS_SUBDIR = 'agents'
 
-// The claudemap runtime lives under .claude/skills/claudemap-runtime/
-export const RUNTIME_SKILL_NAME = 'claudemap-runtime'
+// Assistant-visible skill directory names. Claude keeps the original name
+// for backwards compatibility; Codex gets the CodexMap-branded skill name.
+export const RUNTIME_SKILL_NAMES = Object.freeze({
+  [ASSISTANT_TYPES.CLAUDE]: 'claudemap-runtime',
+  [ASSISTANT_TYPES.CODEX]: 'codexmap-runtime',
+})
+
+export const LEGACY_RUNTIME_SKILL_NAMES = Object.freeze({
+  [ASSISTANT_TYPES.CODEX]: Object.freeze(['claudemap-runtime']),
+})
+
+// Backwards-compatible default for older imports. This intentionally remains
+// the Claude skill name; assistant-aware code should use resolveAssistantPaths().
+export const RUNTIME_SKILL_NAME = RUNTIME_SKILL_NAMES[ASSISTANT_TYPES.CLAUDE]
 
 // Composed paths relative to a target repo root.
 export const SKILL_ROOT_REL = `${CLAUDE_ROOT_DIR}/${SKILLS_SUBDIR}/${RUNTIME_SKILL_NAME}`
@@ -140,14 +163,24 @@ export function resolveAssistantPaths(assistantType) {
     throw new Error(`Unknown assistant type: ${assistantType}. Valid types: ${validTypes}`)
   }
 
-  const skillRootRel = `${config.skillsPath}/${RUNTIME_SKILL_NAME}`
+  const skillName = RUNTIME_SKILL_NAMES[assistantType] || RUNTIME_SKILL_NAME
+  const legacySkillNames = LEGACY_RUNTIME_SKILL_NAMES[assistantType] || Object.freeze([])
+  const skillRootRel = `${config.skillsPath}/${skillName}`
+  const legacySkillRootRels = legacySkillNames.map((legacySkillName) => (
+    `${config.skillsPath}/${legacySkillName}`
+  ))
   const agentBasename = assistantType === ASSISTANT_TYPES.CODEX
     ? ARCHITECT_AGENT_FILENAME.replace('.md', config.agentExt)
     : ARCHITECT_AGENT_FILENAME
 
+  const brandId = assistantType === ASSISTANT_TYPES.CODEX
+    ? BRAND_IDS.CODEXMAP
+    : BRAND_IDS.CLAUDEMAP
+
   return {
     // Base config
     assistantType,
+    brandId,
     rootDir: config.rootDir,
     skillsPath: config.skillsPath,
     agentsPath: config.agentsPath,
@@ -155,7 +188,10 @@ export function resolveAssistantPaths(assistantType) {
     agentExt: config.agentExt,
 
     // Composed skill paths
+    skillName,
+    skillMention: `$${skillName}`,
     skillRootRel,
+    legacySkillRootRels,
     runtimeGraphRel: `${skillRootRel}/${APP_PUBLIC_GRAPH_REL}/${RUNTIME_GRAPH_FILENAME}`,
     runtimeStateRel: `${skillRootRel}/${APP_PUBLIC_GRAPH_REL}/${RUNTIME_STATE_FILENAME}`,
 

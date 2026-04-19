@@ -93,7 +93,7 @@ Instructions here.`
     expect(toml).toContain('Instructions here.')
   })
 
-  it('converts tools to TOML array', () => {
+  it('drops Claude-only tools field (unsupported by Codex TOML schema)', () => {
     const mdContent = `---
 name: test
 description: test
@@ -104,7 +104,7 @@ Body`
 
     const toml = convertAgentMdToToml(mdContent)
 
-    expect(toml).toContain('tools = ["Read", "Glob", "Grep"]')
+    expect(toml).not.toContain('tools')
   })
 
   it('maps model names', () => {
@@ -136,7 +136,7 @@ Body`
     expect(toml).toContain('model_reasoning_effort = "high"')
   })
 
-  it('converts maxTurns to max_turns', () => {
+  it('drops Claude-only maxTurns field (unsupported by Codex TOML schema)', () => {
     const mdContent = `---
 name: test
 description: test
@@ -147,10 +147,10 @@ Body`
 
     const toml = convertAgentMdToToml(mdContent)
 
-    expect(toml).toContain('max_turns = 10')
+    expect(toml).not.toContain('max_turns')
   })
 
-  it('preserves color field', () => {
+  it('drops Claude-only color field (unsupported by Codex TOML schema)', () => {
     const mdContent = `---
 name: test
 description: test
@@ -161,10 +161,10 @@ Body`
 
     const toml = convertAgentMdToToml(mdContent)
 
-    expect(toml).toContain('color = "cyan"')
+    expect(toml).not.toContain('color')
   })
 
-  it('converts full claudemap-architect agent', () => {
+  it('converts full claudemap-architect agent, emitting only Codex-supported fields', () => {
     const mdContent = `---
 name: claudemap-architect
 description: Use PROACTIVELY when turning a repository snapshot into architecture map
@@ -182,11 +182,14 @@ Your only output is the JSON object defined by the enrichment contract.`
     const toml = convertAgentMdToToml(mdContent)
 
     expect(toml).toContain('name = "claudemap-architect"')
-    expect(toml).toContain('tools = ["Read", "Glob", "Grep", "Bash"]')
-    expect(toml).toContain('max_turns = 10')
-    expect(toml).toContain('color = "cyan"')
+    expect(toml).toContain('model = "gpt-5.4"')
+    expect(toml).toContain('model_reasoning_effort = "high"')
     expect(toml).toContain('developer_instructions = """')
     expect(toml).toContain('You are the ClaudeMap architect')
+    // Claude-only fields must not appear — Codex rejects them.
+    expect(toml).not.toContain('tools')
+    expect(toml).not.toContain('max_turns')
+    expect(toml).not.toContain('color')
   })
 
   it('escapes quotes in description', () => {

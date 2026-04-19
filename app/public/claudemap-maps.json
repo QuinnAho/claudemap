@@ -22,7 +22,8 @@
         "ancestorPath": [],
         "filePathHint": "skill/",
         "fingerprint": "sha1:d652dc603412c8f7ff15635c1707dd0912098a3d",
-        "stale": false
+        "stale": false,
+        "needsRebuild": false
       },
       "cachePath": "claudemap-cache.skill-runtime.json",
       "graphPath": "graph/claudemap-runtime.skill-runtime.json",

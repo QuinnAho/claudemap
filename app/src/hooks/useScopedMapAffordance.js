@@ -1,13 +1,14 @@
 import { useCallback } from 'react'
 import { useGraphStore } from '../store/graphStore'
 import { selectMapsManifest } from '../store/selectors'
+import { buildCreateMapPrompt } from '../lib/assistantPrompts'
 import { setActiveMap } from '../lib/mapApi'
 import { areStringArraysEqual } from '../lib/graphView'
 
 // useScopedMapAffordance builds the per-node map affordance used by
 // SystemNode: if a scoped sub-map already exists for this subtree return
 // {kind:'open', onClick} that switches to it, otherwise return
-// {kind:'create', command} with a /create-map invocation prefilled with the
+// {kind:'create', prompt} with a brand-aware create-map invocation prefilled with the
 // node's scope. Qualification is limited to system nodes whose direct
 // children are also systems and number more than two, matching the seed-map
 // policy in mapApi.
@@ -69,9 +70,9 @@ export function useScopedMapAffordance(nodeById) {
     [getAncestorLabels, mapsManifest],
   )
 
-  const buildCreateMapCommand = useCallback(
-    (node) =>
-      `/create-map ${JSON.stringify({
+  const buildScopedMapPrompt = useCallback(
+    (node) => {
+      const scopeJson = JSON.stringify({
         scope: {
           type: 'subsystem',
           rootSystemId: node.id,
@@ -81,7 +82,10 @@ export function useScopedMapAffordance(nodeById) {
         },
         label: node.data?.label || node.id,
         summary: node.data?.summary || null,
-      })}`,
+      })
+
+      return buildCreateMapPrompt(scopeJson)
+    },
     [getAncestorLabels],
   )
 
@@ -107,10 +111,10 @@ export function useScopedMapAffordance(nodeById) {
 
       return {
         kind: 'create',
-        command: buildCreateMapCommand(node),
+        prompt: buildScopedMapPrompt(node),
       }
     },
-    [buildCreateMapCommand, findScopedMapEntry, switchScopedMap],
+    [buildScopedMapPrompt, findScopedMapEntry, switchScopedMap],
   )
 
   return buildMapAffordance

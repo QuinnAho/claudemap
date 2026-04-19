@@ -6,6 +6,7 @@ import {
   RUNTIME_STATE_REL,
 } from '../contracts/paths'
 import { PRESENTATION_MODES } from '../contracts/presentation'
+import { getBrand } from './brand'
 
 // Unified shape predicates - imported from skill/lib/contracts/schemas/
 // so the app and skill share a single source of truth (Phase 7 follow-up).
@@ -51,7 +52,7 @@ export function createLegacyManifest() {
     maps: [
       {
         id: DEFAULT_MAP_ID,
-        label: 'ClaudeMap',
+        label: getBrand().displayName,
         summary: 'Full repo overview',
         scope: null,
         cachePath: CACHE_FILENAME,

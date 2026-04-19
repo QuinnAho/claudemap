@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react'
 import { GRAPH_SOURCES } from '../contracts/graph-sources'
+import { getBrand } from '../lib/brand'
 import {
   createDefaultRuntimeEnvelope,
   fetchGraphAsset,
@@ -65,7 +66,7 @@ export function useRuntimeGraph() {
       setGraph(nodes, edges)
       setMeta({
         repoName: graphData.meta?.repoName || 'claudemap',
-        creditLabel: graphData.meta?.creditLabel || 'ClaudeMap graph',
+        creditLabel: graphData.meta?.creditLabel || `${getBrand().displayName} graph`,
         source: graphData.meta?.source || GRAPH_SOURCES.SEED,
         lastSyncedAt: Date.now(),
       })

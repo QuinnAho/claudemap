@@ -1,7 +1,7 @@
-import { Handle, Position } from '@xyflow/react'
 import { useEffect, useState } from 'react'
 import { MOTION } from '../../contracts/motion'
-import { COLOR, FONT, alpha } from '../../contracts/tokens'
+import { FONT, alpha } from '../../contracts/tokens'
+import NodeHandles from './NodeHandles'
 import { FUNCTION_NODE_WIDTH } from './systemNodeSizing'
 
 const hiddenHandleStyle = {
@@ -67,14 +67,13 @@ export default function FunctionNode({ data }) {
           'opacity var(--motion-surface-duration) var(--motion-ease-soft), transform var(--motion-surface-duration) var(--motion-ease-smooth), background-color var(--motion-quick-duration) var(--motion-ease-soft), border-color var(--motion-quick-duration) var(--motion-ease-soft), box-shadow var(--motion-surface-duration) var(--motion-ease-soft)',
       }}
     >
-      <Handle type="target" position={Position.Top} style={hiddenHandleStyle} />
-      <Handle type="source" position={Position.Bottom} style={hiddenHandleStyle} />
+      <NodeHandles style={hiddenHandleStyle} />
 
       <span
         style={{
           display: 'block',
           fontSize: '11px',
-          color: isLead || isPresentationHighlight ? COLOR.text.highlight : 'var(--text-secondary)',
+          color: isLead || isPresentationHighlight ? 'var(--text-highlight)' : 'var(--text-secondary)',
           fontFamily: FONT.mono,
           whiteSpace: 'nowrap',
           overflow: 'hidden',

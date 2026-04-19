@@ -32,11 +32,14 @@ const DUAL_ARTIFACT_OUTPUT_ROOT = path.join(SMOKE_ROOT, 'artifact-dual')
 const FIXTURE_ROOT = path.join(SMOKE_ROOT, 'package-fixture')
 const CODEX_FIXTURE_ROOT = path.join(SMOKE_ROOT, 'package-fixture-codex')
 const CROSS_ASSISTANT_FIXTURE_ROOT = path.join(SMOKE_ROOT, 'package-fixture-cross-assistant')
+const CLAUDE_RUNTIME_SKILL_NAME = 'claudemap-runtime'
+const CODEX_RUNTIME_SKILL_NAME = 'codexmap-runtime'
+const LEGACY_CODEX_RUNTIME_SKILL_NAME = 'claudemap-runtime'
 const GRAPH_DIR = path.join(
   FIXTURE_ROOT,
   '.claude',
   'skills',
-  'claudemap-runtime',
+  CLAUDE_RUNTIME_SKILL_NAME,
   'app',
   'public',
   'graph',
@@ -252,6 +255,7 @@ function assertScopedManifest(manifestPath, expectedMapId) {
 function assertStrictEnrichmentFailure(setupCommandPath) {
   const emptyEnrichmentPath = path.join(FIXTURE_ROOT, 'empty-enrichment.json')
   fs.writeFileSync(emptyEnrichmentPath, '')
+  const priorExitCode = process.exitCode
 
   return setupCommandPath([FIXTURE_ROOT, '--no-start-app', '--enrichment-file', emptyEnrichmentPath])
     .then(() => {
@@ -262,6 +266,9 @@ function assertStrictEnrichmentFailure(setupCommandPath) {
         error.message.includes('Enrichment file is empty'),
         `Expected strict enrichment failure message. Got:\n${error.message || '(no error message)'}`,
       )
+    })
+    .finally(() => {
+      process.exitCode = priorExitCode
     })
 }
 
@@ -470,6 +477,7 @@ async function assertAppExclusionRules() {
     { name: 'maps-manifest', candidate: `public/${paths.MAPS_MANIFEST_FILENAME}` },
     { name: 'legacy-runtime-graphs', candidate: `public/${paths.RUNTIME_GRAPH_FILENAME}` },
     { name: 'graph-directory', candidate: `public/${paths.GRAPH_DIR_NAME}/x.json` },
+    { name: 'unit-test-files', candidate: 'src/lib/foo.test.js' },
   ]
 
   for (const rule of rules) {
@@ -760,11 +768,13 @@ async function buildCodexArtifact() {
 function assertCodexArtifact(artifactRoot) {
   const codexRoot = path.join(artifactRoot, '.codex')
   const agentsRoot = path.join(artifactRoot, '.agents')
-  const skillRoot = path.join(agentsRoot, 'skills', 'claudemap-runtime')
+  const skillRoot = path.join(agentsRoot, 'skills', CODEX_RUNTIME_SKILL_NAME)
+  const legacySkillRoot = path.join(agentsRoot, 'skills', LEGACY_CODEX_RUNTIME_SKILL_NAME)
 
   assert(fs.existsSync(codexRoot), `Codex artifact missing .codex/: ${codexRoot}`)
   assert(fs.existsSync(agentsRoot), `Codex artifact missing .agents/: ${agentsRoot}`)
   assert(fs.existsSync(skillRoot), `Codex artifact missing skill root: ${skillRoot}`)
+  assert(!fs.existsSync(legacySkillRoot), `Codex artifact should not ship legacy skill root: ${legacySkillRoot}`)
 
   const agentFile = path.join(codexRoot, 'agents', 'claudemap-architect.toml')
   assert(fs.existsSync(agentFile), `Codex artifact missing .toml agent: ${agentFile}`)
@@ -790,17 +800,77 @@ function assertCodexArtifact(artifactRoot) {
     skillContent.includes('Subagent Invocation (Codex)'),
     'Codex SKILL.md is missing Subagent Invocation section',
   )
+  assert(
+    skillContent.includes('Codex Workflow'),
+    'Codex SKILL.md is missing the Codex Workflow section',
+  )
+  assert(
+    !skillContent.includes('.claude/commands'),
+    'Codex SKILL.md should not reference .claude/commands',
+  )
+  assert(
+    !skillContent.includes('Codex does not use slash commands'),
+    'Codex SKILL.md should not claim Codex has no slash commands',
+  )
+  assert(
+    /^name:\s*codexmap-runtime\s*$/m.test(skillContent),
+    'Codex SKILL.md should use the codexmap-runtime skill name',
+  )
+  assert(
+    skillContent.includes('/skills') && skillContent.includes('$codexmap-runtime'),
+    'Codex SKILL.md should explain explicit skill invocation via /skills or $codexmap-runtime',
+  )
+  assert(
+    !skillContent.includes('$claudemap-runtime'),
+    'Codex SKILL.md should not mention the legacy $claudemap-runtime skill invocation',
+  )
+  assert(
+    skillContent.includes('### refresh'),
+    'Codex SKILL.md should expose refresh as the user-facing command name',
+  )
+  assert(
+    !skillContent.includes('### update'),
+    'Codex SKILL.md should not expose the internal update name',
+  )
+  assert(
+    skillContent.includes('**Actions:**') && skillContent.includes('`show highlight <query'),
+    'Codex SKILL.md should document show sub-actions',
+  )
+  assert(
+    !skillContent.includes('command shipped in the embedded'),
+    'Codex SKILL.md should collapse Claude slash-command references into direct embedded-doc guidance',
+  )
+  assert(
+    skillContent.includes('codex-scoped'),
+    'Codex SKILL.md should rebrand claude-scoped prose to codex-scoped',
+  )
+  assert(
+    !skillContent.includes('claude-scoped'),
+    'Codex SKILL.md should not leave claude-scoped prose behind',
+  )
+
+  const navigationDoc = path.join(skillRoot, 'NAVIGATION.md')
+  assert(fs.existsSync(navigationDoc), `Codex NAVIGATION.md missing: ${navigationDoc}`)
+  const navigationContent = fs.readFileSync(navigationDoc, 'utf8')
+  assert(
+    navigationContent.includes('CodexMap Navigation'),
+    'Codex NAVIGATION.md should be rebranded to CodexMap',
+  )
+  assert(
+    navigationContent.includes('/skills') && navigationContent.includes('$codexmap-runtime'),
+    'Codex NAVIGATION.md should explain explicit skill invocation',
+  )
 
   const selfLocationConfig = path.join(skillRoot, '.claudemap-config.json')
   assert(fs.existsSync(selfLocationConfig), `Codex self-location config missing: ${selfLocationConfig}`)
   const selfLocation = readJson(selfLocationConfig)
   assert(
-    selfLocation.skillRootRel === '.agents/skills/claudemap-runtime',
+    selfLocation.skillRootRel === '.agents/skills/codexmap-runtime',
     `Codex self-location has wrong skillRootRel: ${selfLocation.skillRootRel}`,
   )
   assert(selfLocation.assistant === 'codex', 'Codex self-location missing assistant=codex')
 
-  // No slash commands directory.
+  // No repo-defined slash-command directory.
   const commandsDir = path.join(codexRoot, 'commands')
   assert(
     !fs.existsSync(commandsDir),
@@ -825,12 +895,98 @@ function assertCodexArtifact(artifactRoot) {
     'Codex manifest managedPaths missing install record',
   )
   assert(
-    manifest.managedPaths.includes('.agents/skills/claudemap-runtime'),
+    manifest.managedPaths.includes('.agents/skills/codexmap-runtime'),
     'Codex manifest managedPaths missing skill root',
+  )
+  assert(
+    !manifest.managedPaths.includes('.agents/skills/claudemap-runtime'),
+    'Codex manifest should not include the legacy skill root',
   )
   assert(
     !manifest.managedPaths.some((p) => p.startsWith('.claude/')),
     'Codex manifest managedPaths should not contain .claude/ paths',
+  )
+
+  // Branding: packaged index.html must carry the codexmap brand so the
+  // right CSS override wins before first paint; title + favicon must
+  // match the CodexMap descriptor.
+  const indexHtmlPath = path.join(skillRoot, 'app', 'index.html')
+  assert(fs.existsSync(indexHtmlPath), `Codex artifact missing index.html: ${indexHtmlPath}`)
+  const indexHtml = fs.readFileSync(indexHtmlPath, 'utf8')
+  assert(
+    /<html\b[^>]*\sdata-brand="codexmap"/i.test(indexHtml),
+    'Codex index.html missing data-brand="codexmap" on <html>',
+  )
+  assert(
+    /<title>CodexMap<\/title>/.test(indexHtml),
+    'Codex index.html missing <title>CodexMap</title>',
+  )
+  assert(
+    /href="\/favicon-codex\.svg"/.test(indexHtml),
+    'Codex index.html missing /favicon-codex.svg favicon link',
+  )
+
+  // Brand-prose rebrand: the human-readable display name and assistant-visible
+  // skill identity in the Codex SKILL.md should be CodexMap/codexmap-runtime.
+  assert(
+    /\bCodexMap\b/.test(skillContent),
+    'Codex SKILL.md missing CodexMap prose rebrand',
+  )
+  assert(
+    /codexmap-runtime/.test(skillContent),
+    'Codex SKILL.md missing Codex runtime skill identity',
+  )
+
+  const graphSourcesPath = path.join(skillRoot, 'skill', 'lib', 'contracts', 'graph-sources.js')
+  assert(fs.existsSync(graphSourcesPath), `Codex artifact missing graph-sources contract: ${graphSourcesPath}`)
+  const graphSourcesContent = fs.readFileSync(graphSourcesPath, 'utf8')
+  assert(
+    /CLAUDE:\s*'codex'/.test(graphSourcesContent),
+    'Codex graph-sources contract should serialize GRAPH_SOURCES.CLAUDE as codex',
+  )
+  assert(
+    /CLAUDE_SCOPED:\s*'codex-scoped'/.test(graphSourcesContent),
+    'Codex graph-sources contract should serialize GRAPH_SOURCES.CLAUDE_SCOPED as codex-scoped',
+  )
+
+  const appGraphSourcesPath = path.join(skillRoot, 'app', 'src', 'contracts', 'graph-sources.js')
+  assert(fs.existsSync(appGraphSourcesPath), `Codex artifact missing app graph-sources contract: ${appGraphSourcesPath}`)
+  const appGraphSourcesContent = fs.readFileSync(appGraphSourcesPath, 'utf8')
+  assert(
+    /CLAUDE:\s*'codex'/.test(appGraphSourcesContent),
+    'Codex app graph-sources contract should serialize GRAPH_SOURCES.CLAUDE as codex',
+  )
+  assert(
+    /CLAUDE_SCOPED:\s*'codex-scoped'/.test(appGraphSourcesContent),
+    'Codex app graph-sources contract should serialize GRAPH_SOURCES.CLAUDE_SCOPED as codex-scoped',
+  )
+}
+
+// Verify branding was NOT applied to the default (Claude) artifact.
+// The Claude bundle keeps the default :root CSS block, no data-brand
+// attribute, and the ClaudeMap display name.
+function assertClaudeArtifactBranding(artifactRoot) {
+  const indexHtmlPath = path.join(
+    artifactRoot,
+    '.claude',
+    'skills',
+    CLAUDE_RUNTIME_SKILL_NAME,
+    'app',
+    'index.html',
+  )
+  assert(fs.existsSync(indexHtmlPath), `Claude artifact missing index.html: ${indexHtmlPath}`)
+  const indexHtml = fs.readFileSync(indexHtmlPath, 'utf8')
+  assert(
+    !/data-brand=/i.test(indexHtml),
+    'Claude index.html should not carry data-brand (default brand is implicit)',
+  )
+  assert(
+    /<title>ClaudeMap<\/title>/.test(indexHtml),
+    'Claude index.html missing <title>ClaudeMap</title>',
+  )
+  assert(
+    /href="\/favicon\.svg"/.test(indexHtml),
+    'Claude index.html missing /favicon.svg favicon link',
   )
 }
 
@@ -883,6 +1039,28 @@ async function assertCodexInstall(codexArtifactRoot) {
     private: true,
     type: 'module',
   })
+  const preexistingLegacySkill = path.join(
+    CODEX_FIXTURE_ROOT,
+    '.agents',
+    'skills',
+    LEGACY_CODEX_RUNTIME_SKILL_NAME,
+  )
+  writeJson(path.join(preexistingLegacySkill, '.claudemap-config.json'), {
+    assistant: 'codex',
+    skillRootRel: `.agents/skills/${LEGACY_CODEX_RUNTIME_SKILL_NAME}`,
+  })
+  writeText(
+    path.join(preexistingLegacySkill, 'SKILL.md'),
+    [
+      '---',
+      `name: ${LEGACY_CODEX_RUNTIME_SKILL_NAME}`,
+      '---',
+      '',
+      '## Codex Workflow',
+      'claudemap-architect',
+      '',
+    ].join('\n'),
+  )
 
   const result = await installClaudeMap({
     artifactRoot: codexArtifactRoot,
@@ -900,7 +1078,13 @@ async function assertCodexInstall(codexArtifactRoot) {
     CODEX_FIXTURE_ROOT,
     '.agents',
     'skills',
-    'claudemap-runtime',
+    CODEX_RUNTIME_SKILL_NAME,
+  )
+  const legacyInstalledSkill = path.join(
+    CODEX_FIXTURE_ROOT,
+    '.agents',
+    'skills',
+    LEGACY_CODEX_RUNTIME_SKILL_NAME,
   )
   const installedAgent = path.join(
     CODEX_FIXTURE_ROOT,
@@ -915,12 +1099,21 @@ async function assertCodexInstall(codexArtifactRoot) {
   )
 
   assert(fs.existsSync(installedSkill), `Codex install missing skill root: ${installedSkill}`)
+  assert(!fs.existsSync(legacyInstalledSkill), `Codex install left legacy skill root: ${legacyInstalledSkill}`)
   assert(fs.existsSync(installedAgent), `Codex install missing architect .toml: ${installedAgent}`)
   assert(fs.existsSync(installedRecord), `Codex install missing install record: ${installedRecord}`)
 
   const record = readJson(installedRecord)
   assert(record.assistant === 'codex', 'Codex install record missing assistant=codex')
   assert(record.version === 2, 'Codex install record should be version 2')
+  assert(
+    record.managedPaths.includes('.agents/skills/codexmap-runtime'),
+    'Codex install record missing codexmap-runtime managed path',
+  )
+  assert(
+    !record.managedPaths.includes('.agents/skills/claudemap-runtime'),
+    'Codex install record should not include legacy claudemap-runtime managed path',
+  )
 
   // Should not have created .claude/ anywhere.
   assert(
@@ -1057,6 +1250,8 @@ async function main() {
   // Codex-specific assertions. Build a Codex artifact, inspect its
   // layout, exercise the installer against a fresh fixture, and verify
   // the cross-assistant guard on a separate fixture.
+  assertClaudeArtifactBranding(artifactRoot)
+
   const codexArtifactRoot = await buildCodexArtifact()
   assertCodexArtifact(codexArtifactRoot)
   await assertDualArtifact()

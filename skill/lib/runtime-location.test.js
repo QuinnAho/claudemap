@@ -23,18 +23,18 @@ describe('resolveSkillDirectory', () => {
   })
 
   it('finds config file when CLAUDE_SKILL_DIR not set', () => {
-    const configContent = JSON.stringify({ skillDirectory: '.agents/skills/claudemap-runtime' })
+    const configPath = path.resolve('/project/.agents/skills/codexmap-runtime/.claudemap-config.json')
+    const configContent = JSON.stringify({ skillRootRel: '.agents/skills/codexmap-runtime' })
 
-    fs.existsSync.mockImplementation((p) => p.endsWith('.claudemap-config.json'))
+    fs.existsSync.mockImplementation((p) => path.normalize(p) === path.normalize(configPath))
     fs.readFileSync.mockReturnValue(configContent)
 
     const result = resolveSkillDirectory({
       env: {},
-      startDir: '/project/.agents/skills/claudemap-runtime/skill',
+      startDir: '/project/.agents/skills/codexmap-runtime/skill',
     })
 
-    // Should return the directory containing the config file
-    expect(result).toBeDefined()
+    expect(path.normalize(result)).toBe(path.normalize(path.dirname(configPath)))
   })
 
   it('searches upward through directories', () => {
@@ -46,7 +46,7 @@ describe('resolveSkillDirectory', () => {
       // Config file is 2 levels up - normalize paths for cross-platform
       return path.normalize(p) === path.normalize(targetConfigPath)
     })
-    fs.readFileSync.mockReturnValue(JSON.stringify({ skillDirectory: 'test' }))
+    fs.readFileSync.mockReturnValue(JSON.stringify({ skillRootRel: '.agents/skills/codexmap-runtime' }))
 
     resolveSkillDirectory({
       env: {},
@@ -70,7 +70,7 @@ describe('resolveSkillDirectory', () => {
 
   it('prioritizes CLAUDE_SKILL_DIR over config file', () => {
     fs.existsSync.mockReturnValue(true)
-    fs.readFileSync.mockReturnValue(JSON.stringify({ skillDirectory: 'from-config' }))
+    fs.readFileSync.mockReturnValue(JSON.stringify({ skillRootRel: 'from-config' }))
 
     const result = resolveSkillDirectory({
       env: { CLAUDE_SKILL_DIR: '/from-env' },

@@ -2,6 +2,7 @@ import { Compass } from 'lucide-react'
 import { useState } from 'react'
 import { PRESENTATION_MODES } from '../../contracts/presentation'
 import { FONT, alpha } from '../../contracts/tokens'
+import { getBrand } from '../../lib/brand'
 import { setActiveMap } from '../../lib/mapApi'
 import { useGraphStore } from '../../store/graphStore'
 import {
@@ -94,7 +95,7 @@ export default function TopBar() {
             fontFamily: FONT.mono,
           }}
         >
-          ClaudeMap
+          {getBrand().displayName}
         </span>
       </button>
 

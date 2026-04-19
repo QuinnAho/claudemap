@@ -42,9 +42,10 @@ export function resolveSkillDirectory(options = {}) {
 
   if (configPath) {
     const config = readConfigFile(configPath)
-    if (config && config.skillDirectory) {
-      // Config contains relative path from project root
-      // The config file is at the skill root, so use its directory
+    if (config) {
+      // The installer writes .claudemap-config.json at the skill root.
+      // Once we find and parse that file, the containing directory is the
+      // only path we need - field names inside the config may evolve.
       return path.dirname(configPath)
     }
   }

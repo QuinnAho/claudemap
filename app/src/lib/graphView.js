@@ -1,11 +1,13 @@
 import { PRESENTATION_MODES } from '../contracts/presentation'
 import { ZOOM_LEVELS } from '../hooks/useZoomLevel'
 import {
+  getNodeAbsolutePosition,
   getSystemPath,
   getTopLevelSystemId,
   isNodeInSelectedBranch,
   isNodeVisible,
 } from './graphNodeUtils'
+import { chooseEdgeHandles } from './edgeHandles'
 
 // Pure projection helpers that turn raw store state (nodes, highlightedNodes,
 // hoveredPathIds, selectedNode, focusRequest, presentationMode, zoomLevel)
@@ -187,6 +189,20 @@ export function computeConnectedSystemIds({
   return connectedSystemIds
 }
 
+function getRoutableNode(nodeId, nodeById) {
+  const node = nodeById.get(nodeId)
+  const position = getNodeAbsolutePosition(node, nodeById)
+
+  if (!node || !position) {
+    return node
+  }
+
+  return {
+    ...node,
+    position,
+  }
+}
+
 export function computeStyledNodes({
   visibleNodes,
   nodeById,
@@ -281,9 +297,15 @@ export function computeStyledEdges({
   highlightedSystemIds,
 }) {
   return visibleEdges.map((edge) => {
+    const edgeHandles = chooseEdgeHandles(
+      getRoutableNode(edge.source, nodeById),
+      getRoutableNode(edge.target, nodeById),
+    )
+
     if (!selectedSystemId && !hasExplicitHighlights) {
       return {
         ...edge,
+        ...edgeHandles,
         data: {
           ...edge.data,
           isHighlighted: false,
@@ -312,6 +334,7 @@ export function computeStyledEdges({
 
     return {
       ...edge,
+      ...edgeHandles,
       data: {
         ...edge.data,
         isHighlighted,

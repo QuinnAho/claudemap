@@ -1,4 +1,4 @@
-/* Auto-generated from src/contracts/tokens.js and motion.js. Do not edit. */
+/* Auto-generated from src/contracts/tokens.js, motion.js, and branding.js. Do not edit. */
 :root {
   --bg-canvas: #0a0a0a;
   --bg-panel: #111111;
@@ -54,4 +54,12 @@
   --motion-ease-soft: cubic-bezier(0.25, 0.1, 0.25, 1);
   --motion-ease-compass: cubic-bezier(0.22, 0.74, 0.2, 1);
   --motion-ease-ease: ease;
+}
+
+:root[data-brand="codexmap"] {
+  --accent: #5b8def;
+  --accent-pronounced: #5b8def;
+  --bg-highlight-accent: #0e141c;
+  --text-presentation: #e4ecf2;
+  --text-highlight: #eff6ff;
 }

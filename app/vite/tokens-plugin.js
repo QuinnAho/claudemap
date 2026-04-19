@@ -16,13 +16,15 @@ const projectDir = path.resolve(pluginDir, '..')
 
 const tokensSourcePath = path.join(projectDir, 'src', 'contracts', 'tokens.js')
 const motionSourcePath = path.join(projectDir, 'src', 'contracts', 'motion.js')
+const brandingSourcePath = path.join(projectDir, 'src', 'contracts', 'branding.js')
 const generatedCssPath = path.join(projectDir, 'src', 'styles', 'tokens.generated.css')
 
 async function loadTokens() {
   // Cache-bust by appending a timestamp so edits during dev reload cleanly.
   const tokensModule = await import(`${pathToFileUrl(tokensSourcePath)}?t=${Date.now()}`)
   const motionModule = await import(`${pathToFileUrl(motionSourcePath)}?t=${Date.now()}`)
-  return { tokens: tokensModule, motion: motionModule }
+  const brandingModule = await import(`${pathToFileUrl(brandingSourcePath)}?t=${Date.now()}`)
+  return { tokens: tokensModule, motion: motionModule, branding: brandingModule }
 }
 
 function pathToFileUrl(absolutePath) {
@@ -33,10 +35,15 @@ function toKebab(name) {
   return name.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase()
 }
 
-function renderCssVars({ tokens, motion }) {
+// Brand-sensitive tokens: values come from the active brand palette.
+// The default :root block emits the ClaudeMap values from tokens.js;
+// every non-default brand restates the same variable names with its
+// own values in a [data-brand="..."] override block.
+
+function renderCssVars({ tokens, motion, branding }) {
   const lines = []
 
-  lines.push('/* Auto-generated from src/contracts/tokens.js and motion.js. Do not edit. */')
+  lines.push('/* Auto-generated from src/contracts/tokens.js, motion.js, and branding.js. Do not edit. */')
   lines.push(':root {')
 
   // Backgrounds.
@@ -78,6 +85,24 @@ function renderCssVars({ tokens, motion }) {
   }
 
   lines.push('}')
+
+  // Brand overrides. The default :root block above already matches
+  // ClaudeMap; we emit an override block for every non-default brand.
+  // The packager stamps <html data-brand="..."> on the packaged
+  // index.html so the matching override wins at render time.
+  const defaultBrandId = branding.DEFAULT_BRAND_ID
+  for (const [brandId, brand] of Object.entries(branding.BRANDS)) {
+    if (brandId === defaultBrandId) continue
+    lines.push('')
+    lines.push(`:root[data-brand="${brandId}"] {`)
+    lines.push(`  --accent: ${brand.accent.base};`)
+    lines.push(`  --accent-pronounced: ${brand.accent.pronounced};`)
+    lines.push(`  --bg-highlight-accent: ${brand.accent.highlightAccentBg};`)
+    lines.push(`  --text-presentation: ${brand.accent.textPresentation};`)
+    lines.push(`  --text-highlight: ${brand.accent.textHighlight};`)
+    lines.push('}')
+  }
+
   lines.push('')
 
   return lines.join('\n')

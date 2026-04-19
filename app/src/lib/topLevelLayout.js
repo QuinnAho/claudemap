@@ -82,6 +82,72 @@ function buildLayerEntries(nodes) {
   return layers
 }
 
+function getNodeBounds(node) {
+  const left = node.position?.x || 0
+  const top = node.position?.y || 0
+  const width = getNodeWidth(node)
+  const height = getNodeHeight(node)
+
+  return {
+    left,
+    right: left + width,
+    top,
+    bottom: top + height,
+    centerX: left + width / 2,
+  }
+}
+
+function getHorizontalOverlap(leftNode, rightNode) {
+  const leftBounds = getNodeBounds(leftNode)
+  const rightBounds = getNodeBounds(rightNode)
+
+  return Math.max(
+    0,
+    Math.min(leftBounds.right, rightBounds.right) -
+      Math.max(leftBounds.left, rightBounds.left),
+  )
+}
+
+function buildVerticalAnchorsByNodeId(layers, nodesById) {
+  const anchorsByNodeId = new Map()
+
+  for (let layerIndex = 1; layerIndex < layers.length; layerIndex += 1) {
+    const previousLayer = layers[layerIndex - 1]
+    const layer = layers[layerIndex]
+
+    layer.nodeIds.forEach((nodeId) => {
+      const node = nodesById.get(nodeId)
+
+      if (!node) {
+        return
+      }
+
+      const anchors = previousLayer.nodeIds
+        .map((previousNodeId) => {
+          const previousNode = nodesById.get(previousNodeId)
+
+          if (!previousNode) {
+            return null
+          }
+
+          return {
+            nodeId: previousNodeId,
+            overlap: getHorizontalOverlap(previousNode, node),
+          }
+        })
+        .filter((anchor) => anchor && anchor.overlap > 0)
+        .sort((left, right) => right.overlap - left.overlap)
+        .map((anchor) => anchor.nodeId)
+
+      if (anchors.length > 0) {
+        anchorsByNodeId.set(nodeId, anchors)
+      }
+    })
+  }
+
+  return anchorsByNodeId
+}
+
 export function buildTopLevelLayoutModel(nodes, options = {}) {
   const horizontalGap = options.horizontalGap || DEFAULT_HORIZONTAL_GAP
   const verticalGap = options.verticalGap || DEFAULT_VERTICAL_GAP
@@ -90,6 +156,7 @@ export function buildTopLevelLayoutModel(nodes, options = {}) {
     ...(options.padding || {}),
   }
   const layers = buildLayerEntries(nodes)
+  const nodesById = new Map(nodes.map((node) => [node.id, node]))
   const preferredPositionsById = new Map(nodes.map((node) => [node.id, node.position]))
   const gapBeforeByLayer = layers.map((layer, index) => {
     if (index === 0) {
@@ -109,6 +176,7 @@ export function buildTopLevelLayoutModel(nodes, options = {}) {
     padding,
     layers,
     preferredPositionsById,
+    verticalAnchorsByNodeId: buildVerticalAnchorsByNodeId(layers, nodesById),
     gapBeforeByLayer,
   }
 }
@@ -231,7 +299,7 @@ export function reflowTopLevelLayout({
     }
 
     const layerNodes = visibleNodeIds.map((nodeId) => nodeById.get(nodeId))
-    const layerTop =
+    const fallbackLayerTop =
       previousLayerTop === null
         ? layer.preferredY
         : Math.max(
@@ -255,14 +323,50 @@ export function reflowTopLevelLayout({
     })
 
     layerPositions.forEach((position, nodeId) => {
+      const anchors = layoutModel.verticalAnchorsByNodeId?.get(nodeId) || []
+      const anchorBottoms = anchors
+        .map((anchorId) => {
+          const anchorNode = nodeById.get(anchorId)
+          const anchorPosition = nextPositionsById.get(anchorId)
+
+          if (!anchorNode || !anchorPosition) {
+            return null
+          }
+
+          return anchorPosition.y + getNodeHeight(anchorNode)
+        })
+        .filter((bottom) => bottom !== null)
+      const layerTop = anchorBottoms.length > 0
+        ? Math.max(
+            layer.preferredY,
+            Math.max(...anchorBottoms) +
+              (layoutModel.gapBeforeByLayer[index] ?? layoutModel.verticalGap),
+          )
+        : fallbackLayerTop
+
       nextPositionsById.set(nodeId, {
         x: position.x,
         y: layerTop,
       })
     })
 
-    previousLayerTop = layerTop
-    previousLayerHeight = Math.max(...layerNodes.map((node) => getNodeHeight(node)))
+    const layerTops = visibleNodeIds
+      .map((nodeId) => nextPositionsById.get(nodeId)?.y)
+      .filter((top) => top !== undefined)
+    const layerBottoms = visibleNodeIds
+      .map((nodeId) => {
+        const position = nextPositionsById.get(nodeId)
+        const node = nodeById.get(nodeId)
+
+        return position && node ? position.y + getNodeHeight(node) : null
+      })
+      .filter((bottom) => bottom !== null)
+
+    previousLayerTop = layerTops.length ? Math.min(...layerTops) : fallbackLayerTop
+    previousLayerHeight =
+      layerBottoms.length && layerTops.length
+        ? Math.max(...layerBottoms) - previousLayerTop
+        : Math.max(...layerNodes.map((node) => getNodeHeight(node)))
   })
 
   nodes.forEach((node) => {

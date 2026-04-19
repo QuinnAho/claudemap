@@ -26,6 +26,7 @@ const EXEMPT_FILES = [
   'app/src/contracts/tokens.js',
   'app/src/contracts/motion.js',
   'app/src/contracts/zoom.js',
+  'app/src/contracts/branding.js',
   'app/src/contracts/index.js',
   'app/src/lib/runtimeAssets.test.js',
   'scripts/smoke-test-package.js',

@@ -1,8 +1,8 @@
-import { Handle, Position } from '@xyflow/react'
 import { useEffect, useState } from 'react'
 import { MOTION } from '../../contracts/motion'
-import { COLOR, FONT, alpha } from '../../contracts/tokens'
+import { FONT, alpha } from '../../contracts/tokens'
 import FloatingDescription from './FloatingDescription'
+import NodeHandles from './NodeHandles'
 
 const healthColors = {
   yellow: 'var(--health-yellow)',
@@ -70,8 +70,7 @@ export default function FileNode({ data }) {
         overflow: 'hidden',
       }}
     >
-      <Handle type="target" position={Position.Top} style={hiddenHandleStyle} />
-      <Handle type="source" position={Position.Bottom} style={hiddenHandleStyle} />
+      <NodeHandles style={hiddenHandleStyle} />
 
       <FloatingDescription text={data.summary} visible={showDescription} position="above" />
 
@@ -88,7 +87,7 @@ export default function FileNode({ data }) {
         <span
           style={{
             fontSize: '12px',
-            color: isPresentationHighlight ? COLOR.text.highlight : 'var(--text-primary)',
+            color: isPresentationHighlight ? 'var(--text-highlight)' : 'var(--text-primary)',
             fontFamily: FONT.mono,
             overflow: 'hidden',
             textOverflow: 'ellipsis',

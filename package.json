@@ -48,6 +48,7 @@
     "build-site": "npm run generate-seed-map && node ./scripts/build-site.js",
     "mcp": "npm --workspace app run mcp",
     "install-claudemap": "node ./scripts/install-claudemap.js",
+    "install:local": "node ./scripts/install-claudemap.js",
     "setup-claudemap": "npm --workspace skill run setup-claudemap --",
     "open-claudemap": "npm --workspace skill run open-claudemap --",
     "create-map": "npm --workspace skill run create-map --",
