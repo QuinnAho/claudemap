@@ -11,7 +11,22 @@ Unlike traditional visualization tools, ClaudeMap organizes your code by what it
 
 All powered by the same AI you vibecode with.
 
-[![Demo](resources/img/Claudemap-Thumbnail.png)](https://www.loom.com/share/6a2ff0948ae64ae6994fb3817cb3607e)
+## See It In Action
+
+### What's Coming in v0.2.0
+
+ClaudeMap is under active development. Here's what's landing next:
+
+- **Sub-map support** — break larger codebases into focused sub-maps you can create and explore independently
+- **Codex support** — use ClaudeMap with OpenAI Codex, not just Claude Code
+- **Stable map generation** — consistent layouts across rebuilds and refreshes
+
+Click Me ↓
+[![ClaudeMap Demo](resources/img/thumbnail.png)](https://www.loom.com/share/6a2ff0948ae64ae6994fb3817cb3607e)
+
+[Play with ClaudeMap's map](https://quinnaho.github.io/claudemap/) (preview, Claude features require Claude Code)
+
+[Longer YouTube walkthrough](https://www.youtube.com/watch?v=mubRRx5mXzA) if you're into that kind of thing.
 
 [Try the live demo](https://quinnaho.github.io/claudemap/) (preview only, full features require Claude Code or Codex)
 
