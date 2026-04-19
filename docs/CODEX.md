@@ -11,8 +11,7 @@ Then open Codex in that repo:
 
 1. Run `/skills`.
 2. Choose `codexmap-runtime`.
-3. Prefix your request with the inserted skill mention.
-4. Ask naturally.
+3. Ask naturally.
 
 ```text
 $codexmap-runtime build the initial architecture map for this repo

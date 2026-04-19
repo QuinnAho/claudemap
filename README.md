@@ -5,7 +5,11 @@ Welcome to...
 
 **Google Maps for vibecoders.**
 
-AI helps you build fast, but leaves you behind. ClaudeMap reads your project and renders it as an interactive map organized by what your code *does*, not where files live. All with the AI you code with
+AI lets you build faster than ever, but the very tools that help our productivity are leaving us behind - you don't understand what you're building anymore. You can vibecode a full app in a weekend and not even start to explain how it works. ClaudeMap fixes that.
+
+Unlike traditional visualization tools, ClaudeMap organizes your code by what it actually does. Claude reads your project and groups it into concepts in a way you actually think about your project. Zoom out to see the big picture. Zoom in to see the details. Colors show what's healthy and what's broken. Use /explain and ask any question about your code, Claude will present directly on the map and explain step by step. Use /show to tell Claude what you want to find or see, and it moves the map for you.
+
+All powered by the same AI you vibecode with.
 
 [![Demo](resources/img/Claudemap-Thumbnail.png)](https://www.loom.com/share/6a2ff0948ae64ae6994fb3817cb3607e)
 
