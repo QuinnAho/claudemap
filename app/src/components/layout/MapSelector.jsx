@@ -122,7 +122,7 @@ export default function MapSelector() {
       await setActiveMap(nextMapId)
       setIsOpen(false)
     } catch (error) {
-      console.error('Failed to switch ClaudeMap map:', error)
+      console.error('Failed to switch map:', error)
     } finally {
       setIsPending(false)
     }
@@ -131,7 +131,7 @@ export default function MapSelector() {
   return (
     <div
       ref={rootRef}
-      title={staleMaps.length ? 'One or more graphs are stale. Run /refresh to re-resolve them.' : 'Switch graph'}
+      title={staleMaps.length ? 'One or more graphs are stale. Run the refresh command to re-resolve them.' : 'Switch graph'}
       style={{
         position: 'relative',
         display: 'flex',

@@ -2,8 +2,9 @@ const path = require('path')
 
 const POSIX_PATH = path.posix
 const IMPORTABLE_EXTENSIONS = ['.js', '.jsx', '.ts', '.tsx', '.mjs', '.cjs', '.mts', '.cts']
-const EXCLUDED_PREFIXES = ['docs/']
+const EXCLUDED_PREFIXES = ['docs/', 'artifacts/']
 const EXCLUDED_PATHS = new Set(['stitch-base.js'])
+const EXCLUDED_SUFFIXES = ['.test.js']
 
 const SYSTEM_DEFINITIONS = [
   {
@@ -77,6 +78,16 @@ const SYSTEM_DEFINITIONS = [
     healthReason: null,
   },
   {
+    id: 'experience-contracts',
+    label: 'App Contracts',
+    parentId: 'experience',
+    icon: 'puzzle',
+    summary: 'Shared constants, tokens, and type contracts',
+    filePath: 'app/src/contracts/',
+    health: 'green',
+    healthReason: null,
+  },
+  {
     id: 'runtime',
     label: 'Skill Runtime',
     parentId: null,
@@ -135,6 +146,26 @@ const SYSTEM_DEFINITIONS = [
     filePath: 'skill/lib/',
     health: 'red',
     healthReason: 'mcp-client.js still owns transport, runtime state, and file-shim mutation paths',
+  },
+  {
+    id: 'runtime-contracts',
+    label: 'Runtime Contracts',
+    parentId: 'runtime',
+    icon: 'puzzle',
+    summary: 'Schemas, paths, and version contracts',
+    filePath: 'skill/lib/contracts/',
+    health: 'green',
+    healthReason: null,
+  },
+  {
+    id: 'runtime-harness',
+    label: 'Command Harness',
+    parentId: 'runtime',
+    icon: 'zap',
+    summary: 'CLI argument parsing and command execution',
+    filePath: 'skill/lib/command-harness/',
+    health: 'green',
+    healthReason: null,
   },
   {
     id: 'delivery',
@@ -207,6 +238,7 @@ const LEAF_ASSIGNMENTS = [
       'app/src/components/graph/FunctionNode.jsx',
       'app/src/components/graph/FloatingDescription.jsx',
       'app/src/components/graph/MapAffordance.jsx',
+      'app/src/components/graph/NodeHandles.jsx',
       'app/src/components/graph/nodeIcons.js',
       'app/src/components/graph/systemNodeSizing.js',
     ],
@@ -214,15 +246,36 @@ const LEAF_ASSIGNMENTS = [
   {
     systemId: 'experience-state',
     exactPaths: [
-      'app/src/hooks/useGraphData.js',
-      'app/src/hooks/useLayout.js',
-      'app/src/hooks/useZoomLevel.js',
       'app/src/hooks/useClipboard.js',
+      'app/src/hooks/useGraphFocusRuntime.js',
+      'app/src/hooks/useGraphLoaded.js',
+      'app/src/hooks/useGraphPointerHandlers.js',
+      'app/src/hooks/useGraphViewModel.js',
+      'app/src/hooks/useHoverPathScheduler.js',
+      'app/src/hooks/useLayout.js',
+      'app/src/hooks/useRuntimeGraph.js',
+      'app/src/hooks/useRuntimePolling.js',
+      'app/src/hooks/useRuntimeSync.js',
+      'app/src/hooks/useScopedMapAffordance.js',
+      'app/src/hooks/useZoomLevel.js',
+      'app/src/store/graphSlice.js',
       'app/src/store/graphStore.js',
+      'app/src/store/runtimeSlice.js',
+      'app/src/store/selectors.js',
+      'app/src/store/uiSlice.js',
+      'app/src/lib/assistantPrompts.js',
+      'app/src/lib/brand.js',
+      'app/src/lib/edgeHandles.js',
       'app/src/lib/graphNodeUtils.js',
+      'app/src/lib/graphTransform.js',
+      'app/src/lib/graphView.js',
+      'app/src/lib/layoutEdges.js',
       'app/src/lib/layoutEngine.js',
       'app/src/lib/mapApi.js',
+      'app/src/lib/runtimeAssets.js',
+      'app/src/lib/semanticTopLevelLayout.js',
       'app/src/lib/systemTreeLayout.js',
+      'app/src/lib/topLevelLayout.js',
     ],
   },
   {
@@ -238,6 +291,21 @@ const LEAF_ASSIGNMENTS = [
     exactPaths: [
       'app/postcss.config.js',
       'app/tailwind.config.js',
+      'app/vite/tokens-plugin.js',
+      'app/vitest.config.js',
+    ],
+  },
+  {
+    systemId: 'experience-contracts',
+    exactPaths: [
+      'app/src/contracts/branding.js',
+      'app/src/contracts/graph-sources.js',
+      'app/src/contracts/index.js',
+      'app/src/contracts/motion.js',
+      'app/src/contracts/paths.js',
+      'app/src/contracts/presentation.js',
+      'app/src/contracts/tokens.js',
+      'app/src/contracts/zoom.js',
     ],
   },
   {
@@ -257,6 +325,7 @@ const LEAF_ASSIGNMENTS = [
       'skill/lib/file-walker.js',
       'skill/lib/cache.js',
       'skill/lib/differ.js',
+      'skill/lib/import-resolution.js',
     ],
   },
   {
@@ -265,13 +334,26 @@ const LEAF_ASSIGNMENTS = [
       'skill/lib/active-map.js',
       'skill/lib/map-manifest.js',
       'skill/lib/runtime-paths.js',
+      'skill/lib/runtime-location.js',
       'skill/lib/scoped-map.js',
+      'skill/lib/manifest/fingerprint.js',
+      'skill/lib/manifest/index.js',
+      'skill/lib/manifest/io.js',
+      'skill/lib/manifest/migrations.js',
+      'skill/lib/manifest/normalize.js',
+      'skill/lib/manifest/scope-resolution.js',
     ],
   },
   {
     systemId: 'runtime-synthesis',
     exactPaths: [
       'skill/lib/enrichment.js',
+      'skill/lib/enrichment/graph-validation.js',
+      'skill/lib/enrichment/health.js',
+      'skill/lib/enrichment/icons.js',
+      'skill/lib/enrichment/index.js',
+      'skill/lib/enrichment/prompts.js',
+      'skill/lib/enrichment/source-priority.js',
     ],
   },
   {
@@ -279,6 +361,38 @@ const LEAF_ASSIGNMENTS = [
     exactPaths: [
       'skill/lib/mcp-client.js',
       'skill/lib/launcher.js',
+    ],
+  },
+  {
+    systemId: 'runtime-contracts',
+    exactPaths: [
+      'skill/lib/contracts/errors.js',
+      'skill/lib/contracts/graph-sources.js',
+      'skill/lib/contracts/index.js',
+      'skill/lib/contracts/paths.js',
+      'skill/lib/contracts/presentation.js',
+      'skill/lib/contracts/versions.js',
+      'skill/lib/contracts/schemas/cache.js',
+      'skill/lib/contracts/schemas/graph.js',
+      'skill/lib/contracts/schemas/index.js',
+      'skill/lib/contracts/schemas/install-record.js',
+      'skill/lib/contracts/schemas/manifest.js',
+      'skill/lib/contracts/schemas/runtime-envelope.js',
+      'skill/lib/contracts/schemas/shared.js',
+    ],
+  },
+  {
+    systemId: 'runtime-harness',
+    exactPaths: [
+      'skill/lib/command-harness/enrichment-io.js',
+      'skill/lib/command-harness/log.js',
+      'skill/lib/command-harness/parse-args.js',
+      'skill/lib/command-harness/project-root.js',
+      'skill/lib/command-harness/render-slash-template.js',
+      'skill/lib/command-harness/run-command.js',
+      'skill/lib/command-harness/slash-only-descriptors.js',
+      'skill/lib/command-harness/with-mcp.js',
+      'skill/vitest.config.js',
     ],
   },
   {
@@ -298,9 +412,14 @@ const LEAF_ASSIGNMENTS = [
   {
     systemId: 'delivery-packaging',
     exactPaths: [
+      'scripts/check-contracts.js',
       'scripts/install-claudemap.js',
       'scripts/package-claudemap-skill.js',
       'scripts/prepare-npm-bundle.js',
+      'scripts/smoke-test-package.js',
+      'scripts/smoke-test-scope-resolution.mjs',
+      'scripts/lib/agent-converter.js',
+      'scripts/lib/codex-skill-generator.js',
     ],
   },
 ]
@@ -398,6 +517,7 @@ function buildSeedMapGraph(snapshot, contracts) {
   const filteredFiles = snapshot.files
     .filter((file) => !EXCLUDED_PREFIXES.some((prefix) => file.relativePath.startsWith(prefix)))
     .filter((file) => !EXCLUDED_PATHS.has(file.relativePath))
+    .filter((file) => !EXCLUDED_SUFFIXES.some((suffix) => file.relativePath.endsWith(suffix)))
     .sort((left, right) => left.relativePath.localeCompare(right.relativePath))
   const nextSnapshot = {
     ...snapshot,
@@ -461,7 +581,7 @@ function buildSeedMapGraph(snapshot, contracts) {
       files: filteredFiles,
     },
     filteredSnapshot: nextSnapshot,
-    excludedPaths: [...EXCLUDED_PREFIXES, ...EXCLUDED_PATHS],
+    excludedPaths: [...EXCLUDED_PREFIXES, ...EXCLUDED_PATHS, ...EXCLUDED_SUFFIXES],
   }
 }
 

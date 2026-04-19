@@ -24,6 +24,6 @@ async function main() {
 }
 
 main().catch((error) => {
-  console.error(`ClaudeMap MCP server failed: ${error.message}`)
+  console.error(`Runtime MCP server failed: ${error.message}`)
   process.exit(1)
 })

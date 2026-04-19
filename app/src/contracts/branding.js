@@ -3,7 +3,7 @@
 // cool accent). The package installer stamps <html data-brand="..."> on
 // the packaged index.html so the right brand is active before first
 // paint; runtime code reads getBrand() (see app/src/lib/brand.js) to
-// pick display strings.
+// pick display strings and assistant-facing invocation copy.
 //
 // The accent family here is the ONLY place brand colors are defined.
 // The tokens-plugin reads this file to emit per-brand CSS variable
@@ -16,9 +16,9 @@ export const BRAND_IDS = Object.freeze({
 
 export const DEFAULT_BRAND_ID = BRAND_IDS.CLAUDEMAP
 
-// Each brand contributes a small accent family. All other design tokens
-// (backgrounds, text, health, typography, spacing) are brand-neutral
-// and live in tokens.js unchanged.
+// Each brand contributes its display identity, skill invocation handle, and
+// a small accent family. All other design tokens (backgrounds, text, health,
+// typography, spacing) are brand-neutral and live in tokens.js unchanged.
 export const BRANDS = Object.freeze({
   [BRAND_IDS.CLAUDEMAP]: Object.freeze({
     id: BRAND_IDS.CLAUDEMAP,

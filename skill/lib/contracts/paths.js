@@ -76,6 +76,8 @@ export const RUNTIME_SKILL_NAMES = Object.freeze({
   [ASSISTANT_TYPES.CODEX]: 'codexmap-runtime',
 })
 
+// Migration-only assistant-visible names. New artifacts use
+// RUNTIME_SKILL_NAMES; installers use these to clean up managed old roots.
 export const LEGACY_RUNTIME_SKILL_NAMES = Object.freeze({
   [ASSISTANT_TYPES.CODEX]: Object.freeze(['claudemap-runtime']),
 })

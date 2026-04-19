@@ -20,7 +20,7 @@ import {
 import { PRESENTATION_MODES } from '../contracts/presentation.js'
 
 export const toolDefinitions = [
-  { name: 'render_graph', description: 'Render a full ClaudeMap graph payload.' },
+  { name: 'render_graph', description: 'Render a full runtime graph payload.' },
   { name: 'apply_graph_patch', description: 'Apply a batched graph patch to the runtime graph.' },
   { name: 'add_node', description: 'Insert a single node into the runtime graph.' },
   { name: 'remove_node', description: 'Remove a node from the runtime graph.' },

@@ -6,7 +6,7 @@ import {
   getSystemNodeSize,
 } from '../components/graph/systemNodeSizing'
 
-// Pure transform that turns a ClaudeMap graph payload into ReactFlow nodes and
+// Pure transform that turns a runtime graph payload into ReactFlow nodes and
 // edges. Indexing helpers (buildGraphIndexes) are private to this module.
 
 function buildGraphIndexes(graphData) {

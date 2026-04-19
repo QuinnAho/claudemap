@@ -1,0 +1,3018 @@
+{
+  "meta": {
+    "repoName": "claudemap",
+    "branch": "claudemap-v0.2.0",
+    "creditLabel": "ClaudeMap self-map",
+    "generatedAt": "2026-04-19T04:28:40.734Z",
+    "source": "scoped-map",
+    "scope": {
+      "rootSystemId": "runtime",
+      "rootSystemLabel": "Skill Runtime",
+      "layout": "promoted-children"
+    }
+  },
+  "nodes": [
+    {
+      "id": "runtime-commands",
+      "label": "Command Surface",
+      "type": "system",
+      "icon": "zap",
+      "parentId": null,
+      "health": "yellow",
+      "healthReason": "show.js has become a wide control surface for the live map",
+      "summary": "Setup, refresh, explain, and show",
+      "lineCount": 1601,
+      "filePath": "skill/commands/"
+    },
+    {
+      "id": "runtime-analysis",
+      "label": "Project Analysis",
+      "type": "system",
+      "icon": "database",
+      "parentId": null,
+      "health": "green",
+      "healthReason": null,
+      "summary": "Snapshotting, cache, and diffs",
+      "lineCount": 608,
+      "filePath": "skill/lib/"
+    },
+    {
+      "id": "runtime-model",
+      "label": "Map Model",
+      "type": "system",
+      "icon": "puzzle",
+      "parentId": null,
+      "health": "yellow",
+      "healthReason": "Multi-map scope resolution and manifest state now live in one bounded model layer",
+      "summary": "Manifest, scope, and path rules",
+      "lineCount": 1065,
+      "filePath": "skill/lib/"
+    },
+    {
+      "id": "runtime-synthesis",
+      "label": "Graph Synthesis",
+      "type": "system",
+      "icon": "globe",
+      "parentId": null,
+      "health": "yellow",
+      "healthReason": "Enrichment still combines override parsing, prioritization, and heuristic graphing",
+      "summary": "Graph shaping and enrichment",
+      "lineCount": 602,
+      "filePath": "skill/lib/enrichment.js"
+    },
+    {
+      "id": "runtime-transport",
+      "label": "Runtime Transport",
+      "type": "system",
+      "icon": "route",
+      "parentId": null,
+      "health": "red",
+      "healthReason": "mcp-client.js still owns transport, runtime state, and file-shim mutation paths",
+      "summary": "MCP transport and app launch",
+      "lineCount": 895,
+      "filePath": "skill/lib/"
+    },
+    {
+      "id": "runtime-contracts",
+      "label": "Runtime Contracts",
+      "type": "system",
+      "icon": "puzzle",
+      "parentId": null,
+      "health": "green",
+      "healthReason": null,
+      "summary": "Schemas, paths, and version contracts",
+      "lineCount": 989,
+      "filePath": "skill/lib/contracts/"
+    },
+    {
+      "id": "runtime-harness",
+      "label": "Command Harness",
+      "type": "system",
+      "icon": "zap",
+      "parentId": null,
+      "health": "green",
+      "healthReason": null,
+      "summary": "CLI argument parsing and command execution",
+      "lineCount": 648,
+      "filePath": "skill/lib/command-harness/"
+    },
+    {
+      "id": "file-skill-commands-create-map-js",
+      "label": "create-map.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-commands",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Builds a scoped map from the active root graph",
+      "lineCount": 243,
+      "filePath": "skill/commands/create-map.js"
+    },
+    {
+      "id": "file-skill-commands-open-claudemap-js",
+      "label": "open-claudemap.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-commands",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Opens the current map without rebuilding",
+      "lineCount": 111,
+      "filePath": "skill/commands/open-claudemap.js"
+    },
+    {
+      "id": "file-skill-commands-refresh-js",
+      "label": "refresh.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-commands",
+      "health": "yellow",
+      "healthReason": "File is 337 lines",
+      "summary": "Refreshes root and scoped maps after changes",
+      "lineCount": 337,
+      "filePath": "skill/commands/refresh.js"
+    },
+    {
+      "id": "file-skill-commands-setup-claudemap-js",
+      "label": "setup-claudemap.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-commands",
+      "health": "yellow",
+      "healthReason": "High dependency count with 13 imports",
+      "summary": "Builds the root map from a repo snapshot",
+      "lineCount": 202,
+      "filePath": "skill/commands/setup-claudemap.js"
+    },
+    {
+      "id": "file-skill-commands-show-js",
+      "label": "show.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-commands",
+      "health": "red",
+      "healthReason": "Large file at 655 lines",
+      "summary": "Drives highlights, focus, and presentation state",
+      "lineCount": 655,
+      "filePath": "skill/commands/show.js"
+    },
+    {
+      "id": "file-skill-commands-snapshot-js",
+      "label": "snapshot.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-commands",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Writes a repo snapshot JSON",
+      "lineCount": 53,
+      "filePath": "skill/commands/snapshot.js"
+    },
+    {
+      "id": "file-skill-lib-cache-js",
+      "label": "cache.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-analysis",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Persists graph snapshots beside the repo",
+      "lineCount": 79,
+      "filePath": "skill/lib/cache.js"
+    },
+    {
+      "id": "file-skill-lib-differ-js",
+      "label": "differ.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-analysis",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Diffs file manifests and graph payloads",
+      "lineCount": 92,
+      "filePath": "skill/lib/differ.js"
+    },
+    {
+      "id": "file-skill-lib-file-walker-js",
+      "label": "file-walker.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-analysis",
+      "health": "yellow",
+      "healthReason": "File is 314 lines",
+      "summary": "Collects import/export-aware repo snapshots",
+      "lineCount": 314,
+      "filePath": "skill/lib/file-walker.js"
+    },
+    {
+      "id": "file-skill-lib-import-resolution-js",
+      "label": "import-resolution.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-analysis",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Exports resolveImportPath, createSystemImportEdges",
+      "lineCount": 123,
+      "filePath": "skill/lib/import-resolution.js"
+    },
+    {
+      "id": "file-skill-lib-active-map-js",
+      "label": "active-map.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-model",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Resolves the current map entry and its paths",
+      "lineCount": 50,
+      "filePath": "skill/lib/active-map.js"
+    },
+    {
+      "id": "file-skill-lib-manifest-fingerprint-js",
+      "label": "fingerprint.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-model",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Exports normalizeText, normalizePathValue, arraysEqual",
+      "lineCount": 119,
+      "filePath": "skill/lib/manifest/fingerprint.js"
+    },
+    {
+      "id": "file-skill-lib-manifest-index-js",
+      "label": "index.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-model",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Exports findMapById, getActiveMap, setActiveMapId",
+      "lineCount": 52,
+      "filePath": "skill/lib/manifest/index.js"
+    },
+    {
+      "id": "file-skill-lib-manifest-io-js",
+      "label": "io.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-model",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Exports readManifest, writeManifest, ensureManifestForSetup",
+      "lineCount": 54,
+      "filePath": "skill/lib/manifest/io.js"
+    },
+    {
+      "id": "file-skill-lib-manifest-migrations-js",
+      "label": "migrations.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-model",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Exports migrateLegacyRuntimePath, migrateLegacyMapEntryPaths",
+      "lineCount": 67,
+      "filePath": "skill/lib/manifest/migrations.js"
+    },
+    {
+      "id": "file-skill-lib-manifest-normalize-js",
+      "label": "normalize.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-model",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Exports createRootMapEntry, createScopedMapDefaults, createDefaultManifest",
+      "lineCount": 105,
+      "filePath": "skill/lib/manifest/normalize.js"
+    },
+    {
+      "id": "file-skill-lib-manifest-scope-resolution-js",
+      "label": "scope-resolution.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-model",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Exports resolveScopeAgainstGraph",
+      "lineCount": 105,
+      "filePath": "skill/lib/manifest/scope-resolution.js"
+    },
+    {
+      "id": "file-skill-lib-map-manifest-js",
+      "label": "map-manifest.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-model",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Stores map metadata and resolves scopes",
+      "lineCount": 30,
+      "filePath": "skill/lib/map-manifest.js"
+    },
+    {
+      "id": "file-skill-lib-runtime-location-js",
+      "label": "runtime-location.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-model",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Exports resolveSkillDirectory, isClaudeCodeEnvironment, isCodexEnvironment",
+      "lineCount": 147,
+      "filePath": "skill/lib/runtime-location.js"
+    },
+    {
+      "id": "file-skill-lib-runtime-paths-js",
+      "label": "runtime-paths.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-model",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Resolves project and runtime file targets",
+      "lineCount": 96,
+      "filePath": "skill/lib/runtime-paths.js"
+    },
+    {
+      "id": "file-skill-lib-scoped-map-js",
+      "label": "scoped-map.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-model",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Projects subsystem graphs from the root map",
+      "lineCount": 240,
+      "filePath": "skill/lib/scoped-map.js"
+    },
+    {
+      "id": "file-skill-lib-enrichment-js",
+      "label": "enrichment.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-synthesis",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Chooses Claude, override, or heuristic graphs",
+      "lineCount": 18,
+      "filePath": "skill/lib/enrichment.js"
+    },
+    {
+      "id": "file-skill-lib-enrichment-graph-validation-js",
+      "label": "graph-validation.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-synthesis",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Exports validateGraph, parseGraphResponse",
+      "lineCount": 81,
+      "filePath": "skill/lib/enrichment/graph-validation.js"
+    },
+    {
+      "id": "file-skill-lib-enrichment-health-js",
+      "label": "health.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-synthesis",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Exports assessFileHealth, assessSystemHealth",
+      "lineCount": 59,
+      "filePath": "skill/lib/enrichment/health.js"
+    },
+    {
+      "id": "file-skill-lib-enrichment-icons-js",
+      "label": "icons.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-synthesis",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Exports iconForSystem",
+      "lineCount": 26,
+      "filePath": "skill/lib/enrichment/icons.js"
+    },
+    {
+      "id": "file-skill-lib-enrichment-index-js",
+      "label": "index.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-synthesis",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Exports hasEnrichmentResponseOverride, enrichGraph, enrichSnapshot",
+      "lineCount": 287,
+      "filePath": "skill/lib/enrichment/index.js"
+    },
+    {
+      "id": "file-skill-lib-enrichment-prompts-js",
+      "label": "prompts.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-synthesis",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Exports buildPrompt, getClaudeMapArchitectDefinition, getScopedEnrichmentPrompt",
+      "lineCount": 65,
+      "filePath": "skill/lib/enrichment/prompts.js"
+    },
+    {
+      "id": "file-skill-lib-enrichment-source-priority-js",
+      "label": "source-priority.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-synthesis",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Exports getGraphSourcePriority, shouldPreserveExistingGraph, selectPreferredGraph",
+      "lineCount": 66,
+      "filePath": "skill/lib/enrichment/source-priority.js"
+    },
+    {
+      "id": "file-skill-lib-launcher-js",
+      "label": "launcher.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-transport",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Starts or reuses the local ClaudeMap app",
+      "lineCount": 107,
+      "filePath": "skill/lib/launcher.js"
+    },
+    {
+      "id": "file-skill-lib-mcp-client-js",
+      "label": "mcp-client.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-transport",
+      "health": "red",
+      "healthReason": "Large file at 788 lines",
+      "summary": "Bridges commands into runtime graph state",
+      "lineCount": 788,
+      "filePath": "skill/lib/mcp-client.js"
+    },
+    {
+      "id": "file-skill-lib-contracts-errors-js",
+      "label": "errors.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-contracts",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Exports failure, success, warning",
+      "lineCount": 84,
+      "filePath": "skill/lib/contracts/errors.js"
+    },
+    {
+      "id": "file-skill-lib-contracts-graph-sources-js",
+      "label": "graph-sources.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-contracts",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Exports isKnownGraphSource, getGraphSourcePriority, GRAPH_SOURCES",
+      "lineCount": 49,
+      "filePath": "skill/lib/contracts/graph-sources.js"
+    },
+    {
+      "id": "file-skill-lib-contracts-index-js",
+      "label": "index.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-contracts",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Code in skill/lib/contracts",
+      "lineCount": 9,
+      "filePath": "skill/lib/contracts/index.js"
+    },
+    {
+      "id": "file-skill-lib-contracts-paths-js",
+      "label": "paths.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-contracts",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Exports resolveAssistantPaths, detectAssistant, ASSISTANT_TYPES",
+      "lineCount": 281,
+      "filePath": "skill/lib/contracts/paths.js"
+    },
+    {
+      "id": "file-skill-lib-contracts-presentation-js",
+      "label": "presentation.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-contracts",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Exports isPresentationMode, normalizePresentationMode, PRESENTATION_MODES",
+      "lineCount": 25,
+      "filePath": "skill/lib/contracts/presentation.js"
+    },
+    {
+      "id": "file-skill-lib-contracts-schemas-cache-js",
+      "label": "cache.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-contracts",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Exports validateCache",
+      "lineCount": 27,
+      "filePath": "skill/lib/contracts/schemas/cache.js"
+    },
+    {
+      "id": "file-skill-lib-contracts-schemas-graph-js",
+      "label": "graph.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-contracts",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Exports validateGraph",
+      "lineCount": 46,
+      "filePath": "skill/lib/contracts/schemas/graph.js"
+    },
+    {
+      "id": "file-skill-lib-contracts-schemas-index-js",
+      "label": "index.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-contracts",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Exports validate, validateWithWarning, isGraphPayload",
+      "lineCount": 102,
+      "filePath": "skill/lib/contracts/schemas/index.js"
+    },
+    {
+      "id": "file-skill-lib-contracts-schemas-install-record-js",
+      "label": "install-record.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-contracts",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Exports validateInstallRecord",
+      "lineCount": 56,
+      "filePath": "skill/lib/contracts/schemas/install-record.js"
+    },
+    {
+      "id": "file-skill-lib-contracts-schemas-manifest-js",
+      "label": "manifest.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-contracts",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Exports validateManifest",
+      "lineCount": 43,
+      "filePath": "skill/lib/contracts/schemas/manifest.js"
+    },
+    {
+      "id": "file-skill-lib-contracts-schemas-runtime-envelope-js",
+      "label": "runtime-envelope.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-contracts",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Exports validateRuntimeEnvelope",
+      "lineCount": 40,
+      "filePath": "skill/lib/contracts/schemas/runtime-envelope.js"
+    },
+    {
+      "id": "file-skill-lib-contracts-schemas-shared-js",
+      "label": "shared.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-contracts",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Exports isPlainObject, pushTypeError, pushRequiredError",
+      "lineCount": 89,
+      "filePath": "skill/lib/contracts/schemas/shared.js"
+    },
+    {
+      "id": "file-skill-lib-contracts-versions-js",
+      "label": "versions.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-contracts",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Exports runMigrations, runMigrationsWithLadder, MANIFEST_VERSION",
+      "lineCount": 138,
+      "filePath": "skill/lib/contracts/versions.js"
+    },
+    {
+      "id": "file-skill-lib-command-harness-enrichment-io-js",
+      "label": "enrichment-io.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-harness",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Exports loadEnrichmentFileStrict, cleanupEnrichmentFile, readEnrichmentArg",
+      "lineCount": 44,
+      "filePath": "skill/lib/command-harness/enrichment-io.js"
+    },
+    {
+      "id": "file-skill-lib-command-harness-log-js",
+      "label": "log.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-harness",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Exports createLogger",
+      "lineCount": 43,
+      "filePath": "skill/lib/command-harness/log.js"
+    },
+    {
+      "id": "file-skill-lib-command-harness-parse-args-js",
+      "label": "parse-args.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-harness",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Exports parseArgs",
+      "lineCount": 189,
+      "filePath": "skill/lib/command-harness/parse-args.js"
+    },
+    {
+      "id": "file-skill-lib-command-harness-project-root-js",
+      "label": "project-root.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-harness",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Exports resolveProjectRoot",
+      "lineCount": 31,
+      "filePath": "skill/lib/command-harness/project-root.js"
+    },
+    {
+      "id": "file-skill-lib-command-harness-render-slash-template-js",
+      "label": "render-slash-template.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-harness",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Exports slashFileName, renderSlashTemplate",
+      "lineCount": 92,
+      "filePath": "skill/lib/command-harness/render-slash-template.js"
+    },
+    {
+      "id": "file-skill-lib-command-harness-run-command-js",
+      "label": "run-command.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-harness",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Exports runCommand, exitOnError",
+      "lineCount": 176,
+      "filePath": "skill/lib/command-harness/run-command.js"
+    },
+    {
+      "id": "file-skill-lib-command-harness-slash-only-descriptors-js",
+      "label": "slash-only-descriptors.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-harness",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Exports EXPLAIN_SLASH_COMMAND",
+      "lineCount": 30,
+      "filePath": "skill/lib/command-harness/slash-only-descriptors.js"
+    },
+    {
+      "id": "file-skill-lib-command-harness-with-mcp-js",
+      "label": "with-mcp.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-harness",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Exports withMcp",
+      "lineCount": 34,
+      "filePath": "skill/lib/command-harness/with-mcp.js"
+    },
+    {
+      "id": "file-skill-vitest-config-js",
+      "label": "vitest.config.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "runtime-harness",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Exports defineConfig",
+      "lineCount": 9,
+      "filePath": "skill/vitest.config.js"
+    },
+    {
+      "id": "function-skill-commands-create-map-js-main",
+      "label": "main",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-commands-create-map-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Main in create-map.js",
+      "lineCount": 243,
+      "filePath": "skill/commands/create-map.js"
+    },
+    {
+      "id": "function-skill-commands-open-claudemap-js-main",
+      "label": "main",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-commands-open-claudemap-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Main in open-claudemap.js",
+      "lineCount": 111,
+      "filePath": "skill/commands/open-claudemap.js"
+    },
+    {
+      "id": "function-skill-commands-refresh-js-main",
+      "label": "main",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-commands-refresh-js",
+      "health": "yellow",
+      "healthReason": "File is 337 lines",
+      "summary": "Main in refresh.js",
+      "lineCount": 337,
+      "filePath": "skill/commands/refresh.js"
+    },
+    {
+      "id": "function-skill-commands-setup-claudemap-js-main",
+      "label": "main",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-commands-setup-claudemap-js",
+      "health": "yellow",
+      "healthReason": "High dependency count with 13 imports",
+      "summary": "Main in setup-claudemap.js",
+      "lineCount": 202,
+      "filePath": "skill/commands/setup-claudemap.js"
+    },
+    {
+      "id": "function-skill-commands-show-js-main",
+      "label": "main",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-commands-show-js",
+      "health": "red",
+      "healthReason": "Large file at 655 lines",
+      "summary": "Main in show.js",
+      "lineCount": 655,
+      "filePath": "skill/commands/show.js"
+    },
+    {
+      "id": "function-skill-commands-snapshot-js-main",
+      "label": "main",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-commands-snapshot-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Main in snapshot.js",
+      "lineCount": 53,
+      "filePath": "skill/commands/snapshot.js"
+    },
+    {
+      "id": "function-skill-lib-cache-js-getcachepath",
+      "label": "getCachePath",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-cache-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Reads cache path",
+      "lineCount": 19,
+      "filePath": "skill/lib/cache.js"
+    },
+    {
+      "id": "function-skill-lib-cache-js-writecache",
+      "label": "writeCache",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-cache-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Writes cache",
+      "lineCount": 19,
+      "filePath": "skill/lib/cache.js"
+    },
+    {
+      "id": "function-skill-lib-cache-js-readcache",
+      "label": "readCache",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-cache-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Reads cache",
+      "lineCount": 19,
+      "filePath": "skill/lib/cache.js"
+    },
+    {
+      "id": "function-skill-lib-cache-js-iscachestale",
+      "label": "isCacheStale",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-cache-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Is cache stale in cache.js",
+      "lineCount": 19,
+      "filePath": "skill/lib/cache.js"
+    },
+    {
+      "id": "function-skill-lib-differ-js-difffiles",
+      "label": "diffFiles",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-differ-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Diff files in differ.js",
+      "lineCount": 46,
+      "filePath": "skill/lib/differ.js"
+    },
+    {
+      "id": "function-skill-lib-differ-js-diffgraphs",
+      "label": "diffGraphs",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-differ-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Diff graphs in differ.js",
+      "lineCount": 46,
+      "filePath": "skill/lib/differ.js"
+    },
+    {
+      "id": "function-skill-lib-file-walker-js-collectprojectsnapshot",
+      "label": "collectProjectSnapshot",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-file-walker-js",
+      "health": "yellow",
+      "healthReason": "File is 314 lines",
+      "summary": "Collects the repo snapshot used for graphing",
+      "lineCount": 314,
+      "filePath": "skill/lib/file-walker.js"
+    },
+    {
+      "id": "function-skill-lib-import-resolution-js-resolveimportpath",
+      "label": "resolveImportPath",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-import-resolution-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Resolve import path in import-resolution.js",
+      "lineCount": 61,
+      "filePath": "skill/lib/import-resolution.js"
+    },
+    {
+      "id": "function-skill-lib-import-resolution-js-createsystemimportedges",
+      "label": "createSystemImportEdges",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-import-resolution-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Creates system import edges",
+      "lineCount": 61,
+      "filePath": "skill/lib/import-resolution.js"
+    },
+    {
+      "id": "function-skill-lib-manifest-fingerprint-js-normalizetext",
+      "label": "normalizeText",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-manifest-fingerprint-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Normalize text in fingerprint.js",
+      "lineCount": 23,
+      "filePath": "skill/lib/manifest/fingerprint.js"
+    },
+    {
+      "id": "function-skill-lib-manifest-fingerprint-js-normalizepathvalue",
+      "label": "normalizePathValue",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-manifest-fingerprint-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Normalize path value in fingerprint.js",
+      "lineCount": 23,
+      "filePath": "skill/lib/manifest/fingerprint.js"
+    },
+    {
+      "id": "function-skill-lib-manifest-fingerprint-js-arraysequal",
+      "label": "arraysEqual",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-manifest-fingerprint-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Arrays equal in fingerprint.js",
+      "lineCount": 23,
+      "filePath": "skill/lib/manifest/fingerprint.js"
+    },
+    {
+      "id": "function-skill-lib-manifest-fingerprint-js-getnodebyidmap",
+      "label": "getNodeByIdMap",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-manifest-fingerprint-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Reads node by id map",
+      "lineCount": 23,
+      "filePath": "skill/lib/manifest/fingerprint.js"
+    },
+    {
+      "id": "function-skill-lib-manifest-fingerprint-js-collectancestorlabels",
+      "label": "collectAncestorLabels",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-manifest-fingerprint-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Collect ancestor labels in fingerprint.js",
+      "lineCount": 23,
+      "filePath": "skill/lib/manifest/fingerprint.js"
+    },
+    {
+      "id": "function-skill-lib-manifest-index-js-findmapbyid",
+      "label": "findMapById",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-manifest-index-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Find map by id in index.js",
+      "lineCount": 10,
+      "filePath": "skill/lib/manifest/index.js"
+    },
+    {
+      "id": "function-skill-lib-manifest-index-js-getactivemap",
+      "label": "getActiveMap",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-manifest-index-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Reads active map",
+      "lineCount": 10,
+      "filePath": "skill/lib/manifest/index.js"
+    },
+    {
+      "id": "function-skill-lib-manifest-index-js-setactivemapid",
+      "label": "setActiveMapId",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-manifest-index-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Updates active map id",
+      "lineCount": 10,
+      "filePath": "skill/lib/manifest/index.js"
+    },
+    {
+      "id": "function-skill-lib-manifest-index-js-upsertmapentry",
+      "label": "upsertMapEntry",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-manifest-index-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Upsert map entry in index.js",
+      "lineCount": 10,
+      "filePath": "skill/lib/manifest/index.js"
+    },
+    {
+      "id": "function-skill-lib-manifest-index-js-readmanifest",
+      "label": "readManifest",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-manifest-index-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Reads manifest",
+      "lineCount": 10,
+      "filePath": "skill/lib/manifest/index.js"
+    },
+    {
+      "id": "function-skill-lib-manifest-io-js-readmanifest",
+      "label": "readManifest",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-manifest-io-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Reads manifest",
+      "lineCount": 18,
+      "filePath": "skill/lib/manifest/io.js"
+    },
+    {
+      "id": "function-skill-lib-manifest-io-js-writemanifest",
+      "label": "writeManifest",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-manifest-io-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Writes manifest",
+      "lineCount": 18,
+      "filePath": "skill/lib/manifest/io.js"
+    },
+    {
+      "id": "function-skill-lib-manifest-io-js-ensuremanifestforsetup",
+      "label": "ensureManifestForSetup",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-manifest-io-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Ensure manifest for setup in io.js",
+      "lineCount": 18,
+      "filePath": "skill/lib/manifest/io.js"
+    },
+    {
+      "id": "function-skill-lib-manifest-migrations-js-migratelegacyruntimepath",
+      "label": "migrateLegacyRuntimePath",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-manifest-migrations-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Migrate legacy runtime path in migrations.js",
+      "lineCount": 33,
+      "filePath": "skill/lib/manifest/migrations.js"
+    },
+    {
+      "id": "function-skill-lib-manifest-migrations-js-migratelegacymapentrypaths",
+      "label": "migrateLegacyMapEntryPaths",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-manifest-migrations-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Migrate legacy map entry paths in migrations.js",
+      "lineCount": 33,
+      "filePath": "skill/lib/manifest/migrations.js"
+    },
+    {
+      "id": "function-skill-lib-manifest-normalize-js-createrootmapentry",
+      "label": "createRootMapEntry",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-manifest-normalize-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Creates root map entry",
+      "lineCount": 26,
+      "filePath": "skill/lib/manifest/normalize.js"
+    },
+    {
+      "id": "function-skill-lib-manifest-normalize-js-createscopedmapdefaults",
+      "label": "createScopedMapDefaults",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-manifest-normalize-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Creates scoped map defaults",
+      "lineCount": 26,
+      "filePath": "skill/lib/manifest/normalize.js"
+    },
+    {
+      "id": "function-skill-lib-manifest-normalize-js-createdefaultmanifest",
+      "label": "createDefaultManifest",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-manifest-normalize-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Creates default manifest",
+      "lineCount": 26,
+      "filePath": "skill/lib/manifest/normalize.js"
+    },
+    {
+      "id": "function-skill-lib-manifest-normalize-js-normalizemanifest",
+      "label": "normalizeManifest",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-manifest-normalize-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Normalize manifest in normalize.js",
+      "lineCount": 26,
+      "filePath": "skill/lib/manifest/normalize.js"
+    },
+    {
+      "id": "function-skill-lib-manifest-scope-resolution-js-resolvescopeagainstgraph",
+      "label": "resolveScopeAgainstGraph",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-manifest-scope-resolution-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Resolve scope against graph in scope-resolution.js",
+      "lineCount": 105,
+      "filePath": "skill/lib/manifest/scope-resolution.js"
+    },
+    {
+      "id": "function-skill-lib-runtime-location-js-resolveskilldirectory",
+      "label": "resolveSkillDirectory",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-runtime-location-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Resolve skill directory in runtime-location.js",
+      "lineCount": 49,
+      "filePath": "skill/lib/runtime-location.js"
+    },
+    {
+      "id": "function-skill-lib-runtime-location-js-isclaudecodeenvironment",
+      "label": "isClaudeCodeEnvironment",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-runtime-location-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Is claude code environment in runtime-location.js",
+      "lineCount": 49,
+      "filePath": "skill/lib/runtime-location.js"
+    },
+    {
+      "id": "function-skill-lib-runtime-location-js-iscodexenvironment",
+      "label": "isCodexEnvironment",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-runtime-location-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Is codex environment in runtime-location.js",
+      "lineCount": 49,
+      "filePath": "skill/lib/runtime-location.js"
+    },
+    {
+      "id": "function-skill-lib-runtime-paths-js-getruntimeroot",
+      "label": "getRuntimeRoot",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-runtime-paths-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Reads runtime root",
+      "lineCount": 19,
+      "filePath": "skill/lib/runtime-paths.js"
+    },
+    {
+      "id": "function-skill-lib-runtime-paths-js-getruntimepublicroot",
+      "label": "getRuntimePublicRoot",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-runtime-paths-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Reads runtime public root",
+      "lineCount": 19,
+      "filePath": "skill/lib/runtime-paths.js"
+    },
+    {
+      "id": "function-skill-lib-runtime-paths-js-isinstalledruntimeroot",
+      "label": "isInstalledRuntimeRoot",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-runtime-paths-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Is installed runtime root in runtime-paths.js",
+      "lineCount": 19,
+      "filePath": "skill/lib/runtime-paths.js"
+    },
+    {
+      "id": "function-skill-lib-runtime-paths-js-getdefaultprojectroot",
+      "label": "getDefaultProjectRoot",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-runtime-paths-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Reads default project root",
+      "lineCount": 19,
+      "filePath": "skill/lib/runtime-paths.js"
+    },
+    {
+      "id": "function-skill-lib-runtime-paths-js-resolveprojectpath",
+      "label": "resolveProjectPath",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-runtime-paths-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Resolve project path in runtime-paths.js",
+      "lineCount": 19,
+      "filePath": "skill/lib/runtime-paths.js"
+    },
+    {
+      "id": "function-skill-lib-scoped-map-js-buildscopedsnapshot",
+      "label": "buildScopedSnapshot",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-scoped-map-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Builds scoped snapshot",
+      "lineCount": 48,
+      "filePath": "skill/lib/scoped-map.js"
+    },
+    {
+      "id": "function-skill-lib-scoped-map-js-buildscopedgraphfromroot",
+      "label": "buildScopedGraphFromRoot",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-scoped-map-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Cuts a subsystem graph out of the root map",
+      "lineCount": 48,
+      "filePath": "skill/lib/scoped-map.js"
+    },
+    {
+      "id": "function-skill-lib-scoped-map-js-slugifymapid",
+      "label": "slugifyMapId",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-scoped-map-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Slugify map id in scoped-map.js",
+      "lineCount": 48,
+      "filePath": "skill/lib/scoped-map.js"
+    },
+    {
+      "id": "function-skill-lib-scoped-map-js-allocatemapid",
+      "label": "allocateMapId",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-scoped-map-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Allocate map id in scoped-map.js",
+      "lineCount": 48,
+      "filePath": "skill/lib/scoped-map.js"
+    },
+    {
+      "id": "function-skill-lib-scoped-map-js-createscopedmapfileset",
+      "label": "createScopedMapFileSet",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-scoped-map-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Creates scoped map file set",
+      "lineCount": 48,
+      "filePath": "skill/lib/scoped-map.js"
+    },
+    {
+      "id": "function-skill-lib-enrichment-graph-validation-js-validategraph",
+      "label": "validateGraph",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-enrichment-graph-validation-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Validate graph in graph-validation.js",
+      "lineCount": 40,
+      "filePath": "skill/lib/enrichment/graph-validation.js"
+    },
+    {
+      "id": "function-skill-lib-enrichment-graph-validation-js-parsegraphresponse",
+      "label": "parseGraphResponse",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-enrichment-graph-validation-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Parse graph response in graph-validation.js",
+      "lineCount": 40,
+      "filePath": "skill/lib/enrichment/graph-validation.js"
+    },
+    {
+      "id": "function-skill-lib-enrichment-health-js-assessfilehealth",
+      "label": "assessFileHealth",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-enrichment-health-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Assess file health in health.js",
+      "lineCount": 29,
+      "filePath": "skill/lib/enrichment/health.js"
+    },
+    {
+      "id": "function-skill-lib-enrichment-health-js-assesssystemhealth",
+      "label": "assessSystemHealth",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-enrichment-health-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Assess system health in health.js",
+      "lineCount": 29,
+      "filePath": "skill/lib/enrichment/health.js"
+    },
+    {
+      "id": "function-skill-lib-enrichment-index-js-hasenrichmentresponseoverride",
+      "label": "hasEnrichmentResponseOverride",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-enrichment-index-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Has enrichment response override in index.js",
+      "lineCount": 57,
+      "filePath": "skill/lib/enrichment/index.js"
+    },
+    {
+      "id": "function-skill-lib-enrichment-index-js-enrichgraph",
+      "label": "enrichGraph",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-enrichment-index-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Enrich graph in index.js",
+      "lineCount": 57,
+      "filePath": "skill/lib/enrichment/index.js"
+    },
+    {
+      "id": "function-skill-lib-enrichment-index-js-enrichsnapshot",
+      "label": "enrichSnapshot",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-enrichment-index-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Enrich snapshot in index.js",
+      "lineCount": 57,
+      "filePath": "skill/lib/enrichment/index.js"
+    },
+    {
+      "id": "function-skill-lib-enrichment-index-js-enrichscopedgraph",
+      "label": "enrichScopedGraph",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-enrichment-index-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Enrich scoped graph in index.js",
+      "lineCount": 57,
+      "filePath": "skill/lib/enrichment/index.js"
+    },
+    {
+      "id": "function-skill-lib-enrichment-index-js-getclaudemaparchitectdefinition",
+      "label": "getClaudeMapArchitectDefinition",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-enrichment-index-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Reads claude map architect definition",
+      "lineCount": 57,
+      "filePath": "skill/lib/enrichment/index.js"
+    },
+    {
+      "id": "function-skill-lib-enrichment-prompts-js-buildprompt",
+      "label": "buildPrompt",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-enrichment-prompts-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Builds prompt",
+      "lineCount": 16,
+      "filePath": "skill/lib/enrichment/prompts.js"
+    },
+    {
+      "id": "function-skill-lib-enrichment-prompts-js-getclaudemaparchitectdefinition",
+      "label": "getClaudeMapArchitectDefinition",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-enrichment-prompts-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Reads claude map architect definition",
+      "lineCount": 16,
+      "filePath": "skill/lib/enrichment/prompts.js"
+    },
+    {
+      "id": "function-skill-lib-enrichment-prompts-js-getscopedenrichmentprompt",
+      "label": "getScopedEnrichmentPrompt",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-enrichment-prompts-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Reads scoped enrichment prompt",
+      "lineCount": 16,
+      "filePath": "skill/lib/enrichment/prompts.js"
+    },
+    {
+      "id": "function-skill-lib-enrichment-prompts-js-getrootenrichmentprompt",
+      "label": "getRootEnrichmentPrompt",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-enrichment-prompts-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Reads root enrichment prompt",
+      "lineCount": 16,
+      "filePath": "skill/lib/enrichment/prompts.js"
+    },
+    {
+      "id": "function-skill-lib-enrichment-source-priority-js-getgraphsourcepriority",
+      "label": "getGraphSourcePriority",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-enrichment-source-priority-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Reads graph source priority",
+      "lineCount": 22,
+      "filePath": "skill/lib/enrichment/source-priority.js"
+    },
+    {
+      "id": "function-skill-lib-enrichment-source-priority-js-shouldpreserveexistinggraph",
+      "label": "shouldPreserveExistingGraph",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-enrichment-source-priority-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Should preserve existing graph in source-priority.js",
+      "lineCount": 22,
+      "filePath": "skill/lib/enrichment/source-priority.js"
+    },
+    {
+      "id": "function-skill-lib-enrichment-source-priority-js-selectpreferredgraph",
+      "label": "selectPreferredGraph",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-enrichment-source-priority-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Select preferred graph in source-priority.js",
+      "lineCount": 22,
+      "filePath": "skill/lib/enrichment/source-priority.js"
+    },
+    {
+      "id": "function-skill-lib-launcher-js-isclaudemapapprunning",
+      "label": "isClaudeMapAppRunning",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-launcher-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Is claude map app running in launcher.js",
+      "lineCount": 53,
+      "filePath": "skill/lib/launcher.js"
+    },
+    {
+      "id": "function-skill-lib-launcher-js-launchclaudemapwindow",
+      "label": "launchClaudeMapWindow",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-launcher-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Starts or reuses the local ClaudeMap app",
+      "lineCount": 53,
+      "filePath": "skill/lib/launcher.js"
+    },
+    {
+      "id": "function-skill-lib-mcp-client-js-createmcpclient",
+      "label": "createMcpClient",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-mcp-client-js",
+      "health": "red",
+      "healthReason": "Large file at 788 lines",
+      "summary": "Builds a file-shim runtime client",
+      "lineCount": 157,
+      "filePath": "skill/lib/mcp-client.js"
+    },
+    {
+      "id": "function-skill-lib-mcp-client-js-connectmcpclient",
+      "label": "connectMcpClient",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-mcp-client-js",
+      "health": "red",
+      "healthReason": "Large file at 788 lines",
+      "summary": "Connects stdio MCP or falls back to file-shim",
+      "lineCount": 157,
+      "filePath": "skill/lib/mcp-client.js"
+    },
+    {
+      "id": "function-skill-lib-mcp-client-js-closemcpclient",
+      "label": "closeMcpClient",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-mcp-client-js",
+      "health": "red",
+      "healthReason": "Large file at 788 lines",
+      "summary": "Close mcp client in mcp-client.js",
+      "lineCount": 157,
+      "filePath": "skill/lib/mcp-client.js"
+    },
+    {
+      "id": "function-skill-lib-mcp-client-js-getruntimegraphpath",
+      "label": "getRuntimeGraphPath",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-mcp-client-js",
+      "health": "red",
+      "healthReason": "Large file at 788 lines",
+      "summary": "Reads runtime graph path",
+      "lineCount": 157,
+      "filePath": "skill/lib/mcp-client.js"
+    },
+    {
+      "id": "function-skill-lib-mcp-client-js-getruntimestatepath",
+      "label": "getRuntimeStatePath",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-mcp-client-js",
+      "health": "red",
+      "healthReason": "Large file at 788 lines",
+      "summary": "Reads runtime state path",
+      "lineCount": 157,
+      "filePath": "skill/lib/mcp-client.js"
+    },
+    {
+      "id": "function-skill-lib-contracts-errors-js-failure",
+      "label": "failure",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-contracts-errors-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Failure in errors.js",
+      "lineCount": 16,
+      "filePath": "skill/lib/contracts/errors.js"
+    },
+    {
+      "id": "function-skill-lib-contracts-errors-js-success",
+      "label": "success",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-contracts-errors-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Success in errors.js",
+      "lineCount": 16,
+      "filePath": "skill/lib/contracts/errors.js"
+    },
+    {
+      "id": "function-skill-lib-contracts-errors-js-warning",
+      "label": "warning",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-contracts-errors-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Warning in errors.js",
+      "lineCount": 16,
+      "filePath": "skill/lib/contracts/errors.js"
+    },
+    {
+      "id": "function-skill-lib-contracts-errors-js-setwarningsink",
+      "label": "setWarningSink",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-contracts-errors-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Updates warning sink",
+      "lineCount": 16,
+      "filePath": "skill/lib/contracts/errors.js"
+    },
+    {
+      "id": "function-skill-lib-contracts-errors-js-reportwarning",
+      "label": "reportWarning",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-contracts-errors-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Report warning in errors.js",
+      "lineCount": 16,
+      "filePath": "skill/lib/contracts/errors.js"
+    },
+    {
+      "id": "function-skill-lib-contracts-paths-js-resolveassistantpaths",
+      "label": "resolveAssistantPaths",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-contracts-paths-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Resolve assistant paths in paths.js",
+      "lineCount": 140,
+      "filePath": "skill/lib/contracts/paths.js"
+    },
+    {
+      "id": "function-skill-lib-contracts-paths-js-detectassistant",
+      "label": "detectAssistant",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-contracts-paths-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Detect assistant in paths.js",
+      "lineCount": 140,
+      "filePath": "skill/lib/contracts/paths.js"
+    },
+    {
+      "id": "function-skill-lib-contracts-schemas-index-js-validate",
+      "label": "validate",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-contracts-schemas-index-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Validate in index.js",
+      "lineCount": 20,
+      "filePath": "skill/lib/contracts/schemas/index.js"
+    },
+    {
+      "id": "function-skill-lib-contracts-schemas-index-js-validatewithwarning",
+      "label": "validateWithWarning",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-contracts-schemas-index-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Validate with warning in index.js",
+      "lineCount": 20,
+      "filePath": "skill/lib/contracts/schemas/index.js"
+    },
+    {
+      "id": "function-skill-lib-contracts-schemas-index-js-isgraphpayload",
+      "label": "isGraphPayload",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-contracts-schemas-index-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Is graph payload in index.js",
+      "lineCount": 20,
+      "filePath": "skill/lib/contracts/schemas/index.js"
+    },
+    {
+      "id": "function-skill-lib-contracts-schemas-index-js-isruntimeenvelope",
+      "label": "isRuntimeEnvelope",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-contracts-schemas-index-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Is runtime envelope in index.js",
+      "lineCount": 20,
+      "filePath": "skill/lib/contracts/schemas/index.js"
+    },
+    {
+      "id": "function-skill-lib-contracts-schemas-index-js-ismapsmanifest",
+      "label": "isMapsManifest",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-contracts-schemas-index-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Is maps manifest in index.js",
+      "lineCount": 20,
+      "filePath": "skill/lib/contracts/schemas/index.js"
+    },
+    {
+      "id": "function-skill-lib-contracts-schemas-install-record-js-validateinstallrecord",
+      "label": "validateInstallRecord",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-contracts-schemas-install-record-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Validate install record in install-record.js",
+      "lineCount": 56,
+      "filePath": "skill/lib/contracts/schemas/install-record.js"
+    },
+    {
+      "id": "function-skill-lib-contracts-schemas-shared-js-isplainobject",
+      "label": "isPlainObject",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-contracts-schemas-shared-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Is plain object in shared.js",
+      "lineCount": 17,
+      "filePath": "skill/lib/contracts/schemas/shared.js"
+    },
+    {
+      "id": "function-skill-lib-contracts-schemas-shared-js-pushtypeerror",
+      "label": "pushTypeError",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-contracts-schemas-shared-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Push type error in shared.js",
+      "lineCount": 17,
+      "filePath": "skill/lib/contracts/schemas/shared.js"
+    },
+    {
+      "id": "function-skill-lib-contracts-schemas-shared-js-pushrequirederror",
+      "label": "pushRequiredError",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-contracts-schemas-shared-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Push required error in shared.js",
+      "lineCount": 17,
+      "filePath": "skill/lib/contracts/schemas/shared.js"
+    },
+    {
+      "id": "function-skill-lib-contracts-schemas-shared-js-pushenumerror",
+      "label": "pushEnumError",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-contracts-schemas-shared-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Push enum error in shared.js",
+      "lineCount": 17,
+      "filePath": "skill/lib/contracts/schemas/shared.js"
+    },
+    {
+      "id": "function-skill-lib-contracts-schemas-shared-js-typeof",
+      "label": "typeOf",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-contracts-schemas-shared-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Type of in shared.js",
+      "lineCount": 17,
+      "filePath": "skill/lib/contracts/schemas/shared.js"
+    },
+    {
+      "id": "function-skill-lib-contracts-versions-js-runmigrations",
+      "label": "runMigrations",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-contracts-versions-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Run migrations in versions.js",
+      "lineCount": 69,
+      "filePath": "skill/lib/contracts/versions.js"
+    },
+    {
+      "id": "function-skill-lib-contracts-versions-js-runmigrationswithladder",
+      "label": "runMigrationsWithLadder",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-contracts-versions-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Run migrations with ladder in versions.js",
+      "lineCount": 69,
+      "filePath": "skill/lib/contracts/versions.js"
+    },
+    {
+      "id": "function-skill-lib-command-harness-parse-args-js-parseargs",
+      "label": "parseArgs",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-command-harness-parse-args-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Parse args in parse-args.js",
+      "lineCount": 189,
+      "filePath": "skill/lib/command-harness/parse-args.js"
+    },
+    {
+      "id": "function-skill-lib-command-harness-render-slash-template-js-slashfilename",
+      "label": "slashFileName",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-command-harness-render-slash-template-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Slash file name in render-slash-template.js",
+      "lineCount": 46,
+      "filePath": "skill/lib/command-harness/render-slash-template.js"
+    },
+    {
+      "id": "function-skill-lib-command-harness-render-slash-template-js-renderslashtemplate",
+      "label": "renderSlashTemplate",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-command-harness-render-slash-template-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Render slash template in render-slash-template.js",
+      "lineCount": 46,
+      "filePath": "skill/lib/command-harness/render-slash-template.js"
+    },
+    {
+      "id": "function-skill-lib-command-harness-run-command-js-runcommand",
+      "label": "runCommand",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-command-harness-run-command-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Run command in run-command.js",
+      "lineCount": 88,
+      "filePath": "skill/lib/command-harness/run-command.js"
+    },
+    {
+      "id": "function-skill-lib-command-harness-run-command-js-exitonerror",
+      "label": "exitOnError",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-skill-lib-command-harness-run-command-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Exit on error in run-command.js",
+      "lineCount": 88,
+      "filePath": "skill/lib/command-harness/run-command.js"
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-runtime-analysis-runtime-contracts",
+      "source": "runtime-analysis",
+      "target": "runtime-contracts",
+      "type": "imports"
+    },
+    {
+      "id": "edge-runtime-analysis-runtime-model",
+      "source": "runtime-analysis",
+      "target": "runtime-model",
+      "type": "imports"
+    },
+    {
+      "id": "edge-runtime-commands-runtime-analysis",
+      "source": "runtime-commands",
+      "target": "runtime-analysis",
+      "type": "imports"
+    },
+    {
+      "id": "edge-runtime-commands-runtime-contracts",
+      "source": "runtime-commands",
+      "target": "runtime-contracts",
+      "type": "imports"
+    },
+    {
+      "id": "edge-runtime-commands-runtime-harness",
+      "source": "runtime-commands",
+      "target": "runtime-harness",
+      "type": "imports"
+    },
+    {
+      "id": "edge-runtime-commands-runtime-model",
+      "source": "runtime-commands",
+      "target": "runtime-model",
+      "type": "imports"
+    },
+    {
+      "id": "edge-runtime-commands-runtime-synthesis",
+      "source": "runtime-commands",
+      "target": "runtime-synthesis",
+      "type": "imports"
+    },
+    {
+      "id": "edge-runtime-commands-runtime-transport",
+      "source": "runtime-commands",
+      "target": "runtime-transport",
+      "type": "imports"
+    },
+    {
+      "id": "edge-runtime-harness-runtime-contracts",
+      "source": "runtime-harness",
+      "target": "runtime-contracts",
+      "type": "imports"
+    },
+    {
+      "id": "edge-runtime-harness-runtime-model",
+      "source": "runtime-harness",
+      "target": "runtime-model",
+      "type": "imports"
+    },
+    {
+      "id": "edge-runtime-harness-runtime-transport",
+      "source": "runtime-harness",
+      "target": "runtime-transport",
+      "type": "imports"
+    },
+    {
+      "id": "edge-runtime-model-runtime-analysis",
+      "source": "runtime-model",
+      "target": "runtime-analysis",
+      "type": "imports"
+    },
+    {
+      "id": "edge-runtime-model-runtime-contracts",
+      "source": "runtime-model",
+      "target": "runtime-contracts",
+      "type": "imports"
+    },
+    {
+      "id": "edge-runtime-synthesis-runtime-analysis",
+      "source": "runtime-synthesis",
+      "target": "runtime-analysis",
+      "type": "imports"
+    },
+    {
+      "id": "edge-runtime-synthesis-runtime-contracts",
+      "source": "runtime-synthesis",
+      "target": "runtime-contracts",
+      "type": "imports"
+    },
+    {
+      "id": "edge-runtime-transport-runtime-contracts",
+      "source": "runtime-transport",
+      "target": "runtime-contracts",
+      "type": "imports"
+    },
+    {
+      "id": "edge-runtime-transport-runtime-model",
+      "source": "runtime-transport",
+      "target": "runtime-model",
+      "type": "imports"
+    }
+  ],
+  "files": [
+    {
+      "path": "skill/commands/create-map.js",
+      "relativePath": "skill/commands/create-map.js",
+      "name": "create-map.js",
+      "directory": "skill/commands",
+      "lineCount": 243,
+      "imports": [
+        "path",
+        "url",
+        "../lib/active-map.js",
+        "../lib/cache.js",
+        "../lib/enrichment.js",
+        "../lib/map-manifest.js",
+        "../lib/mcp-client.js",
+        "../lib/contracts/graph-sources.js",
+        "../lib/scoped-map.js",
+        "../lib/command-harness/run-command.js",
+        "../lib/contracts/errors.js",
+        "../lib/command-harness/enrichment-io.js"
+      ],
+      "exports": [
+        "main",
+        "CREATE_MAP_COMMAND"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776439605768.4187
+    },
+    {
+      "path": "skill/commands/open-claudemap.js",
+      "relativePath": "skill/commands/open-claudemap.js",
+      "name": "open-claudemap.js",
+      "directory": "skill/commands",
+      "lineCount": 111,
+      "imports": [
+        "path",
+        "url",
+        "../lib/launcher.js",
+        "../lib/mcp-client.js",
+        "../lib/contracts/graph-sources.js",
+        "../lib/command-harness/run-command.js",
+        "../lib/contracts/errors.js"
+      ],
+      "exports": [
+        "main",
+        "OPEN_CLAUDEMAP_COMMAND"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776404377182.8691
+    },
+    {
+      "path": "skill/commands/refresh.js",
+      "relativePath": "skill/commands/refresh.js",
+      "name": "refresh.js",
+      "directory": "skill/commands",
+      "lineCount": 337,
+      "imports": [
+        "path",
+        "url",
+        "../lib/active-map.js",
+        "../lib/cache.js",
+        "../lib/differ.js",
+        "../lib/enrichment.js",
+        "../lib/file-walker.js",
+        "../lib/map-manifest.js",
+        "../lib/mcp-client.js",
+        "../lib/scoped-map.js",
+        "../lib/contracts/graph-sources.js",
+        "../lib/command-harness/run-command.js",
+        "../lib/contracts/errors.js",
+        "../lib/command-harness/enrichment-io.js"
+      ],
+      "exports": [
+        "main",
+        "UPDATE_COMMAND"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776453956313.4597
+    },
+    {
+      "path": "skill/commands/setup-claudemap.js",
+      "relativePath": "skill/commands/setup-claudemap.js",
+      "name": "setup-claudemap.js",
+      "directory": "skill/commands",
+      "lineCount": 202,
+      "imports": [
+        "path",
+        "url",
+        "../lib/file-walker.js",
+        "../lib/enrichment.js",
+        "../lib/cache.js",
+        "../lib/launcher.js",
+        "../lib/active-map.js",
+        "../lib/map-manifest.js",
+        "../lib/mcp-client.js",
+        "../lib/contracts/graph-sources.js",
+        "../lib/command-harness/run-command.js",
+        "../lib/contracts/errors.js",
+        "../lib/command-harness/enrichment-io.js"
+      ],
+      "exports": [
+        "main",
+        "SETUP_CLAUDEMAP_COMMAND"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776453999313.217
+    },
+    {
+      "path": "skill/commands/show.js",
+      "relativePath": "skill/commands/show.js",
+      "name": "show.js",
+      "directory": "skill/commands",
+      "lineCount": 655,
+      "imports": [
+        "../lib/mcp-client.js",
+        "../lib/contracts/presentation.js",
+        "../lib/command-harness/run-command.js",
+        "../lib/contracts/errors.js",
+        "url",
+        "path"
+      ],
+      "exports": [
+        "main",
+        "SHOW_COMMAND"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776404450433.5454
+    },
+    {
+      "path": "skill/commands/snapshot.js",
+      "relativePath": "skill/commands/snapshot.js",
+      "name": "snapshot.js",
+      "directory": "skill/commands",
+      "lineCount": 53,
+      "imports": [
+        "fs",
+        "path",
+        "url",
+        "../lib/file-walker.js",
+        "../lib/command-harness/run-command.js",
+        "../lib/contracts/errors.js"
+      ],
+      "exports": [
+        "main",
+        "SNAPSHOT_COMMAND"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776405007075.2285
+    },
+    {
+      "path": "skill/lib/active-map.js",
+      "relativePath": "skill/lib/active-map.js",
+      "name": "active-map.js",
+      "directory": "skill/lib",
+      "lineCount": 50,
+      "imports": [
+        "./contracts/paths.js",
+        "./map-manifest.js",
+        "./runtime-paths.js"
+      ],
+      "exports": [
+        "resolveMapRuntimePaths",
+        "resolveMapCachePath",
+        "resolveMapPaths",
+        "resolveMapById",
+        "resolveActiveMap"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776394080919.019
+    },
+    {
+      "path": "skill/lib/cache.js",
+      "relativePath": "skill/lib/cache.js",
+      "name": "cache.js",
+      "directory": "skill/lib",
+      "lineCount": 79,
+      "imports": [
+        "./contracts/paths.js",
+        "./contracts/schemas/index.js",
+        "./runtime-paths.js"
+      ],
+      "exports": [
+        "getCachePath",
+        "writeCache",
+        "readCache",
+        "isCacheStale"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776444060771.6646
+    },
+    {
+      "path": "skill/lib/command-harness/enrichment-io.js",
+      "relativePath": "skill/lib/command-harness/enrichment-io.js",
+      "name": "enrichment-io.js",
+      "directory": "skill/lib/command-harness",
+      "lineCount": 44,
+      "imports": [
+        "fs",
+        "../contracts/errors.js"
+      ],
+      "exports": [
+        "loadEnrichmentFileStrict",
+        "cleanupEnrichmentFile",
+        "readEnrichmentArg"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776401197509.779
+    },
+    {
+      "path": "skill/lib/command-harness/log.js",
+      "relativePath": "skill/lib/command-harness/log.js",
+      "name": "log.js",
+      "directory": "skill/lib/command-harness",
+      "lineCount": 43,
+      "imports": [],
+      "exports": [
+        "createLogger"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776400558603.285
+    },
+    {
+      "path": "skill/lib/command-harness/parse-args.js",
+      "relativePath": "skill/lib/command-harness/parse-args.js",
+      "name": "parse-args.js",
+      "directory": "skill/lib/command-harness",
+      "lineCount": 189,
+      "imports": [
+        "../contracts/errors.js"
+      ],
+      "exports": [
+        "parseArgs"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776405652971.2498
+    },
+    {
+      "path": "skill/lib/command-harness/project-root.js",
+      "relativePath": "skill/lib/command-harness/project-root.js",
+      "name": "project-root.js",
+      "directory": "skill/lib/command-harness",
+      "lineCount": 31,
+      "imports": [
+        "path"
+      ],
+      "exports": [
+        "resolveProjectRoot"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776400635812.9834
+    },
+    {
+      "path": "skill/lib/command-harness/render-slash-template.js",
+      "relativePath": "skill/lib/command-harness/render-slash-template.js",
+      "name": "render-slash-template.js",
+      "directory": "skill/lib/command-harness",
+      "lineCount": 92,
+      "imports": [],
+      "exports": [
+        "slashFileName",
+        "renderSlashTemplate"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776405504909.5464
+    },
+    {
+      "path": "skill/lib/command-harness/run-command.js",
+      "relativePath": "skill/lib/command-harness/run-command.js",
+      "name": "run-command.js",
+      "directory": "skill/lib/command-harness",
+      "lineCount": 176,
+      "imports": [
+        "./project-root.js",
+        "./parse-args.js",
+        "./with-mcp.js",
+        "./log.js",
+        "../active-map.js",
+        "../contracts/errors.js"
+      ],
+      "exports": [
+        "runCommand",
+        "exitOnError"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776401218381.1643
+    },
+    {
+      "path": "skill/lib/command-harness/slash-only-descriptors.js",
+      "relativePath": "skill/lib/command-harness/slash-only-descriptors.js",
+      "name": "slash-only-descriptors.js",
+      "directory": "skill/lib/command-harness",
+      "lineCount": 30,
+      "imports": [],
+      "exports": [
+        "EXPLAIN_SLASH_COMMAND"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776404488408.5422
+    },
+    {
+      "path": "skill/lib/command-harness/with-mcp.js",
+      "relativePath": "skill/lib/command-harness/with-mcp.js",
+      "name": "with-mcp.js",
+      "directory": "skill/lib/command-harness",
+      "lineCount": 34,
+      "imports": [
+        "../mcp-client.js",
+        "../contracts/graph-sources.js",
+        "../contracts/errors.js"
+      ],
+      "exports": [
+        "withMcp"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776404875655.4019
+    },
+    {
+      "path": "skill/lib/contracts/errors.js",
+      "relativePath": "skill/lib/contracts/errors.js",
+      "name": "errors.js",
+      "directory": "skill/lib/contracts",
+      "lineCount": 84,
+      "imports": [],
+      "exports": [
+        "failure",
+        "success",
+        "warning",
+        "setWarningSink",
+        "reportWarning",
+        "ClaudeMapError",
+        "ERROR_CODES"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776443736304.743
+    },
+    {
+      "path": "skill/lib/contracts/graph-sources.js",
+      "relativePath": "skill/lib/contracts/graph-sources.js",
+      "name": "graph-sources.js",
+      "directory": "skill/lib/contracts",
+      "lineCount": 49,
+      "imports": [],
+      "exports": [
+        "isKnownGraphSource",
+        "getGraphSourcePriority",
+        "GRAPH_SOURCES",
+        "GRAPH_SOURCE_PRIORITY",
+        "DEFAULT_GRAPH_SOURCE_PRIORITY"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776377703242.2654
+    },
+    {
+      "path": "skill/lib/contracts/index.js",
+      "relativePath": "skill/lib/contracts/index.js",
+      "name": "index.js",
+      "directory": "skill/lib/contracts",
+      "lineCount": 9,
+      "imports": [],
+      "exports": [],
+      "language": "javascript",
+      "mtimeMs": 1776377735714.3489
+    },
+    {
+      "path": "skill/lib/contracts/paths.js",
+      "relativePath": "skill/lib/contracts/paths.js",
+      "name": "paths.js",
+      "directory": "skill/lib/contracts",
+      "lineCount": 281,
+      "imports": [
+        "fs",
+        "path"
+      ],
+      "exports": [
+        "resolveAssistantPaths",
+        "detectAssistant",
+        "ASSISTANT_TYPES",
+        "BRAND_IDS",
+        "ASSISTANT_CONFIGS",
+        "CLAUDE_ROOT_DIR",
+        "SKILLS_SUBDIR",
+        "COMMANDS_SUBDIR",
+        "AGENTS_SUBDIR",
+        "RUNTIME_SKILL_NAMES",
+        "LEGACY_RUNTIME_SKILL_NAMES",
+        "RUNTIME_SKILL_NAME",
+        "SKILL_ROOT_REL",
+        "COMMANDS_ROOT_REL",
+        "AGENTS_ROOT_REL",
+        "RUNTIME_INSTALLED_PATH_SUFFIX",
+        "GRAPH_DIR_NAME",
+        "RUNTIME_GRAPH_FILENAME",
+        "RUNTIME_STATE_FILENAME",
+        "RUNTIME_GRAPH_REL",
+        "RUNTIME_STATE_REL",
+        "CACHE_FILENAME",
+        "MAPS_MANIFEST_FILENAME",
+        "ARTIFACT_MANIFEST_FILENAME",
+        "INSTALL_RECORD_FILENAME",
+        "ARCHITECT_AGENT_FILENAME",
+        "ARCHITECT_AGENT_REL",
+        "SEED_MAP_REL",
+        "PACKAGE_ARTIFACT_DIR_REL",
+        "NPM_BUNDLE_DIR_REL",
+        "NPM_BUNDLE_SUBDIR",
+        "ARTIFACT_NAME",
+        "CLI_BIN_REL",
+        "PARTIAL_INSTALL_MARKER_FILENAME",
+        "DOCS_DIR_REL",
+        "APP_PUBLIC_GRAPH_REL",
+        "APP_PUBLIC_GRAPH_RUNTIME_REL",
+        "APP_PUBLIC_GRAPH_STATE_REL",
+        "PROMPTS_DIR_REL",
+        "ENRICHMENT_PROMPT_FILENAME",
+        "SCOPED_ENRICHMENT_PROMPT_FILENAME"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776570053728.9827
+    },
+    {
+      "path": "skill/lib/contracts/presentation.js",
+      "relativePath": "skill/lib/contracts/presentation.js",
+      "name": "presentation.js",
+      "directory": "skill/lib/contracts",
+      "lineCount": 25,
+      "imports": [],
+      "exports": [
+        "isPresentationMode",
+        "normalizePresentationMode",
+        "PRESENTATION_MODES",
+        "PRESENTATION_MODE_LIST"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776377691511.6074
+    },
+    {
+      "path": "skill/lib/contracts/schemas/cache.js",
+      "relativePath": "skill/lib/contracts/schemas/cache.js",
+      "name": "cache.js",
+      "directory": "skill/lib/contracts/schemas",
+      "lineCount": 27,
+      "imports": [
+        "./shared.js"
+      ],
+      "exports": [
+        "validateCache"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776443874320.09
+    },
+    {
+      "path": "skill/lib/contracts/schemas/graph.js",
+      "relativePath": "skill/lib/contracts/schemas/graph.js",
+      "name": "graph.js",
+      "directory": "skill/lib/contracts/schemas",
+      "lineCount": 46,
+      "imports": [
+        "./shared.js"
+      ],
+      "exports": [
+        "validateGraph"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776443818503.3096
+    },
+    {
+      "path": "skill/lib/contracts/schemas/index.js",
+      "relativePath": "skill/lib/contracts/schemas/index.js",
+      "name": "index.js",
+      "directory": "skill/lib/contracts/schemas",
+      "lineCount": 102,
+      "imports": [
+        "../errors.js",
+        "./cache.js",
+        "./graph.js",
+        "./install-record.js",
+        "./manifest.js",
+        "./runtime-envelope.js"
+      ],
+      "exports": [
+        "validate",
+        "validateWithWarning",
+        "isGraphPayload",
+        "isRuntimeEnvelope",
+        "isMapsManifest",
+        "isValidGraph",
+        "isValidRuntimeEnvelope",
+        "isValidManifest",
+        "SCHEMA_NAMES",
+        "validateCache",
+        "validateGraph",
+        "validateInstallRecord",
+        "validateManifest",
+        "validateRuntimeEnvelope"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776447380966.3865
+    },
+    {
+      "path": "skill/lib/contracts/schemas/install-record.js",
+      "relativePath": "skill/lib/contracts/schemas/install-record.js",
+      "name": "install-record.js",
+      "directory": "skill/lib/contracts/schemas",
+      "lineCount": 56,
+      "imports": [
+        "./shared.js",
+        "../paths.js"
+      ],
+      "exports": [
+        "validateInstallRecord"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776494122206.305
+    },
+    {
+      "path": "skill/lib/contracts/schemas/manifest.js",
+      "relativePath": "skill/lib/contracts/schemas/manifest.js",
+      "name": "manifest.js",
+      "directory": "skill/lib/contracts/schemas",
+      "lineCount": 43,
+      "imports": [
+        "./shared.js"
+      ],
+      "exports": [
+        "validateManifest"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776443832328.493
+    },
+    {
+      "path": "skill/lib/contracts/schemas/runtime-envelope.js",
+      "relativePath": "skill/lib/contracts/schemas/runtime-envelope.js",
+      "name": "runtime-envelope.js",
+      "directory": "skill/lib/contracts/schemas",
+      "lineCount": 40,
+      "imports": [
+        "./shared.js"
+      ],
+      "exports": [
+        "validateRuntimeEnvelope"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776443846625.0303
+    },
+    {
+      "path": "skill/lib/contracts/schemas/shared.js",
+      "relativePath": "skill/lib/contracts/schemas/shared.js",
+      "name": "shared.js",
+      "directory": "skill/lib/contracts/schemas",
+      "lineCount": 89,
+      "imports": [],
+      "exports": [
+        "isPlainObject",
+        "pushTypeError",
+        "pushRequiredError",
+        "pushEnumError",
+        "typeOf",
+        "ok",
+        "fail",
+        "validateShape"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776443797706.6504
+    },
+    {
+      "path": "skill/lib/contracts/versions.js",
+      "relativePath": "skill/lib/contracts/versions.js",
+      "name": "versions.js",
+      "directory": "skill/lib/contracts",
+      "lineCount": 138,
+      "imports": [
+        "./schemas/index.js"
+      ],
+      "exports": [
+        "runMigrations",
+        "runMigrationsWithLadder",
+        "MANIFEST_VERSION",
+        "GRAPH_VERSION",
+        "RUNTIME_STATE_VERSION",
+        "INSTALL_RECORD_VERSION",
+        "CACHE_VERSION",
+        "GRAPH_REVISION_UNSET",
+        "CURRENT_VERSIONS"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776494122213.3716
+    },
+    {
+      "path": "skill/lib/differ.js",
+      "relativePath": "skill/lib/differ.js",
+      "name": "differ.js",
+      "directory": "skill/lib",
+      "lineCount": 92,
+      "imports": [],
+      "exports": [
+        "diffFiles",
+        "diffGraphs"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776225237471.0105
+    },
+    {
+      "path": "skill/lib/enrichment.js",
+      "relativePath": "skill/lib/enrichment.js",
+      "name": "enrichment.js",
+      "directory": "skill/lib",
+      "lineCount": 18,
+      "imports": [
+        "./enrichment/index.js"
+      ],
+      "exports": [],
+      "language": "javascript",
+      "mtimeMs": 1776438913394.6406
+    },
+    {
+      "path": "skill/lib/enrichment/graph-validation.js",
+      "relativePath": "skill/lib/enrichment/graph-validation.js",
+      "name": "graph-validation.js",
+      "directory": "skill/lib/enrichment",
+      "lineCount": 81,
+      "imports": [],
+      "exports": [
+        "validateGraph",
+        "parseGraphResponse"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776438753263.9507
+    },
+    {
+      "path": "skill/lib/enrichment/health.js",
+      "relativePath": "skill/lib/enrichment/health.js",
+      "name": "health.js",
+      "directory": "skill/lib/enrichment",
+      "lineCount": 59,
+      "imports": [],
+      "exports": [
+        "assessFileHealth",
+        "assessSystemHealth"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776438787633.458
+    },
+    {
+      "path": "skill/lib/enrichment/icons.js",
+      "relativePath": "skill/lib/enrichment/icons.js",
+      "name": "icons.js",
+      "directory": "skill/lib/enrichment",
+      "lineCount": 26,
+      "imports": [],
+      "exports": [
+        "iconForSystem"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776438770690.062
+    },
+    {
+      "path": "skill/lib/enrichment/index.js",
+      "relativePath": "skill/lib/enrichment/index.js",
+      "name": "index.js",
+      "directory": "skill/lib/enrichment",
+      "lineCount": 287,
+      "imports": [
+        "fs",
+        "path",
+        "../contracts/graph-sources.js",
+        "../import-resolution.js",
+        "./graph-validation.js",
+        "./health.js",
+        "./icons.js",
+        "./prompts.js"
+      ],
+      "exports": [
+        "hasEnrichmentResponseOverride",
+        "enrichGraph",
+        "enrichSnapshot",
+        "enrichScopedGraph",
+        "getClaudeMapArchitectDefinition",
+        "getRootEnrichmentPrompt",
+        "getScopedEnrichmentPrompt",
+        "getGraphSourcePriority",
+        "selectPreferredGraph",
+        "shouldPreserveExistingGraph"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776438897021.4138
+    },
+    {
+      "path": "skill/lib/enrichment/prompts.js",
+      "relativePath": "skill/lib/enrichment/prompts.js",
+      "name": "prompts.js",
+      "directory": "skill/lib/enrichment",
+      "lineCount": 65,
+      "imports": [
+        "fs",
+        "path",
+        "url",
+        "../contracts/paths.js"
+      ],
+      "exports": [
+        "buildPrompt",
+        "getClaudeMapArchitectDefinition",
+        "getScopedEnrichmentPrompt",
+        "getRootEnrichmentPrompt"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776438734604.2563
+    },
+    {
+      "path": "skill/lib/enrichment/source-priority.js",
+      "relativePath": "skill/lib/enrichment/source-priority.js",
+      "name": "source-priority.js",
+      "directory": "skill/lib/enrichment",
+      "lineCount": 66,
+      "imports": [
+        "../contracts/graph-sources.js"
+      ],
+      "exports": [
+        "getGraphSourcePriority",
+        "shouldPreserveExistingGraph",
+        "selectPreferredGraph"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776438835370.5522
+    },
+    {
+      "path": "skill/lib/file-walker.js",
+      "relativePath": "skill/lib/file-walker.js",
+      "name": "file-walker.js",
+      "directory": "skill/lib",
+      "lineCount": 314,
+      "imports": [
+        "fs",
+        "path",
+        "child_process",
+        "./contracts/paths.js"
+      ],
+      "exports": [
+        "collectProjectSnapshot"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776394057586.8196
+    },
+    {
+      "path": "skill/lib/import-resolution.js",
+      "relativePath": "skill/lib/import-resolution.js",
+      "name": "import-resolution.js",
+      "directory": "skill/lib",
+      "lineCount": 123,
+      "imports": [
+        "path"
+      ],
+      "exports": [
+        "resolveImportPath",
+        "createSystemImportEdges"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776333329897.5588
+    },
+    {
+      "path": "skill/lib/launcher.js",
+      "relativePath": "skill/lib/launcher.js",
+      "name": "launcher.js",
+      "directory": "skill/lib",
+      "lineCount": 107,
+      "imports": [
+        "http",
+        "path",
+        "child_process",
+        "url"
+      ],
+      "exports": [
+        "isClaudeMapAppRunning",
+        "launchClaudeMapWindow"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776225237480.7573
+    },
+    {
+      "path": "skill/lib/manifest/fingerprint.js",
+      "relativePath": "skill/lib/manifest/fingerprint.js",
+      "name": "fingerprint.js",
+      "directory": "skill/lib/manifest",
+      "lineCount": 119,
+      "imports": [
+        "crypto"
+      ],
+      "exports": [
+        "normalizeText",
+        "normalizePathValue",
+        "arraysEqual",
+        "getNodeByIdMap",
+        "collectAncestorLabels",
+        "computeScopeFingerprint",
+        "createScopeDescriptor"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776439152579.0361
+    },
+    {
+      "path": "skill/lib/manifest/index.js",
+      "relativePath": "skill/lib/manifest/index.js",
+      "name": "index.js",
+      "directory": "skill/lib/manifest",
+      "lineCount": 52,
+      "imports": [
+        "./normalize.js"
+      ],
+      "exports": [
+        "findMapById",
+        "getActiveMap",
+        "setActiveMapId",
+        "upsertMapEntry",
+        "DEFAULT_MAP_ID",
+        "readManifest",
+        "writeManifest",
+        "ensureManifestForSetup",
+        "computeScopeFingerprint",
+        "createScopeDescriptor",
+        "resolveScopeAgainstGraph"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776439267563.7646
+    },
+    {
+      "path": "skill/lib/manifest/io.js",
+      "relativePath": "skill/lib/manifest/io.js",
+      "name": "io.js",
+      "directory": "skill/lib/manifest",
+      "lineCount": 54,
+      "imports": [
+        "fs",
+        "../contracts/schemas/index.js",
+        "../runtime-paths.js",
+        "./normalize.js"
+      ],
+      "exports": [
+        "readManifest",
+        "writeManifest",
+        "ensureManifestForSetup"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776444034832.0154
+    },
+    {
+      "path": "skill/lib/manifest/migrations.js",
+      "relativePath": "skill/lib/manifest/migrations.js",
+      "name": "migrations.js",
+      "directory": "skill/lib/manifest",
+      "lineCount": 67,
+      "imports": [
+        "../contracts/paths.js"
+      ],
+      "exports": [
+        "migrateLegacyRuntimePath",
+        "migrateLegacyMapEntryPaths"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776439320703.1672
+    },
+    {
+      "path": "skill/lib/manifest/normalize.js",
+      "relativePath": "skill/lib/manifest/normalize.js",
+      "name": "normalize.js",
+      "directory": "skill/lib/manifest",
+      "lineCount": 105,
+      "imports": [
+        "../contracts/paths.js",
+        "./migrations.js"
+      ],
+      "exports": [
+        "createRootMapEntry",
+        "createScopedMapDefaults",
+        "createDefaultManifest",
+        "normalizeManifest",
+        "DEFAULT_MAP_ID",
+        "MANIFEST_VERSION"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776439203714.114
+    },
+    {
+      "path": "skill/lib/manifest/scope-resolution.js",
+      "relativePath": "skill/lib/manifest/scope-resolution.js",
+      "name": "scope-resolution.js",
+      "directory": "skill/lib/manifest",
+      "lineCount": 105,
+      "imports": [
+        "./fingerprint.js"
+      ],
+      "exports": [
+        "resolveScopeAgainstGraph"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776439529750.771
+    },
+    {
+      "path": "skill/lib/map-manifest.js",
+      "relativePath": "skill/lib/map-manifest.js",
+      "name": "map-manifest.js",
+      "directory": "skill/lib",
+      "lineCount": 30,
+      "imports": [
+        "./manifest/index.js"
+      ],
+      "exports": [],
+      "language": "javascript",
+      "mtimeMs": 1776439287789.8977
+    },
+    {
+      "path": "skill/lib/mcp-client.js",
+      "relativePath": "skill/lib/mcp-client.js",
+      "name": "mcp-client.js",
+      "directory": "skill/lib",
+      "lineCount": 788,
+      "imports": [
+        "fs",
+        "path",
+        "url",
+        "./contracts/graph-sources.js",
+        "./contracts/presentation.js",
+        "./contracts/paths.js",
+        "./contracts/schemas/index.js",
+        "./runtime-paths.js",
+        "@modelcontextprotocol/sdk/client/index.js",
+        "@modelcontextprotocol/sdk/client/stdio.js"
+      ],
+      "exports": [
+        "createMcpClient",
+        "connectMcpClient",
+        "closeMcpClient",
+        "getRuntimeGraphPath",
+        "getRuntimeStatePath",
+        "readRuntimeGraph",
+        "readRuntimeState",
+        "renderGraph",
+        "highlightNodes",
+        "clearHighlight",
+        "navigateTo",
+        "guidedFlow",
+        "setHealthOverlay",
+        "setPresentationMode",
+        "presentStep",
+        "showCaption",
+        "clearCaption",
+        "addNode",
+        "removeNode",
+        "updateNode",
+        "addEdge",
+        "removeEdge",
+        "applyGraphPatch"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776444107787.4658
+    },
+    {
+      "path": "skill/lib/runtime-location.js",
+      "relativePath": "skill/lib/runtime-location.js",
+      "name": "runtime-location.js",
+      "directory": "skill/lib",
+      "lineCount": 147,
+      "imports": [
+        "fs",
+        "path"
+      ],
+      "exports": [
+        "resolveSkillDirectory",
+        "isClaudeCodeEnvironment",
+        "isCodexEnvironment"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776547686340.0554
+    },
+    {
+      "path": "skill/lib/runtime-paths.js",
+      "relativePath": "skill/lib/runtime-paths.js",
+      "name": "runtime-paths.js",
+      "directory": "skill/lib",
+      "lineCount": 96,
+      "imports": [
+        "fs",
+        "path",
+        "url",
+        "./contracts/paths.js",
+        "./contracts/schemas/index.js"
+      ],
+      "exports": [
+        "getRuntimeRoot",
+        "getRuntimePublicRoot",
+        "isInstalledRuntimeRoot",
+        "getDefaultProjectRoot",
+        "resolveProjectPath",
+        "resolveRuntimePublicPath",
+        "getProjectManifestPath",
+        "getRuntimeManifestPath",
+        "readJsonFile",
+        "writeJsonFileAtomic"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776443982277.6975
+    },
+    {
+      "path": "skill/lib/scoped-map.js",
+      "relativePath": "skill/lib/scoped-map.js",
+      "name": "scoped-map.js",
+      "directory": "skill/lib",
+      "lineCount": 240,
+      "imports": [
+        "./map-manifest.js",
+        "./import-resolution.js",
+        "./contracts/graph-sources.js",
+        "./contracts/paths.js"
+      ],
+      "exports": [
+        "buildScopedSnapshot",
+        "buildScopedGraphFromRoot",
+        "slugifyMapId",
+        "allocateMapId",
+        "createScopedMapFileSet"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776394490083.8462
+    },
+    {
+      "path": "skill/vitest.config.js",
+      "relativePath": "skill/vitest.config.js",
+      "name": "vitest.config.js",
+      "directory": "skill",
+      "lineCount": 9,
+      "imports": [
+        "vitest/config"
+      ],
+      "exports": [
+        "defineConfig"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776445409097.0098
+    }
+  ]
+}

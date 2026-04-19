@@ -3,8 +3,8 @@
     "repoName": "claudemap",
     "branch": "feat/support-multiple-maps",
     "creditLabel": "ClaudeMap self-map",
-    "generatedAt": "2026-04-15T05:45:06.518Z",
-    "source": "manual"
+    "generatedAt": "2026-04-15T05:50:51.569Z",
+    "source": "claude"
   },
   "nodes": [
     {
@@ -2386,6 +2386,67 @@
       "mtimeMs": 1776225237344.8062
     },
     {
+      "path": "docs/assets/app-vendor-o0jK7pC1.js",
+      "relativePath": "docs/assets/app-vendor-o0jK7pC1.js",
+      "name": "app-vendor-o0jK7pC1.js",
+      "directory": "docs/assets",
+      "lineCount": 186,
+      "imports": [],
+      "exports": [],
+      "language": "javascript",
+      "mtimeMs": 1776230225173.4941
+    },
+    {
+      "path": "docs/assets/claudemap-seed-map-Bjo3S5tw.js",
+      "relativePath": "docs/assets/claudemap-seed-map-Bjo3S5tw.js",
+      "name": "claudemap-seed-map-Bjo3S5tw.js",
+      "directory": "docs/assets",
+      "lineCount": 2,
+      "imports": [],
+      "exports": [],
+      "language": "javascript",
+      "mtimeMs": 1776230225187.6965
+    },
+    {
+      "path": "docs/assets/graph-vendor-BsBLUtAw.js",
+      "relativePath": "docs/assets/graph-vendor-BsBLUtAw.js",
+      "name": "graph-vendor-BsBLUtAw.js",
+      "directory": "docs/assets",
+      "lineCount": 47,
+      "imports": [
+        "@xyflow/${d}/dist/style.css"
+      ],
+      "exports": [],
+      "language": "javascript",
+      "mtimeMs": 1776230225188.6946
+    },
+    {
+      "path": "docs/assets/GraphRuntime-CP3CS-Os.js",
+      "relativePath": "docs/assets/GraphRuntime-CP3CS-Os.js",
+      "name": "GraphRuntime-CP3CS-Os.js",
+      "directory": "docs/assets",
+      "lineCount": 8,
+      "imports": [
+        "./claudemap-seed-map-Bjo3S5tw.js"
+      ],
+      "exports": [],
+      "language": "javascript",
+      "mtimeMs": 1776230225186.686
+    },
+    {
+      "path": "docs/assets/index-B6tgtpLu.js",
+      "relativePath": "docs/assets/index-B6tgtpLu.js",
+      "name": "index-B6tgtpLu.js",
+      "directory": "docs/assets",
+      "lineCount": 3,
+      "imports": [
+        "./GraphRuntime-CP3CS-Os.js"
+      ],
+      "exports": [],
+      "language": "javascript",
+      "mtimeMs": 1776230225186.686
+    },
+    {
       "path": "scripts/build-site.js",
       "relativePath": "scripts/build-site.js",
       "name": "build-site.js",
@@ -2806,6 +2867,17 @@
       ],
       "language": "javascript",
       "mtimeMs": 1776226102126.9094
+    },
+    {
+      "path": "stitch-base.js",
+      "relativePath": "stitch-base.js",
+      "name": "stitch-base.js",
+      "directory": "",
+      "lineCount": 658,
+      "imports": [],
+      "exports": [],
+      "language": "javascript",
+      "mtimeMs": 1776225237497.7112
     }
   ]
 }

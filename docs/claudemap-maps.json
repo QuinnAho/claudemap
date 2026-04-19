@@ -8,8 +8,44 @@
       "summary": "Full repo overview",
       "scope": null,
       "cachePath": "claudemap-cache.json",
-      "graphPath": "claudemap-runtime.json",
-      "statePath": "claudemap-runtime-state.json"
+      "graphPath": "graph/claudemap-runtime.json",
+      "statePath": "graph/claudemap-runtime-state.json"
+    },
+    {
+      "id": "skill-runtime",
+      "label": "Skill Runtime",
+      "summary": "CLI runtime that builds and drives maps",
+      "scope": {
+        "type": "subsystem",
+        "rootSystemId": "runtime",
+        "rootSystemLabel": "Skill Runtime",
+        "ancestorPath": [],
+        "filePathHint": "skill/",
+        "fingerprint": "sha1:702f027fa3d2eff7dbf3655190e99d066ca9c847",
+        "stale": false,
+        "needsRebuild": false
+      },
+      "cachePath": "claudemap-cache.skill-runtime.json",
+      "graphPath": "graph/claudemap-runtime.skill-runtime.json",
+      "statePath": "graph/claudemap-runtime-state.skill-runtime.json"
+    },
+    {
+      "id": "map-experience",
+      "label": "Map Experience",
+      "summary": "Interactive map UI and walkthroughs",
+      "scope": {
+        "type": "subsystem",
+        "rootSystemId": "experience",
+        "rootSystemLabel": "Map Experience",
+        "ancestorPath": [],
+        "filePathHint": "app/src/",
+        "fingerprint": "sha1:ad4cd9c7967dbfae449bc444dbed807b8c5dc5fd",
+        "stale": false,
+        "needsRebuild": false
+      },
+      "cachePath": "claudemap-cache.map-experience.json",
+      "graphPath": "graph/claudemap-runtime.map-experience.json",
+      "statePath": "graph/claudemap-runtime-state.map-experience.json"
     }
   ]
 }

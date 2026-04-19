@@ -48,7 +48,7 @@ npm run build
 npm test
 ```
 
-This builds the local ClaudeMap artifact, installs it into a throwaway fixture repository, runs the installed ClaudeMap commands, and verifies the packaged slash-command templates and runtime graph layout.
+This builds the local ClaudeMap artifacts, installs them into throwaway fixture repositories, runs the installed commands, and verifies the packaged Claude/Codex command docs and runtime graph layout.
 
 If you want an additional manual install in a separate target repository:
 
@@ -68,11 +68,11 @@ npm publish --dry-run --cache artifacts/.npm-cache
 
 ```bash
 git add .
-git commit -m "Release v0.1.0"
-git tag v0.1.0
+git commit -m "Release v0.2.0"
+git tag v0.2.0
 ```
 
-7. Publish the first public release.
+7. Publish the release.
 
 ```bash
 npm publish --access public

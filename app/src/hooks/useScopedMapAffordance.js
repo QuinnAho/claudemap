@@ -41,7 +41,7 @@ export function useScopedMapAffordance(nodeById) {
     try {
       await setActiveMap(mapId)
     } catch (error) {
-      console.error('Failed to switch ClaudeMap map:', error)
+      console.error('Failed to switch map:', error)
     }
   }, [])
 

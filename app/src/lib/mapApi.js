@@ -33,7 +33,7 @@ export async function setActiveMap(mapId) {
   })
 
   if (!response.ok) {
-    throw new Error(await readApiError(response, 'Failed to switch ClaudeMap'))
+    throw new Error(await readApiError(response, 'Failed to switch map'))
   }
 
   return response.json()

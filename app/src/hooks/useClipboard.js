@@ -1,3 +1,5 @@
+import { getBrand } from '../lib/brand'
+
 function buildNodeContextText(nodeData, meta = {}) {
   const nodeType = nodeData.type ? `\nType: ${nodeData.type}` : ''
   const repoLine = meta.repoName ? `\nRepo: ${meta.repoName}` : ''
@@ -5,8 +7,9 @@ function buildNodeContextText(nodeData, meta = {}) {
     nodeData.health && nodeData.health !== 'green'
       ? `\nHealth: ${nodeData.health} - ${nodeData.healthReason || 'unknown'}`
       : ''
+  const brandLabel = getBrand().displayName
 
-  return `[ClaudeMap] ${nodeData.label}${repoLine}${nodeType}
+  return `[${brandLabel}] ${nodeData.label}${repoLine}${nodeType}
 Path: ${nodeData.filePath}
 Summary: ${nodeData.summary}${healthLine}
 Lines: ${nodeData.lineCount}`

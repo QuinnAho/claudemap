@@ -17,9 +17,10 @@ export default function TopBar() {
   const activeMapId = useGraphStore(selectActiveMapId)
   const meta = useGraphStore(selectMeta)
   const [isReturningHome, setIsReturningHome] = useState(false)
+  const brand = getBrand()
   const headerText =
     presentationMode !== PRESENTATION_MODES.FREE
-      ? 'shhh... claude is presenting...'
+      ? `shhh... ${brand.pasteTargetLabel.toLowerCase()} is presenting...`
       : ''
 
   const homeLabel = meta?.repoName?.trim() || 'repository'
@@ -34,7 +35,7 @@ export default function TopBar() {
     try {
       await setActiveMap('root')
     } catch (error) {
-      console.error('Failed to switch ClaudeMap map:', error)
+      console.error('Failed to switch map:', error)
     } finally {
       setIsReturningHome(false)
     }
@@ -95,7 +96,7 @@ export default function TopBar() {
             fontFamily: FONT.mono,
           }}
         >
-          {getBrand().displayName}
+          {brand.displayName}
         </span>
       </button>
 

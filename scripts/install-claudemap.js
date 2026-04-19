@@ -388,7 +388,10 @@ function removeManagedPaths(targetRoot, managedPaths, dryRun) {
   return removedPaths
 }
 
-function shouldRemoveLegacyRuntimeRoot(absolutePath) {
+// Migration cleanup for old Codex installs. Only remove a legacy skill root
+// when it carries the managed self-location file or generated Codex SKILL.md
+// markers; leave user-created directories alone.
+function isManagedLegacyRuntimeRoot(absolutePath) {
   const configPath = path.join(absolutePath, '.claudemap-config.json')
 
   if (fs.existsSync(configPath)) {
@@ -432,7 +435,7 @@ function removeLegacyRuntimeSkillRoots(targetRoot, assistantPaths, dryRun) {
     }
 
     const absoluteLegacyRoot = resolveManagedPath(targetRoot, legacySkillRootRel)
-    if (!fs.existsSync(absoluteLegacyRoot) || !shouldRemoveLegacyRuntimeRoot(absoluteLegacyRoot)) {
+    if (!fs.existsSync(absoluteLegacyRoot) || !isManagedLegacyRuntimeRoot(absoluteLegacyRoot)) {
       continue
     }
 

@@ -1,4 +1,4 @@
-// ClaudeMap design tokens. Single source of truth for color, opacity,
+// Runtime design tokens. Single source of truth for color, opacity,
 // typography, and spacing. Every component reads from here.
 //
 // The Vite tokens plugin (app/vite/tokens-plugin.js) mirrors these into
@@ -6,7 +6,7 @@
 // Do not edit globals.css :root block by hand; regenerate from here.
 //
 // Brand-sensitive slots (`accent`, `accentPronounced`) are resolved from
-// the active brand at module eval time by reading <html data-brand="…">.
+// the active brand at module eval time by reading <html data-brand="...">.
 // The CSS var override in tokens.generated.css handles any rule that
 // references var(--accent) directly; this module handles every JS call
 // through `alpha()`, which composes rgba() strings from raw hex and so
@@ -78,10 +78,10 @@ function hexToRgb(hex) {
 }
 
 // Resolve the active brand's accent hex pair once at module eval. The
-// packager stamps <html data-brand="…"> before any script runs, so the
+// packager stamps <html data-brand="..."> before any script runs, so the
 // attribute is already present by the time this module is imported. In
 // non-DOM contexts (tests, SSR) fall back to the default brand, which
-// matches HEX.accent for ClaudeMap.
+// matches HEX.accent.
 const RESOLVED_BRAND_ACCENT = (() => {
   const fallback = BRANDS[DEFAULT_BRAND_ID]
   if (typeof document === 'undefined') {

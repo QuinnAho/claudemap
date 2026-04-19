@@ -340,7 +340,7 @@ function writeNavigationDocs(artifactRoot, skillRoot, assistantPaths) {
   const skillRel = toPosix(skillRoot)
   const agentsRel = assistantPaths.agentsPath
   const agentFile = `${agentsRel}/${assistantPaths.architectAgentFilename}`
-  const skillMention = assistantPaths.skillMention || '$claudemap-runtime'
+  const skillMention = assistantPaths.skillMention || `$${assistantPaths.skillName || 'claudemap-runtime'}`
   const quickStartSteps = assistantPaths.commandsPath
     ? [
         '1. Run `setup-claudemap`',
