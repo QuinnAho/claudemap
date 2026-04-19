@@ -28,7 +28,7 @@ claude
 /setup-claudemap
 ```
 
-Codex users: `npx @quinnaho/claudemap install --assistant codex` - see [Codex guide](docs/CODEX.md).
+**Codex support is here!** Codex users: `npx @quinnaho/claudemap install --assistant codex` - see [Codex guide](docs/CODEX.md).
 
 In Codex, run `/skills`, choose `codexmap-runtime`, then prefix natural-language requests with `$codexmap-runtime`, for example:
 
