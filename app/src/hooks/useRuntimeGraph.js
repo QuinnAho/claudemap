@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react'
 import { GRAPH_SOURCES } from '../contracts/graph-sources'
 import { getBrand } from '../lib/brand'
+import { getClientActiveMapOverride } from '../lib/mapApi'
 import {
   createDefaultRuntimeEnvelope,
   fetchGraphAsset,
@@ -85,6 +86,21 @@ export function useRuntimeGraph() {
     }
 
     const manifest = await fetchMapsManifest()
+
+    // On static hosts (e.g. the published /docs demo) the Vite API that
+    // persists activeMapId isn't reachable, so MapSelector writes the user's
+    // choice into a client-side override via setActiveMap. Apply that override
+    // here so downstream consumers (store.activeMapId, getActiveMapEntry) see
+    // the selected submap as if it had come from the manifest.
+    const clientOverrideId = getClientActiveMapOverride()
+    if (
+      clientOverrideId &&
+      manifest?.maps?.some((entry) => entry.id === clientOverrideId) &&
+      manifest.activeMapId !== clientOverrideId
+    ) {
+      manifest.activeMapId = clientOverrideId
+    }
+
     const activeMapEntry = getActiveMapEntry(manifest)
 
     if (!isMountedRef.current || !activeMapEntry) {

@@ -28,12 +28,12 @@ claude
 /setup-claudemap
 ```
 
-**Codex support is here!:**`npx @quinnaho/claudemap install --assistant codex` - see [Codex guide](docs/CODEX.md).
+**Codex support is here!**`npx @quinnaho/claudemap install --assistant codex` - see [Codex guide](docs/CODEX.md).
 
-In Codex, run `/skills`, choose `codexmap-runtime`, then prefix natural-language requests with `$codexmap-runtime`, for example:
+In Codex, run `/skills`, choose `codexmap-runtime`, or prefix natural-language requests with `$codexmap-runtime`, for example:
 
 ```text
-$codexmap-runtime build the initial architecture map for this repo
+$codexmap-runtime build the initial map for this repo
 ```
 
 ## Commands
