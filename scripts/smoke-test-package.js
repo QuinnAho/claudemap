@@ -552,6 +552,21 @@ function assertPackagedGraphShapes(artifactRoot, paths) {
   assert(Array.isArray(manifest.maps) && manifest.maps.length > 0, 'Packaged maps manifest has no map entries')
 }
 
+function assertNoPackagedDevelopmentArtifacts(artifactRoot, paths) {
+  const skillRoot = path.join(artifactRoot, paths.SKILL_ROOT_REL)
+  const forbiddenPaths = [
+    path.join(skillRoot, 'skill', 'node_modules'),
+    path.join(skillRoot, 'skill', 'tmp'),
+  ]
+
+  for (const forbiddenPath of forbiddenPaths) {
+    assert(
+      !fs.existsSync(forbiddenPath),
+      `Packaged skill leaked development artifact: ${path.relative(artifactRoot, forbiddenPath)}`,
+    )
+  }
+}
+
 // The artifact manifest's managedPaths list is derived from command
 // descriptors. Assert each slash-command .md file actually landed at the
 // path the artifact manifest claims, and that the install record path,
@@ -1207,6 +1222,7 @@ async function main() {
 
   const paths = await loadPathContracts()
   assertPackagedGraphShapes(artifactRoot, paths)
+  assertNoPackagedDevelopmentArtifacts(artifactRoot, paths)
   await assertPackagedShapesValidate(artifactRoot, paths)
   await assertSchemaDriftDetection()
   assertArtifactManifestManagedPaths(artifactRoot, paths)

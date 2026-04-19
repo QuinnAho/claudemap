@@ -532,6 +532,8 @@ function ensureCleanArtifactLocation(outputRoot, artifactDirName) {
 
 function shouldExcludeSkill(relativePath) {
   if (relativePath === 'SKILL.md') return true
+  if (relativePath === 'node_modules' || relativePath.startsWith('node_modules/')) return true
+  if (relativePath === 'tmp' || relativePath.startsWith('tmp/')) return true
   if (isTestSourcePath(relativePath)) return true
   return false
 }
