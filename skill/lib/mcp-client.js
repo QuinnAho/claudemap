@@ -1,14 +1,20 @@
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { Client } from '@modelcontextprotocol/sdk/client/index.js'
-import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js'
+import { GRAPH_SOURCES } from './contracts/graph-sources.js'
+import { PRESENTATION_MODES } from './contracts/presentation.js'
+import {
+  APP_PUBLIC_GRAPH_RUNTIME_REL,
+  APP_PUBLIC_GRAPH_STATE_REL,
+} from './contracts/paths.js'
+import { SCHEMA_NAMES, validateWithWarning } from './contracts/schemas/index.js'
+import { writeJsonFileAtomic } from './runtime-paths.js'
 
 const DEFAULT_RUNTIME_GRAPH_PATH = path.resolve(
-  fileURLToPath(new URL('../../app/public/claudemap-runtime.json', import.meta.url)),
+  fileURLToPath(new URL(`../../${APP_PUBLIC_GRAPH_RUNTIME_REL}`, import.meta.url)),
 )
 const DEFAULT_RUNTIME_STATE_PATH = path.resolve(
-  fileURLToPath(new URL('../../app/public/claudemap-runtime-state.json', import.meta.url)),
+  fileURLToPath(new URL(`../../${APP_PUBLIC_GRAPH_STATE_REL}`, import.meta.url)),
 )
 
 function createDefaultRuntimeState() {
@@ -19,7 +25,7 @@ function createDefaultRuntimeState() {
     focus: null,
     guidedFlow: null,
     presentation: {
-      mode: 'free',
+      mode: PRESENTATION_MODES.FREE,
       lockInput: false,
       title: null,
       explanation: null,
@@ -37,7 +43,7 @@ function createDefaultRuntimeEnvelope() {
     graphMeta: {
       repoName: 'claudemap',
       generatedAt: null,
-      source: 'file-shim',
+      source: GRAPH_SOURCES.FILE_SHIM,
       nodeCount: 0,
       edgeCount: 0,
       fileCount: 0,
@@ -46,14 +52,26 @@ function createDefaultRuntimeEnvelope() {
   }
 }
 
+function normalizePresentationMode(mode) {
+  if (mode === 'locked-demo') {
+    return PRESENTATION_MODES.LOCKED
+  }
+
+  if (mode === PRESENTATION_MODES.GUIDED || mode === PRESENTATION_MODES.LOCKED) {
+    return mode
+  }
+
+  return PRESENTATION_MODES.FREE
+}
+
 function createEmptyGraph() {
   return {
     meta: {
       repoName: 'claudemap',
-      branch: 'current',
+      branch: 'workspace',
       creditLabel: 'ClaudeMap skill',
       generatedAt: new Date().toISOString(),
-      source: 'file-shim',
+      source: GRAPH_SOURCES.FILE_SHIM,
     },
     nodes: [],
     edges: [],
@@ -62,9 +80,11 @@ function createEmptyGraph() {
 }
 
 function normalizeRuntimeState(runtime) {
+  const normalizedMode = normalizePresentationMode(runtime?.presentation?.mode)
   const normalizedPresentation = {
     ...createDefaultRuntimeState().presentation,
     ...(runtime?.presentation || {}),
+    mode: normalizedMode,
   }
 
   const normalizedExplanation =
@@ -80,11 +100,11 @@ function normalizeRuntimeState(runtime) {
       ...normalizedPresentation,
       explanation: normalizedExplanation,
       body: normalizedPresentation.body || normalizedExplanation,
-      mode: normalizedPresentation.mode || 'free',
+      mode: normalizedPresentation.mode || PRESENTATION_MODES.FREE,
       lockInput:
         typeof normalizedPresentation.lockInput === 'boolean'
           ? normalizedPresentation.lockInput
-          : normalizedPresentation.mode === 'locked-demo',
+          : normalizedPresentation.mode === PRESENTATION_MODES.LOCKED,
     },
   }
 }
@@ -93,36 +113,42 @@ function summarizeGraph(graph) {
   return {
     repoName: graph.meta?.repoName || 'claudemap',
     generatedAt: graph.meta?.generatedAt || null,
-    source: graph.meta?.source || 'file-shim',
+    source: graph.meta?.source || GRAPH_SOURCES.FILE_SHIM,
     nodeCount: Array.isArray(graph.nodes) ? graph.nodes.length : 0,
     edgeCount: Array.isArray(graph.edges) ? graph.edges.length : 0,
     fileCount: Array.isArray(graph.files) ? graph.files.length : 0,
   }
 }
 
-function readJsonFile(filePath, fallbackFactory) {
+function readJsonFile(filePath, fallbackFactory, schemaName) {
   if (!fs.existsSync(filePath)) {
     return fallbackFactory()
   }
 
+  let parsed = null
   try {
-    return JSON.parse(fs.readFileSync(filePath, 'utf8'))
+    parsed = JSON.parse(fs.readFileSync(filePath, 'utf8'))
   } catch {
     return fallbackFactory()
   }
+
+  if (schemaName) {
+    validateWithWarning(schemaName, parsed, { filePath })
+  }
+
+  return parsed
 }
 
 function readGraph(graphPath) {
-  return readJsonFile(graphPath, createEmptyGraph)
+  return readJsonFile(graphPath, createEmptyGraph, SCHEMA_NAMES.GRAPH)
 }
 
 function readRuntimeEnvelope(statePath) {
-  return readJsonFile(statePath, createDefaultRuntimeEnvelope)
+  return readJsonFile(statePath, createDefaultRuntimeEnvelope, SCHEMA_NAMES.RUNTIME_ENVELOPE)
 }
 
 function writeJsonFile(filePath, data) {
-  fs.mkdirSync(path.dirname(filePath), { recursive: true })
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2))
+  writeJsonFileAtomic(filePath, data)
 }
 
 function writeGraph(graphPath, graphData) {
@@ -198,7 +224,7 @@ function applyGraphChangesToGraph(graph, payload = {}) {
       ...graph.meta,
       ...payload.meta,
       generatedAt: payload.meta.generatedAt || graph.meta?.generatedAt || new Date().toISOString(),
-      source: payload.meta.source || graph.meta?.source || 'file-shim',
+      source: payload.meta.source || graph.meta?.source || GRAPH_SOURCES.FILE_SHIM,
     }
   }
 
@@ -270,7 +296,7 @@ async function invokeFileShim(client, toolName, payload) {
           ...graph.meta,
           ...(payload.meta || {}),
           generatedAt: payload.meta?.generatedAt || new Date().toISOString(),
-          source: payload.meta?.source || 'file-shim',
+          source: payload.meta?.source || GRAPH_SOURCES.FILE_SHIM,
         },
         nodes: payload.nodes || [],
         edges: payload.edges || [],
@@ -282,7 +308,7 @@ async function invokeFileShim(client, toolName, payload) {
         statePath,
         buildNextRuntimeEnvelope(runtimeEnvelope, nextGraph, payload.runtime || runtimeEnvelope.runtime, true),
       )
-      return { transport: 'file-shim', toolName, graphPath, statePath }
+      return { transport: GRAPH_SOURCES.FILE_SHIM, toolName, graphPath, statePath }
     }
 
     case 'add_node': {
@@ -292,7 +318,7 @@ async function invokeFileShim(client, toolName, payload) {
         statePath,
         buildNextRuntimeEnvelope(runtimeEnvelope, graph, runtimeEnvelope.runtime, true),
       )
-      return { transport: 'file-shim', toolName, graphPath, statePath }
+      return { transport: GRAPH_SOURCES.FILE_SHIM, toolName, graphPath, statePath }
     }
 
     case 'remove_node': {
@@ -305,7 +331,7 @@ async function invokeFileShim(client, toolName, payload) {
         statePath,
         buildNextRuntimeEnvelope(runtimeEnvelope, graph, runtimeEnvelope.runtime, true),
       )
-      return { transport: 'file-shim', toolName, graphPath, statePath }
+      return { transport: GRAPH_SOURCES.FILE_SHIM, toolName, graphPath, statePath }
     }
 
     case 'update_node': {
@@ -317,7 +343,7 @@ async function invokeFileShim(client, toolName, payload) {
         statePath,
         buildNextRuntimeEnvelope(runtimeEnvelope, graph, runtimeEnvelope.runtime, true),
       )
-      return { transport: 'file-shim', toolName, graphPath, statePath }
+      return { transport: GRAPH_SOURCES.FILE_SHIM, toolName, graphPath, statePath }
     }
 
     case 'add_edge': {
@@ -327,7 +353,7 @@ async function invokeFileShim(client, toolName, payload) {
         statePath,
         buildNextRuntimeEnvelope(runtimeEnvelope, graph, runtimeEnvelope.runtime, true),
       )
-      return { transport: 'file-shim', toolName, graphPath, statePath }
+      return { transport: GRAPH_SOURCES.FILE_SHIM, toolName, graphPath, statePath }
     }
 
     case 'remove_edge': {
@@ -337,7 +363,7 @@ async function invokeFileShim(client, toolName, payload) {
         statePath,
         buildNextRuntimeEnvelope(runtimeEnvelope, graph, runtimeEnvelope.runtime, true),
       )
-      return { transport: 'file-shim', toolName, graphPath, statePath }
+      return { transport: GRAPH_SOURCES.FILE_SHIM, toolName, graphPath, statePath }
     }
 
     case 'apply_graph_patch': {
@@ -348,7 +374,7 @@ async function invokeFileShim(client, toolName, payload) {
         buildNextRuntimeEnvelope(runtimeEnvelope, nextGraph, payload.runtime || runtimeEnvelope.runtime, true),
       )
       return {
-        transport: 'file-shim',
+        transport: GRAPH_SOURCES.FILE_SHIM,
         toolName,
         graphPath,
         statePath,
@@ -371,7 +397,7 @@ async function invokeFileShim(client, toolName, payload) {
           guidedFlow: null,
         }, false),
       )
-      return { transport: 'file-shim', toolName, graphPath, statePath }
+      return { transport: GRAPH_SOURCES.FILE_SHIM, toolName, graphPath, statePath }
     }
 
     case 'clear_highlight': {
@@ -383,7 +409,7 @@ async function invokeFileShim(client, toolName, payload) {
           guidedFlow: null,
         }, false),
       )
-      return { transport: 'file-shim', toolName, graphPath, statePath }
+      return { transport: GRAPH_SOURCES.FILE_SHIM, toolName, graphPath, statePath }
     }
 
     case 'navigate_to': {
@@ -398,7 +424,7 @@ async function invokeFileShim(client, toolName, payload) {
           ),
         }, false),
       )
-      return { transport: 'file-shim', toolName, graphPath, statePath }
+      return { transport: GRAPH_SOURCES.FILE_SHIM, toolName, graphPath, statePath }
     }
 
     case 'guided_flow': {
@@ -414,7 +440,7 @@ async function invokeFileShim(client, toolName, payload) {
           },
         }, false),
       )
-      return { transport: 'file-shim', toolName, graphPath, statePath }
+      return { transport: GRAPH_SOURCES.FILE_SHIM, toolName, graphPath, statePath }
     }
 
     case 'set_health_overlay': {
@@ -425,16 +451,16 @@ async function invokeFileShim(client, toolName, payload) {
           healthOverlay: !!payload.enabled,
         }, false),
       )
-      return { transport: 'file-shim', toolName, graphPath, statePath }
+      return { transport: GRAPH_SOURCES.FILE_SHIM, toolName, graphPath, statePath }
     }
 
     case 'set_presentation_mode': {
-      const nextMode = payload.mode || 'free'
+      const nextMode = normalizePresentationMode(payload.mode)
       const shouldResetScene = payload.resetScene !== false
       const nextPresentation =
-        nextMode === 'free'
+        nextMode === PRESENTATION_MODES.FREE
           ? {
-              mode: 'free',
+              mode: PRESENTATION_MODES.FREE,
               lockInput: false,
               title: null,
               explanation: null,
@@ -448,7 +474,7 @@ async function invokeFileShim(client, toolName, payload) {
               lockInput:
                 typeof payload.lockInput === 'boolean'
                   ? payload.lockInput
-                  : nextMode === 'locked-demo',
+                  : nextMode === PRESENTATION_MODES.LOCKED,
               explanation:
                 payload.explanation === undefined
                   ? shouldResetScene
@@ -486,11 +512,13 @@ async function invokeFileShim(client, toolName, payload) {
           presentation: nextPresentation,
         }, false),
       )
-      return { transport: 'file-shim', toolName, graphPath, statePath }
+      return { transport: GRAPH_SOURCES.FILE_SHIM, toolName, graphPath, statePath }
     }
 
     case 'present_step': {
-      const nextMode = payload.mode || runtimeEnvelope.runtime.presentation?.mode || 'guided'
+      const nextMode = normalizePresentationMode(
+        payload.mode || runtimeEnvelope.runtime.presentation?.mode || PRESENTATION_MODES.GUIDED,
+      )
       const nextExplanation = payload.explanation || null
 
       writeRuntimeEnvelope(
@@ -511,7 +539,7 @@ async function invokeFileShim(client, toolName, payload) {
             lockInput:
               typeof payload.lockInput === 'boolean'
                 ? payload.lockInput
-                : nextMode === 'locked-demo',
+                : nextMode === PRESENTATION_MODES.LOCKED,
             title: payload.title || null,
             explanation: nextExplanation,
             body: nextExplanation,
@@ -520,7 +548,7 @@ async function invokeFileShim(client, toolName, payload) {
           },
         }, false),
       )
-      return { transport: 'file-shim', toolName, graphPath, statePath }
+      return { transport: GRAPH_SOURCES.FILE_SHIM, toolName, graphPath, statePath }
     }
 
     case 'show_caption': {
@@ -530,11 +558,11 @@ async function invokeFileShim(client, toolName, payload) {
           ...runtimeEnvelope.runtime,
           presentation: {
             ...runtimeEnvelope.runtime.presentation,
-            mode: runtimeEnvelope.runtime.presentation?.mode || 'guided',
+            mode: runtimeEnvelope.runtime.presentation?.mode || PRESENTATION_MODES.GUIDED,
             lockInput:
               typeof runtimeEnvelope.runtime.presentation?.lockInput === 'boolean'
                 ? runtimeEnvelope.runtime.presentation.lockInput
-                : runtimeEnvelope.runtime.presentation?.mode === 'locked-demo',
+                : normalizePresentationMode(runtimeEnvelope.runtime.presentation?.mode) === PRESENTATION_MODES.LOCKED,
             title: payload.title || null,
             explanation: payload.body || '',
             body: payload.body || '',
@@ -543,7 +571,7 @@ async function invokeFileShim(client, toolName, payload) {
           },
         }, false),
       )
-      return { transport: 'file-shim', toolName, graphPath, statePath }
+      return { transport: GRAPH_SOURCES.FILE_SHIM, toolName, graphPath, statePath }
     }
 
     case 'clear_caption': {
@@ -561,17 +589,23 @@ async function invokeFileShim(client, toolName, payload) {
           },
         }, false),
       )
-      return { transport: 'file-shim', toolName, graphPath, statePath }
+      return { transport: GRAPH_SOURCES.FILE_SHIM, toolName, graphPath, statePath }
     }
 
     default:
-      return { transport: 'file-shim', toolName, graphPath, supported: false }
+      return { transport: GRAPH_SOURCES.FILE_SHIM, toolName, graphPath, supported: false }
   }
 }
 
 async function invokeTool(client, toolName, payload) {
   if (typeof client?.callTool === 'function') {
-    return client.callTool(toolName, payload)
+    return client.callTool(toolName, {
+      ...(payload || {}),
+      __runtimeTarget: {
+        graphPath: client.graphPath || DEFAULT_RUNTIME_GRAPH_PATH,
+        statePath: client.statePath || DEFAULT_RUNTIME_STATE_PATH,
+      },
+    })
   }
 
   return invokeFileShim(client, toolName, payload)
@@ -579,7 +613,7 @@ async function invokeTool(client, toolName, payload) {
 
 export function createMcpClient(options = {}) {
   return {
-    mode: options.mode || 'file-shim',
+    mode: options.mode || GRAPH_SOURCES.FILE_SHIM,
     graphPath: options.graphPath || DEFAULT_RUNTIME_GRAPH_PATH,
     statePath: options.statePath || DEFAULT_RUNTIME_STATE_PATH,
     callTool: options.callTool,
@@ -596,6 +630,10 @@ export async function connectMcpClient(options = {}) {
   }
 
   try {
+    const [{ Client }, { StdioClientTransport }] = await Promise.all([
+      import('@modelcontextprotocol/sdk/client/index.js'),
+      import('@modelcontextprotocol/sdk/client/stdio.js'),
+    ])
     const repoRoot = path.resolve(fileURLToPath(new URL('../../', import.meta.url)))
     const transport = new StdioClientTransport({
       command: npmCommand(),
@@ -614,6 +652,8 @@ export async function connectMcpClient(options = {}) {
       mode: 'stdio',
       client,
       transport,
+      graphPath: options.graphPath || DEFAULT_RUNTIME_GRAPH_PATH,
+      statePath: options.statePath || DEFAULT_RUNTIME_STATE_PATH,
       callTool: (toolName, args) =>
         client.callTool({
           name: toolName,
@@ -685,7 +725,7 @@ export async function setHealthOverlay(mcpClient, enabled) {
   return invokeTool(mcpClient, 'set_health_overlay', { enabled })
 }
 
-export async function setPresentationMode(mcpClient, mode = 'free', options = {}) {
+export async function setPresentationMode(mcpClient, mode = PRESENTATION_MODES.FREE, options = {}) {
   return invokeTool(mcpClient, 'set_presentation_mode', {
     mode,
     lockInput: options.lockInput,
@@ -702,7 +742,7 @@ export async function presentStep(mcpClient, options = {}) {
     nodeIds: options.nodeIds || [],
     color: options.color || 'accent',
     zoom: options.zoom || 1,
-    mode: options.mode || 'guided',
+    mode: options.mode || PRESENTATION_MODES.GUIDED,
     lockInput: options.lockInput,
     title: options.title || null,
     stepLabel: options.stepLabel || null,

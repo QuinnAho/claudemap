@@ -1,3 +1,5 @@
+import { getBrand } from '../lib/brand'
+
 function buildNodeContextText(nodeData, meta = {}) {
   const nodeType = nodeData.type ? `\nType: ${nodeData.type}` : ''
   const repoLine = meta.repoName ? `\nRepo: ${meta.repoName}` : ''
@@ -5,8 +7,9 @@ function buildNodeContextText(nodeData, meta = {}) {
     nodeData.health && nodeData.health !== 'green'
       ? `\nHealth: ${nodeData.health} - ${nodeData.healthReason || 'unknown'}`
       : ''
+  const brandLabel = getBrand().displayName
 
-  return `[ClaudeMap] ${nodeData.label}${repoLine}${nodeType}
+  return `[${brandLabel}] ${nodeData.label}${repoLine}${nodeType}
 Path: ${nodeData.filePath}
 Summary: ${nodeData.summary}${healthLine}
 Lines: ${nodeData.lineCount}`
@@ -40,12 +43,10 @@ function copyTextWithExecCommand(text) {
   return copied
 }
 
-export async function copyNodeToClipboard(nodeData, meta = {}) {
-  if (!nodeData) {
+export async function copyTextToClipboard(text) {
+  if (!text) {
     return false
   }
-
-  const text = buildNodeContextText(nodeData, meta)
 
   if (navigator?.clipboard?.writeText) {
     try {
@@ -57,4 +58,12 @@ export async function copyNodeToClipboard(nodeData, meta = {}) {
   }
 
   return copyTextWithExecCommand(text)
+}
+
+export async function copyNodeToClipboard(nodeData, meta = {}) {
+  if (!nodeData) {
+    return false
+  }
+
+  return copyTextToClipboard(buildNodeContextText(nodeData, meta))
 }

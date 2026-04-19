@@ -1,0 +1,594 @@
+{
+  "meta": {
+    "repoName": "claudemap",
+    "branch": "claudemap-v0.2.0",
+    "creditLabel": "ClaudeMap self-map",
+    "generatedAt": "2026-04-19T05:22:14.006Z",
+    "source": "scoped-map",
+    "scope": {
+      "rootSystemId": "delivery",
+      "rootSystemLabel": "Delivery Pipeline",
+      "layout": "promoted-children"
+    }
+  },
+  "nodes": [
+    {
+      "id": "delivery-cli",
+      "label": "CLI Entry",
+      "type": "system",
+      "icon": "zap",
+      "parentId": null,
+      "health": "green",
+      "healthReason": null,
+      "summary": "npm-facing command wrapper",
+      "lineCount": 152,
+      "filePath": "bin/"
+    },
+    {
+      "id": "delivery-site",
+      "label": "Seeded Preview",
+      "type": "system",
+      "icon": "globe",
+      "parentId": null,
+      "health": "green",
+      "healthReason": null,
+      "summary": "Self-map generation and site build",
+      "lineCount": 1192,
+      "filePath": "scripts/"
+    },
+    {
+      "id": "delivery-packaging",
+      "label": "Distribution",
+      "type": "system",
+      "icon": "gear",
+      "parentId": null,
+      "health": "yellow",
+      "healthReason": "Artifact creation and install flows are still driven by a few large scripts",
+      "summary": "Artifact and install packaging",
+      "lineCount": 3913,
+      "filePath": "scripts/"
+    },
+    {
+      "id": "file-bin-claudemap-js",
+      "label": "claudemap.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "delivery-cli",
+      "health": "green",
+      "healthReason": null,
+      "summary": "CLI wrapper around install and update",
+      "lineCount": 152,
+      "filePath": "bin/claudemap.js"
+    },
+    {
+      "id": "file-scripts-build-site-js",
+      "label": "build-site.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "delivery-site",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Builds the public preview from the seed map",
+      "lineCount": 211,
+      "filePath": "scripts/build-site.js"
+    },
+    {
+      "id": "file-scripts-generate-seed-map-js",
+      "label": "generate-seed-map.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "delivery-site",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Regenerates the curated ClaudeMap self-map",
+      "lineCount": 99,
+      "filePath": "scripts/generate-seed-map.js"
+    },
+    {
+      "id": "file-scripts-lib-seed-map-builder-js",
+      "label": "seed-map-builder.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "delivery-site",
+      "health": "red",
+      "healthReason": "Large file at 882 lines",
+      "summary": "Defines the curated self-map architecture recipe",
+      "lineCount": 882,
+      "filePath": "scripts/lib/seed-map-builder.js"
+    },
+    {
+      "id": "file-scripts-check-contracts-js",
+      "label": "check-contracts.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "delivery-packaging",
+      "health": "yellow",
+      "healthReason": "File is 301 lines",
+      "summary": "Code in scripts",
+      "lineCount": 301,
+      "filePath": "scripts/check-contracts.js"
+    },
+    {
+      "id": "file-scripts-install-claudemap-js",
+      "label": "install-claudemap.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "delivery-packaging",
+      "health": "red",
+      "healthReason": "Large file at 718 lines",
+      "summary": "Installs or updates ClaudeMap in a target repo",
+      "lineCount": 718,
+      "filePath": "scripts/install-claudemap.js"
+    },
+    {
+      "id": "file-scripts-lib-agent-converter-js",
+      "label": "agent-converter.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "delivery-packaging",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Exports parseFrontmatter, convertAgentMdToToml, convertAgentFile",
+      "lineCount": 139,
+      "filePath": "scripts/lib/agent-converter.js"
+    },
+    {
+      "id": "file-scripts-lib-codex-skill-generator-js",
+      "label": "codex-skill-generator.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "delivery-packaging",
+      "health": "yellow",
+      "healthReason": "File is 422 lines",
+      "summary": "Exports generateCodexSkill, writeCodexSkill, renderCommandSection",
+      "lineCount": 422,
+      "filePath": "scripts/lib/codex-skill-generator.js"
+    },
+    {
+      "id": "file-scripts-package-claudemap-skill-js",
+      "label": "package-claudemap-skill.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "delivery-packaging",
+      "health": "red",
+      "healthReason": "Large file at 833 lines",
+      "summary": "Builds the packaged runtime artifact",
+      "lineCount": 833,
+      "filePath": "scripts/package-claudemap-skill.js"
+    },
+    {
+      "id": "file-scripts-prepare-npm-bundle-js",
+      "label": "prepare-npm-bundle.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "delivery-packaging",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Stages the npm bundle from the packaged artifact",
+      "lineCount": 40,
+      "filePath": "scripts/prepare-npm-bundle.js"
+    },
+    {
+      "id": "file-scripts-smoke-test-package-js",
+      "label": "smoke-test-package.js",
+      "type": "file",
+      "icon": "file",
+      "parentId": "delivery-packaging",
+      "health": "red",
+      "healthReason": "Large file at 1271 lines",
+      "summary": "Code in scripts",
+      "lineCount": 1271,
+      "filePath": "scripts/smoke-test-package.js"
+    },
+    {
+      "id": "file-scripts-smoke-test-scope-resolution-mjs",
+      "label": "smoke-test-scope-resolution.mjs",
+      "type": "file",
+      "icon": "file",
+      "parentId": "delivery-packaging",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Code in scripts",
+      "lineCount": 189,
+      "filePath": "scripts/smoke-test-scope-resolution.mjs"
+    },
+    {
+      "id": "function-scripts-lib-seed-map-builder-js-buildseedmapgraph",
+      "label": "buildSeedMapGraph",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-scripts-lib-seed-map-builder-js",
+      "health": "red",
+      "healthReason": "Large file at 882 lines",
+      "summary": "Builds seed map graph",
+      "lineCount": 882,
+      "filePath": "scripts/lib/seed-map-builder.js"
+    },
+    {
+      "id": "function-scripts-install-claudemap-js-installclaudemap",
+      "label": "installClaudeMap",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-scripts-install-claudemap-js",
+      "health": "red",
+      "healthReason": "Large file at 718 lines",
+      "summary": "Install claude map in install-claudemap.js",
+      "lineCount": 718,
+      "filePath": "scripts/install-claudemap.js"
+    },
+    {
+      "id": "function-scripts-lib-agent-converter-js-parsefrontmatter",
+      "label": "parseFrontmatter",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-scripts-lib-agent-converter-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Parse frontmatter in agent-converter.js",
+      "lineCount": 46,
+      "filePath": "scripts/lib/agent-converter.js"
+    },
+    {
+      "id": "function-scripts-lib-agent-converter-js-convertagentmdtotoml",
+      "label": "convertAgentMdToToml",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-scripts-lib-agent-converter-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Convert agent md to toml in agent-converter.js",
+      "lineCount": 46,
+      "filePath": "scripts/lib/agent-converter.js"
+    },
+    {
+      "id": "function-scripts-lib-agent-converter-js-convertagentfile",
+      "label": "convertAgentFile",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-scripts-lib-agent-converter-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Convert agent file in agent-converter.js",
+      "lineCount": 46,
+      "filePath": "scripts/lib/agent-converter.js"
+    },
+    {
+      "id": "function-scripts-lib-codex-skill-generator-js-generatecodexskill",
+      "label": "generateCodexSkill",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-scripts-lib-codex-skill-generator-js",
+      "health": "yellow",
+      "healthReason": "File is 422 lines",
+      "summary": "Generate codex skill in codex-skill-generator.js",
+      "lineCount": 84,
+      "filePath": "scripts/lib/codex-skill-generator.js"
+    },
+    {
+      "id": "function-scripts-lib-codex-skill-generator-js-writecodexskill",
+      "label": "writeCodexSkill",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-scripts-lib-codex-skill-generator-js",
+      "health": "yellow",
+      "healthReason": "File is 422 lines",
+      "summary": "Writes codex skill",
+      "lineCount": 84,
+      "filePath": "scripts/lib/codex-skill-generator.js"
+    },
+    {
+      "id": "function-scripts-lib-codex-skill-generator-js-rendercommandsection",
+      "label": "renderCommandSection",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-scripts-lib-codex-skill-generator-js",
+      "health": "yellow",
+      "healthReason": "File is 422 lines",
+      "summary": "Render command section in codex-skill-generator.js",
+      "lineCount": 84,
+      "filePath": "scripts/lib/codex-skill-generator.js"
+    },
+    {
+      "id": "function-scripts-lib-codex-skill-generator-js-transformskillbody",
+      "label": "transformSkillBody",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-scripts-lib-codex-skill-generator-js",
+      "health": "yellow",
+      "healthReason": "File is 422 lines",
+      "summary": "Transform skill body in codex-skill-generator.js",
+      "lineCount": 84,
+      "filePath": "scripts/lib/codex-skill-generator.js"
+    },
+    {
+      "id": "function-scripts-lib-codex-skill-generator-js-applycodexskillidentity",
+      "label": "applyCodexSkillIdentity",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-scripts-lib-codex-skill-generator-js",
+      "health": "yellow",
+      "healthReason": "File is 422 lines",
+      "summary": "Apply codex skill identity in codex-skill-generator.js",
+      "lineCount": 84,
+      "filePath": "scripts/lib/codex-skill-generator.js"
+    },
+    {
+      "id": "function-scripts-package-claudemap-skill-js-buildclaudemapartifact",
+      "label": "buildClaudeMapArtifact",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-scripts-package-claudemap-skill-js",
+      "health": "red",
+      "healthReason": "Large file at 833 lines",
+      "summary": "Builds claude map artifact",
+      "lineCount": 277,
+      "filePath": "scripts/package-claudemap-skill.js"
+    },
+    {
+      "id": "function-scripts-package-claudemap-skill-js-createappexclusionrules",
+      "label": "createAppExclusionRules",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-scripts-package-claudemap-skill-js",
+      "health": "red",
+      "healthReason": "Large file at 833 lines",
+      "summary": "Creates app exclusion rules",
+      "lineCount": 277,
+      "filePath": "scripts/package-claudemap-skill.js"
+    },
+    {
+      "id": "function-scripts-package-claudemap-skill-js-artifactdirnamefor",
+      "label": "artifactDirNameFor",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-scripts-package-claudemap-skill-js",
+      "health": "red",
+      "healthReason": "Large file at 833 lines",
+      "summary": "Artifact dir name for in package-claudemap-skill.js",
+      "lineCount": 277,
+      "filePath": "scripts/package-claudemap-skill.js"
+    }
+  ],
+  "edges": [],
+  "files": [
+    {
+      "path": "bin/claudemap.js",
+      "relativePath": "bin/claudemap.js",
+      "name": "claudemap.js",
+      "directory": "bin",
+      "lineCount": 152,
+      "imports": [
+        "fs",
+        "path",
+        "child_process",
+        "../skill/lib/contracts/paths.js"
+      ],
+      "exports": [],
+      "language": "javascript",
+      "mtimeMs": 1776494122143.2834
+    },
+    {
+      "path": "scripts/build-site.js",
+      "relativePath": "scripts/build-site.js",
+      "name": "build-site.js",
+      "directory": "scripts",
+      "lineCount": 211,
+      "imports": [
+        "fs",
+        "path",
+        "child_process",
+        "../skill/lib/contracts/paths.js",
+        "../skill/lib/contracts/schemas/index.js",
+        "../skill/lib/contracts/graph-sources.js",
+        "../skill/lib/contracts/presentation.js"
+      ],
+      "exports": [],
+      "language": "javascript",
+      "mtimeMs": 1776447598996.4263
+    },
+    {
+      "path": "scripts/check-contracts.js",
+      "relativePath": "scripts/check-contracts.js",
+      "name": "check-contracts.js",
+      "directory": "scripts",
+      "lineCount": 301,
+      "imports": [
+        "fs",
+        "path"
+      ],
+      "exports": [],
+      "language": "javascript",
+      "mtimeMs": 1776497018930.1074
+    },
+    {
+      "path": "scripts/generate-seed-map.js",
+      "relativePath": "scripts/generate-seed-map.js",
+      "name": "generate-seed-map.js",
+      "directory": "scripts",
+      "lineCount": 99,
+      "imports": [
+        "fs",
+        "path",
+        "./lib/seed-map-builder.js",
+        "../skill/lib/file-walker.js",
+        "../skill/lib/contracts/graph-sources.js",
+        "../skill/lib/contracts/presentation.js",
+        "../skill/lib/contracts/paths.js"
+      ],
+      "exports": [],
+      "language": "javascript",
+      "mtimeMs": 1776396326941.4658
+    },
+    {
+      "path": "scripts/install-claudemap.js",
+      "relativePath": "scripts/install-claudemap.js",
+      "name": "install-claudemap.js",
+      "directory": "scripts",
+      "lineCount": 718,
+      "imports": [
+        "fs",
+        "path",
+        "child_process",
+        "../skill/lib/contracts/paths.js",
+        "../skill/lib/contracts/schemas/index.js"
+      ],
+      "exports": [
+        "installClaudeMap"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776570054295.0166
+    },
+    {
+      "path": "scripts/lib/agent-converter.js",
+      "relativePath": "scripts/lib/agent-converter.js",
+      "name": "agent-converter.js",
+      "directory": "scripts/lib",
+      "lineCount": 139,
+      "imports": [
+        "fs",
+        "path"
+      ],
+      "exports": [
+        "parseFrontmatter",
+        "convertAgentMdToToml",
+        "convertAgentFile"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776535638046.7512
+    },
+    {
+      "path": "scripts/lib/codex-skill-generator.js",
+      "relativePath": "scripts/lib/codex-skill-generator.js",
+      "name": "codex-skill-generator.js",
+      "directory": "scripts/lib",
+      "lineCount": 422,
+      "imports": [
+        "fs",
+        "path"
+      ],
+      "exports": [
+        "generateCodexSkill",
+        "writeCodexSkill",
+        "renderCommandSection",
+        "transformSkillBody",
+        "applyCodexSkillIdentity",
+        "generateCodexOrchestration",
+        "rebrandClaudeToCodex",
+        "buildCodexRebrandWhitelist",
+        "applyCodexDeepRebrand"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776568406993.5312
+    },
+    {
+      "path": "scripts/lib/seed-map-builder.js",
+      "relativePath": "scripts/lib/seed-map-builder.js",
+      "name": "seed-map-builder.js",
+      "directory": "scripts/lib",
+      "lineCount": 882,
+      "imports": [
+        "path"
+      ],
+      "exports": [
+        "EXCLUDED_PATHS",
+        "EXCLUDED_PREFIXES",
+        "buildSeedMapGraph"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776572177088.2983
+    },
+    {
+      "path": "scripts/package-claudemap-skill.js",
+      "relativePath": "scripts/package-claudemap-skill.js",
+      "name": "package-claudemap-skill.js",
+      "directory": "scripts",
+      "lineCount": 833,
+      "imports": [
+        "fs",
+        "path",
+        "child_process",
+        "../skill/lib/contracts/paths.js",
+        "./lib/agent-converter.js",
+        "./lib/codex-skill-generator.js",
+        "../app/src/contracts/branding.js",
+        "../skill/lib/contracts/graph-sources.js",
+        "../skill/lib/contracts/presentation.js",
+        "../skill/commands/setup-claudemap.js",
+        "../skill/commands/refresh.js",
+        "../skill/commands/open-claudemap.js",
+        "../skill/commands/create-map.js",
+        "../skill/commands/show.js",
+        "../skill/commands/snapshot.js",
+        "../skill/lib/command-harness/slash-only-descriptors.js",
+        "../skill/lib/command-harness/render-slash-template.js"
+      ],
+      "exports": [
+        "buildClaudeMapArtifact",
+        "createAppExclusionRules",
+        "artifactDirNameFor"
+      ],
+      "language": "javascript",
+      "mtimeMs": 1776570053172.7734
+    },
+    {
+      "path": "scripts/prepare-npm-bundle.js",
+      "relativePath": "scripts/prepare-npm-bundle.js",
+      "name": "prepare-npm-bundle.js",
+      "directory": "scripts",
+      "lineCount": 40,
+      "imports": [
+        "path",
+        "child_process",
+        "../skill/lib/contracts/paths.js"
+      ],
+      "exports": [],
+      "language": "javascript",
+      "mtimeMs": 1776494122177.4048
+    },
+    {
+      "path": "scripts/smoke-test-package.js",
+      "relativePath": "scripts/smoke-test-package.js",
+      "name": "smoke-test-package.js",
+      "directory": "scripts",
+      "lineCount": 1271,
+      "imports": [
+        "./services/session.js",
+        "./ui/app.js",
+        "../shared/config.js",
+        "fs",
+        "path",
+        "url",
+        "child_process",
+        "./install-claudemap.js",
+        "./package-claudemap-skill.js",
+        "../skill/lib/contracts/paths.js",
+        "../skill/lib/contracts/schemas/index.js",
+        "../skill/lib/contracts/errors.js",
+        "../skill/lib/contracts/graph-sources.js",
+        "../skill/lib/command-harness/render-slash-template.js",
+        "../skill/commands/setup-claudemap.js",
+        "../skill/commands/refresh.js",
+        "../skill/commands/open-claudemap.js",
+        "../skill/commands/create-map.js",
+        "../skill/commands/show.js",
+        "../skill/lib/command-harness/slash-only-descriptors.js"
+      ],
+      "exports": [],
+      "language": "javascript",
+      "mtimeMs": 1776568389558.6445
+    },
+    {
+      "path": "scripts/smoke-test-scope-resolution.mjs",
+      "relativePath": "scripts/smoke-test-scope-resolution.mjs",
+      "name": "smoke-test-scope-resolution.mjs",
+      "directory": "scripts",
+      "lineCount": 189,
+      "imports": [
+        "../skill/lib/map-manifest.js"
+      ],
+      "exports": [],
+      "language": "javascript",
+      "mtimeMs": 1776439688312.7263
+    }
+  ]
+}

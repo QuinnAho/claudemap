@@ -1,0 +1,65 @@
+/* Auto-generated from src/contracts/tokens.js, motion.js, and branding.js. Do not edit. */
+:root {
+  --bg-canvas: #0a0a0a;
+  --bg-panel: #111111;
+  --bg-card: #1a1a1a;
+  --bg-topbar: #0f0f0f;
+  --bg-menu: #0c0c0c;
+  --bg-floating: #121212;
+  --bg-highlight-accent: #1c120e;
+  --bg-highlight-neutral: #131313;
+  --bg-resting: #121212;
+  --bg-resting-function: #1a1a1a;
+  --text-primary: #e5e5e5;
+  --text-secondary: #737373;
+  --text-muted: #525252;
+  --text-presentation: #f2ebe4;
+  --text-highlight: #fff4ef;
+  --accent: #df714c;
+  --accent-pronounced: #df714c;
+  --health-green: #22c55e;
+  --health-yellow: #eab308;
+  --health-red: #ef4444;
+  --border: rgba(255, 255, 255, 0.07);
+  --border-light: rgba(255, 255, 255, 0.1);
+  --motion-quick-ms: 280ms;
+  --motion-surface-ms: 420ms;
+  --motion-layout-ms: 520ms;
+  --motion-viewport-ms: 450ms;
+  --motion-compass-ms: 940ms;
+  --motion-caret-blink-ms: 1000ms;
+  --motion-hover-enter-ms: 72ms;
+  --motion-hover-enter-settle-ms: 48ms;
+  --motion-hover-exit-ms: 140ms;
+  --motion-runtime-poll-ms: 1200ms;
+  --motion-guided-flow-step-ms: 1500ms;
+  --motion-guided-flow-step-min-ms: 400ms;
+  --motion-graph-ready-delay-ms: 200ms;
+  --motion-status-bar-refresh-ms: 30000ms;
+  --motion-menu-hide-ms: 220ms;
+  --motion-node-visibility-ms: 30ms;
+  --motion-reveal-index-step-ms: 40ms;
+  --motion-reveal-index-max-ms: 140ms;
+  --motion-reveal-activation-ms: 24ms;
+  --motion-transition-trigger-ms: 10ms;
+  --motion-fade-out-ms: 320ms;
+  --motion-type-interval-ms: 16ms;
+  --motion-map-affordance-reset-ms: 1600ms;
+  --motion-zoom-button-ms: 300ms;
+  --motion-fit-view-ms: 500ms;
+  --motion-quick-duration: 280ms;
+  --motion-surface-duration: 420ms;
+  --motion-layout-duration: 520ms;
+  --motion-ease-smooth: cubic-bezier(0.2, 0.82, 0.2, 1);
+  --motion-ease-soft: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --motion-ease-compass: cubic-bezier(0.22, 0.74, 0.2, 1);
+  --motion-ease-ease: ease;
+}
+
+:root[data-brand="codexmap"] {
+  --accent: #5b8def;
+  --accent-pronounced: #5b8def;
+  --bg-highlight-accent: #0e141c;
+  --text-presentation: #e4ecf2;
+  --text-highlight: #eff6ff;
+}

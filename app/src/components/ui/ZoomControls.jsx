@@ -1,19 +1,28 @@
 import { Activity, Locate, Minus, Plus } from 'lucide-react'
 import { useReactFlow } from '@xyflow/react'
+import { MOTION } from '../../contracts/motion'
+import { PRESENTATION_MODES } from '../../contracts/presentation'
+import { alpha } from '../../contracts/tokens'
+import { FIT_VIEW } from '../../contracts/zoom'
 import { useGraphStore } from '../../store/graphStore'
+import {
+  selectHealthOverlay,
+  selectPresentationMode,
+  selectSetHealthOverlay,
+} from '../../store/selectors'
 
 export default function ZoomControls() {
   const { zoomIn, zoomOut, fitView } = useReactFlow()
-  const healthOverlay = useGraphStore((state) => state.healthOverlay)
-  const setHealthOverlay = useGraphStore((state) => state.setHealthOverlay)
-  const presentationMode = useGraphStore((state) => state.presentationMode)
+  const healthOverlay = useGraphStore(selectHealthOverlay)
+  const setHealthOverlay = useGraphStore(selectSetHealthOverlay)
+  const presentationMode = useGraphStore(selectPresentationMode)
 
   const islandStyle = {
     backgroundColor: 'var(--bg-card)',
     border: '1px solid var(--border)',
     borderRadius: '8px',
     overflow: 'hidden',
-    boxShadow: '0 6px 16px rgba(0, 0, 0, 0.18)',
+    boxShadow: `0 6px 16px ${alpha('black', 0.18)}`,
   }
 
   const getButtonStyle = (isActive = false) => ({
@@ -53,7 +62,7 @@ export default function ZoomControls() {
         pointerEvents: 'auto',
       }}
     >
-      {presentationMode === 'free' ? (
+      {presentationMode === PRESENTATION_MODES.FREE ? (
         <div style={islandStyle}>
           <button
             style={getButtonStyle(healthOverlay)}
@@ -70,7 +79,7 @@ export default function ZoomControls() {
       <div style={islandStyle}>
         <button
           style={getButtonStyle()}
-          onClick={() => zoomIn({ duration: 300 })}
+          onClick={() => zoomIn({ duration: MOTION.zoomButton })}
           onMouseEnter={(event) => setHoverColor(event, { hover: true })}
           onMouseLeave={(event) => setHoverColor(event, { hover: false })}
           aria-label="Zoom in"
@@ -80,7 +89,7 @@ export default function ZoomControls() {
         <div style={dividerStyle} />
         <button
           style={getButtonStyle()}
-          onClick={() => zoomOut({ duration: 300 })}
+          onClick={() => zoomOut({ duration: MOTION.zoomButton })}
           onMouseEnter={(event) => setHoverColor(event, { hover: true })}
           onMouseLeave={(event) => setHoverColor(event, { hover: false })}
           aria-label="Zoom out"
@@ -90,7 +99,7 @@ export default function ZoomControls() {
         <div style={dividerStyle} />
         <button
           style={getButtonStyle()}
-          onClick={() => fitView({ duration: 500, padding: 0.2, maxZoom: 0.65 })}
+          onClick={() => fitView({ duration: MOTION.fitView, padding: FIT_VIEW.padding, maxZoom: FIT_VIEW.maxZoom })}
           onMouseEnter={(event) => setHoverColor(event, { hover: true })}
           onMouseLeave={(event) => setHoverColor(event, { hover: false })}
           aria-label="Fit view"

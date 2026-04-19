@@ -18,16 +18,16 @@ npm run build
 
 ## Repo-Specific Checks
 
-- If you change the public demo or app output, run `npm run build-demo-site` and include `docs/`.
-- If you change installer, packaging, or npm release behavior, run `npm pack --dry-run`.
-- If you change bundled commands, prompts, or runtime packaging, run `node scripts/package-claudemap-skill.js --no-demo-sync`.
+- If you change the seeded self-map, public site, or app output, run `npm run build-site` and include `docs/`. Use `npm run generate-seed-map` when you only want to refresh the seeded self-map without rebuilding the site.
+- If you change installer, packaging, or npm release behavior, run `npm pack --dry-run --cache artifacts/.npm-cache`.
+- If you change installer, packaging, or npm release behavior, also run `npm run pack:test` and smoke-test the tarball in another repo when practical.
+- If you change bundled commands, prompts, or runtime packaging, run `node scripts/package-claudemap-skill.js`.
 - Do not commit `.npm-bundle/` or `artifacts/`.
 
 ## Pull Requests
 
 - Describe the problem, the change, and any tradeoffs.
-- List the commands you ran to verify the change.
-- Include screenshots or a short video for visible UI/demo changes.
+- Include screenshots or a short video for visible UI/site changes.
 - Update docs when setup, publishing, or command behavior changes.
 
 ## Conduct

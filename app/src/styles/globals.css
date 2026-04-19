@@ -1,20 +1,5 @@
 @import "tailwindcss";
-
-:root {
-  --bg-canvas: #0a0a0a;
-  --bg-panel: #111111;
-  --bg-card: #1a1a1a;
-  --bg-topbar: #0f0f0f;
-  --border: rgba(255, 255, 255, 0.07);
-  --border-light: rgba(255, 255, 255, 0.1);
-  --text-primary: #e5e5e5;
-  --text-secondary: #737373;
-  --text-muted: #525252;
-  --accent: #df714c;
-  --health-green: #22c55e;
-  --health-yellow: #eab308;
-  --health-red: #ef4444;
-}
+@import "./tokens.generated.css";
 
 * {
   margin: 0;
@@ -58,6 +43,65 @@ body,
   }
 }
 
+@keyframes topbarCompassLookAround {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  38% {
+    transform: rotate(136deg);
+  }
+
+  68% {
+    transform: rotate(248deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 .react-flow__node {
-  transition: transform 0.3s ease, width 0.3s ease, height 0.3s ease;
+  will-change: transform, width, height;
+  transition:
+    transform var(--motion-layout-duration) var(--motion-ease-smooth),
+    width var(--motion-layout-duration) var(--motion-ease-smooth),
+    height var(--motion-layout-duration) var(--motion-ease-smooth);
+}
+
+.map-affordance {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  cursor: pointer;
+  pointer-events: auto;
+  white-space: nowrap;
+  transition: color 0.18s ease;
+}
+
+.map-affordance:hover,
+.map-affordance[data-copied='true'] {
+  color: var(--accent);
+}
+
+.topbar-home {
+  transition:
+    opacity var(--motion-quick-duration) var(--motion-ease-soft),
+    filter var(--motion-quick-duration) var(--motion-ease-soft);
+}
+
+.topbar-home:hover {
+  filter: brightness(1.03);
+}
+
+.topbar-home:hover .topbar-home-icon {
+  animation: topbarCompassLookAround 940ms cubic-bezier(0.22, 0.74, 0.2, 1) 1;
 }

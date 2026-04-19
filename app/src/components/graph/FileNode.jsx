@@ -1,6 +1,8 @@
-import { Handle, Position } from '@xyflow/react'
 import { useEffect, useState } from 'react'
+import { MOTION } from '../../contracts/motion'
+import { FONT, alpha } from '../../contracts/tokens'
 import FloatingDescription from './FloatingDescription'
+import NodeHandles from './NodeHandles'
 
 const healthColors = {
   yellow: 'var(--health-yellow)',
@@ -20,25 +22,25 @@ export default function FileNode({ data }) {
   const restingOpacity = data.isGhosted ? 0.14 : data.isDimmed ? 0.48 : 1
   const finalOpacity = isVisible ? restingOpacity : 0
   const borderColor = data.isSelected
-    ? 'rgba(232, 97, 60, 0.7)'
+    ? alpha('accent', 0.7)
     : isPresentationHighlight
-      ? 'rgba(232, 97, 60, 0.42)'
+      ? alpha('accent', 0.42)
       : isSubtleHighlight
-        ? 'rgba(255, 255, 255, 0.08)'
-      : 'rgba(255, 255, 255, 0.05)'
+        ? alpha('white', 0.08)
+      : alpha('white', 0.05)
   const boxShadow = data.isSelected
-    ? '0 0 0 1px rgba(232, 97, 60, 0.12), 0 10px 22px rgba(232, 97, 60, 0.15)'
+    ? `0 0 0 1px ${alpha('accent', 0.12)}, 0 10px 22px ${alpha('accent', 0.15)}`
     : isPresentationHighlight
-      ? '0 0 0 1px rgba(232, 97, 60, 0.08), 0 8px 18px rgba(232, 97, 60, 0.12)'
+      ? `0 0 0 1px ${alpha('accent', 0.08)}, 0 8px 18px ${alpha('accent', 0.12)}`
       : isSubtleHighlight
-        ? '0 0 0 1px rgba(255, 255, 255, 0.025), 0 3px 8px rgba(0, 0, 0, 0.2)'
-      : '0 2px 8px rgba(0, 0, 0, 0.22)'
+        ? `0 0 0 1px ${alpha('white', 0.025)}, 0 3px 8px ${alpha('black', 0.2)}`
+      : `0 2px 8px ${alpha('black', 0.22)}`
   const showDescription = !data.hideDescription && data.isSelected && data.summary
 
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
       setIsVisible(true)
-    }, 30)
+    }, MOTION.nodeVisibility)
 
     return () => window.clearTimeout(timeoutId)
   }, [])
@@ -49,10 +51,10 @@ export default function FileNode({ data }) {
         width: '100%',
         height: '100%',
         backgroundColor: isPresentationHighlight
-          ? 'rgba(28, 18, 14, 0.96)'
+          ? alpha('highlightAccentBg', 0.96)
           : isSubtleHighlight
-            ? 'rgba(19, 19, 19, 0.96)'
-            : 'rgba(18, 18, 18, 0.96)',
+            ? alpha('highlightNeutralBg', 0.96)
+            : alpha('floating', 0.96),
         border: `1px solid ${borderColor}`,
         borderRadius: '10px',
         boxShadow,
@@ -63,13 +65,12 @@ export default function FileNode({ data }) {
         transform:
           data.isPresentationLead ? 'translateY(0) scale(1.03)' : 'translateY(0) scale(1)',
         transition:
-          'opacity 0.24s ease, transform 0.26s ease, box-shadow 0.2s ease, border-color 0.2s ease',
+          'opacity var(--motion-surface-duration) var(--motion-ease-soft), transform var(--motion-layout-duration) var(--motion-ease-smooth), box-shadow var(--motion-surface-duration) var(--motion-ease-soft), border-color var(--motion-surface-duration) var(--motion-ease-soft)',
         position: 'relative',
         overflow: 'hidden',
       }}
     >
-      <Handle type="target" position={Position.Top} style={hiddenHandleStyle} />
-      <Handle type="source" position={Position.Bottom} style={hiddenHandleStyle} />
+      <NodeHandles style={hiddenHandleStyle} />
 
       <FloatingDescription text={data.summary} visible={showDescription} position="above" />
 
@@ -86,8 +87,8 @@ export default function FileNode({ data }) {
         <span
           style={{
             fontSize: '12px',
-            color: isPresentationHighlight ? '#fff4ef' : 'var(--text-primary)',
-            fontFamily: "'SF Mono', 'Fira Code', 'Consolas', monospace",
+            color: isPresentationHighlight ? 'var(--text-highlight)' : 'var(--text-primary)',
+            fontFamily: FONT.mono,
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
@@ -130,7 +131,7 @@ export default function FileNode({ data }) {
           marginTop: hasNestedFunctions ? '6px' : '0px',
           transform: hasNestedFunctions ? 'translateY(0)' : 'translateY(-6px)',
           transition:
-            'flex 0.28s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease, margin-top 0.28s cubic-bezier(0.22, 1, 0.36, 1), transform 0.28s cubic-bezier(0.22, 1, 0.36, 1)',
+            'flex var(--motion-surface-duration) var(--motion-ease-smooth), opacity var(--motion-surface-duration) var(--motion-ease-soft), margin-top var(--motion-surface-duration) var(--motion-ease-smooth), transform var(--motion-surface-duration) var(--motion-ease-smooth)',
         }}
       >
         <div
@@ -139,12 +140,12 @@ export default function FileNode({ data }) {
             height: '100%',
             borderTop:
               data.isPresentationLead || isPresentationHighlight
-                ? '1px solid rgba(232, 97, 60, 0.18)'
-                : '1px solid rgba(255, 255, 255, 0.06)',
+                ? `1px solid ${alpha('accent', 0.18)}`
+                : `1px solid ${alpha('white', 0.06)}`,
             background:
               data.isPresentationLead || isPresentationHighlight
-                ? 'linear-gradient(180deg, rgba(232, 97, 60, 0.06) 0%, rgba(232, 97, 60, 0.02) 100%)'
-                : 'linear-gradient(180deg, rgba(255, 255, 255, 0.025) 0%, rgba(255, 255, 255, 0.01) 100%)',
+                ? `linear-gradient(180deg, ${alpha('accent', 0.06)} 0%, ${alpha('accent', 0.02)} 100%)`
+                : `linear-gradient(180deg, ${alpha('white', 0.025)} 0%, ${alpha('white', 0.01)} 100%)`,
           }}
         />
       </div>

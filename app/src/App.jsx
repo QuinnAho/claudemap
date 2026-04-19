@@ -1,6 +1,7 @@
 import { Suspense, lazy } from 'react'
 import TopBar from './components/layout/TopBar'
 import StatusBar from './components/layout/StatusBar'
+import { useRuntimeSync } from './hooks/useRuntimeSync'
 
 const GraphRuntime = lazy(() => import('./components/graph/GraphRuntime'))
 
@@ -18,12 +19,14 @@ function GraphBootFallback() {
         letterSpacing: '0.01em',
       }}
     >
-      Loading graph runtime...
+      Loading...
     </div>
   )
 }
 
 export default function App() {
+  useRuntimeSync()
+
   return (
     <div
       style={{

@@ -1,20 +1,23 @@
 {
   "name": "@claudemap/skill",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "bin": {
     "setup-claudemap": "./commands/setup-claudemap.js",
     "open-claudemap": "./commands/open-claudemap.js",
-    "claudemap-refresh": "./commands/update.js",
+    "claudemap-create-map": "./commands/create-map.js",
+    "claudemap-refresh": "./commands/refresh.js",
     "claudemap-show": "./commands/show.js",
     "claudemap-snapshot": "./commands/snapshot.js"
   },
   "scripts": {
     "setup-claudemap": "node ./commands/setup-claudemap.js",
     "open-claudemap": "node ./commands/open-claudemap.js",
-    "refresh": "node ./commands/update.js",
+    "create-map": "node ./commands/create-map.js",
+    "refresh": "node ./commands/refresh.js",
     "show": "node ./commands/show.js",
-    "snapshot": "node ./commands/snapshot.js"
+    "snapshot": "node ./commands/snapshot.js",
+    "test": "vitest run"
   }
 }

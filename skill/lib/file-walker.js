@@ -1,5 +1,9 @@
 import fs from 'fs'
 import path from 'path'
+import { execFileSync } from 'child_process'
+import { CACHE_FILENAME } from './contracts/paths.js'
+
+const branchCache = new Map()
 
 const SKIPPED_DIRECTORY_NAMES = new Set([
   '.git',
@@ -13,7 +17,7 @@ const SKIPPED_DIRECTORY_NAMES = new Set([
 const SKIPPED_FILE_NAMES = new Set([
   '.env',
   '.gitignore',
-  'claudemap-cache.json',
+  CACHE_FILENAME,
   'package-lock.json',
   'yarn.lock',
 ])
@@ -265,9 +269,45 @@ export function collectProjectSnapshot(rootDir) {
   return {
     repoRoot: resolvedRoot,
     repoName: path.basename(resolvedRoot),
+    branch: resolveGitBranchLabel(resolvedRoot),
     generatedAt: new Date().toISOString(),
     files,
     totalFiles: files.length,
     totalLines: files.reduce((total, file) => total + file.lineCount, 0),
   }
+}
+
+function resolveGitBranchLabel(rootDir) {
+  if (branchCache.has(rootDir)) {
+    return branchCache.get(rootDir)
+  }
+
+  let branchLabel = 'workspace'
+
+  try {
+    const branchName = execFileSync('git', ['branch', '--show-current'], {
+      cwd: rootDir,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }).trim()
+
+    if (branchName) {
+      branchLabel = branchName
+    } else {
+      const commitSha = execFileSync('git', ['rev-parse', '--short', 'HEAD'], {
+        cwd: rootDir,
+        encoding: 'utf8',
+        stdio: ['ignore', 'pipe', 'ignore'],
+      }).trim()
+
+      if (commitSha) {
+        branchLabel = `detached@${commitSha}`
+      }
+    }
+  } catch {
+    branchLabel = 'workspace'
+  }
+
+  branchCache.set(rootDir, branchLabel)
+  return branchLabel
 }

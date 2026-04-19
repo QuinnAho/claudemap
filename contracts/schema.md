@@ -1,10 +1,10 @@
 # ClaudeMap Schema
 
-ClaudeMap currently uses three JSON payload shapes:
+ClaudeMap uses three JSON payload shapes:
 
-- Graph payload: `contracts/claudemap.sample.json`
-- Cache payload: `contracts/claudemap-cache.sample.json`
-- Runtime state payload: `contracts/claudemap-runtime-state.sample.json`
+- Graph payload: `contracts/claudemap-seed-map.json` (the seeded ClaudeMap self-map)
+- Cache payload: written to `claudemap-cache.json` in the analyzed project
+- Runtime state payload: written to `claudemap-runtime-state.json` in the analyzed project
 
 ## Graph Payload
 

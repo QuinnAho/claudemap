@@ -1,18 +1,21 @@
 import { useEffect, useState } from 'react'
-import { Clock3 } from 'lucide-react'
+import { MOTION } from '../../contracts/motion'
+import { FONT } from '../../contracts/tokens'
 import { useGraphStore } from '../../store/graphStore'
+import {
+  selectMetaLastSyncedAt,
+  selectPresentationMode,
+} from '../../store/selectors'
 
 export default function StatusBar() {
-  const branch = useGraphStore((state) => state.meta.branch)
-  const creditLabel = useGraphStore((state) => state.meta.creditLabel)
-  const lastSyncedAt = useGraphStore((state) => state.meta.lastSyncedAt)
-  const presentationMode = useGraphStore((state) => state.presentationMode)
+  const lastSyncedAt = useGraphStore(selectMetaLastSyncedAt)
+  const presentationMode = useGraphStore(selectPresentationMode)
   const [currentTime, setCurrentTime] = useState(() => Date.now())
 
   useEffect(() => {
     const intervalId = window.setInterval(() => {
       setCurrentTime(Date.now())
-    }, 30000)
+    }, MOTION.statusBarRefresh)
 
     return () => window.clearInterval(intervalId)
   }, [])
@@ -20,10 +23,6 @@ export default function StatusBar() {
   useEffect(() => {
     setCurrentTime(Date.now())
   }, [lastSyncedAt])
-
-  const statusGroupStyle = { display: 'flex', alignItems: 'center', gap: '16px' }
-  const statusItemStyle = { display: 'flex', alignItems: 'center', gap: '8px' }
-  const creditStyle = { whiteSpace: 'nowrap' }
 
   const getSyncLabel = () => {
     const elapsedMs = Math.max(0, currentTime - lastSyncedAt)
@@ -54,13 +53,26 @@ export default function StatusBar() {
         justifyContent: 'space-between',
         padding: '0 16px',
         flexShrink: 0,
-        fontFamily: "'SF Mono', 'Fira Code', 'Consolas', monospace",
+        fontFamily: FONT.mono,
         fontSize: '12px',
         color: 'var(--text-secondary)',
       }}
     >
-      <div style={statusGroupStyle}>
-        <div style={statusItemStyle}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '14px',
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            minWidth: 0,
+          }}
+        >
           <div
             style={{
               width: '6px',
@@ -69,19 +81,21 @@ export default function StatusBar() {
               backgroundColor: 'var(--health-green)',
             }}
           />
-          <span>{branch}</span>
-        </div>
-        <div style={{ ...statusItemStyle, gap: '6px' }}>
-          <Clock3 size={12} />
           <span>{getSyncLabel()}</span>
         </div>
-        <div style={statusItemStyle}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+          }}
+        >
           <span>{`Mode: ${presentationMode}`}</span>
         </div>
       </div>
 
-      <div style={creditStyle}>
-        <span>{creditLabel}</span>
+      <div style={{ whiteSpace: 'nowrap' }}>
+        <span>A Project by Quinn Aho</span>
       </div>
     </div>
   )

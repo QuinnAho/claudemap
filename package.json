@@ -1,6 +1,6 @@
 {
   "name": "@quinnaho/claudemap",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "ClaudeMap installer CLI for bootstrapping the bundled .claude runtime into any repository",
   "license": "MIT",
   "author": "Quinn Aho",
@@ -24,7 +24,7 @@
     "node": ">=18"
   },
   "bin": {
-    "claudemap": "./bin/claudemap.js"
+    "claudemap": "bin/claudemap.js"
   },
   "files": [
     "bin/",
@@ -38,13 +38,20 @@
     "skill"
   ],
   "scripts": {
+    "test": "node ./scripts/check-contracts.js && node ./scripts/smoke-test-package.js",
+    "test:package": "node ./scripts/smoke-test-package.js",
+    "test:contracts": "node ./scripts/check-contracts.js",
     "dev": "npm --workspace app run dev",
     "build": "npm --workspace app run build",
-    "build-demo-site": "node ./scripts/build-demo-site.js",
+    "pack:test": "npm pack --pack-destination artifacts/npm --cache artifacts/.npm-cache",
+    "generate-seed-map": "node ./scripts/generate-seed-map.js",
+    "build-site": "npm run generate-seed-map && node ./scripts/build-site.js",
     "mcp": "npm --workspace app run mcp",
     "install-claudemap": "node ./scripts/install-claudemap.js",
+    "install:local": "node ./scripts/install-claudemap.js",
     "setup-claudemap": "npm --workspace skill run setup-claudemap --",
     "open-claudemap": "npm --workspace skill run open-claudemap --",
+    "create-map": "npm --workspace skill run create-map --",
     "refresh": "npm --workspace skill run refresh --",
     "update-claudemap-install": "node ./scripts/install-claudemap.js --update",
     "show": "npm --workspace skill run show --",

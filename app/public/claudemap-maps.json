@@ -1,0 +1,129 @@
+{
+  "version": 1,
+  "activeMapId": "root",
+  "maps": [
+    {
+      "id": "root",
+      "label": "ClaudeMap",
+      "summary": "Full repo overview",
+      "scope": null,
+      "cachePath": "claudemap-cache.json",
+      "graphPath": "graph/claudemap-runtime.json",
+      "statePath": "graph/claudemap-runtime-state.json"
+    },
+    {
+      "id": "skill-runtime",
+      "label": "Skill Runtime",
+      "summary": "CLI runtime that builds and drives maps",
+      "scope": {
+        "type": "subsystem",
+        "rootSystemId": "runtime",
+        "rootSystemLabel": "Skill Runtime",
+        "ancestorPath": [],
+        "filePathHint": "skill/",
+        "fingerprint": "sha1:702f027fa3d2eff7dbf3655190e99d066ca9c847",
+        "stale": false,
+        "needsRebuild": false
+      },
+      "cachePath": "claudemap-cache.skill-runtime.json",
+      "graphPath": "graph/claudemap-runtime.skill-runtime.json",
+      "statePath": "graph/claudemap-runtime-state.skill-runtime.json"
+    },
+    {
+      "id": "map-experience",
+      "label": "Map Experience",
+      "summary": "Interactive map UI and walkthroughs",
+      "scope": {
+        "type": "subsystem",
+        "rootSystemId": "experience",
+        "rootSystemLabel": "Map Experience",
+        "ancestorPath": [],
+        "filePathHint": "app/src/",
+        "fingerprint": "sha1:ad4cd9c7967dbfae449bc444dbed807b8c5dc5fd",
+        "stale": false,
+        "needsRebuild": false
+      },
+      "cachePath": "claudemap-cache.map-experience.json",
+      "graphPath": "graph/claudemap-runtime.map-experience.json",
+      "statePath": "graph/claudemap-runtime-state.map-experience.json"
+    },
+    {
+      "id": "state-layout",
+      "label": "State & Layout",
+      "summary": "Runtime polling and layout math",
+      "scope": {
+        "type": "subsystem",
+        "rootSystemId": "experience-state",
+        "rootSystemLabel": "State & Layout",
+        "ancestorPath": [
+          "Map Experience"
+        ],
+        "filePathHint": "app/src/hooks/",
+        "fingerprint": "sha1:8bc80576e2d7eae454a3383229859140d6473ee8",
+        "stale": false,
+        "needsRebuild": false
+      },
+      "cachePath": "claudemap-cache.state-layout.json",
+      "graphPath": "graph/claudemap-runtime.state-layout.json",
+      "statePath": "graph/claudemap-runtime-state.state-layout.json"
+    },
+    {
+      "id": "command-surface",
+      "label": "Command Surface",
+      "summary": "Setup, refresh, explain, and show commands",
+      "scope": {
+        "type": "subsystem",
+        "rootSystemId": "runtime-commands",
+        "rootSystemLabel": "Command Surface",
+        "ancestorPath": [
+          "Skill Runtime"
+        ],
+        "filePathHint": "skill/commands/",
+        "fingerprint": "sha1:4b4fe30f3a2f3bfa073144ac168926e43c7326cd",
+        "stale": false,
+        "needsRebuild": false
+      },
+      "cachePath": "claudemap-cache.command-surface.json",
+      "graphPath": "graph/claudemap-runtime.command-surface.json",
+      "statePath": "graph/claudemap-runtime-state.command-surface.json"
+    },
+    {
+      "id": "map-model",
+      "label": "Map Model",
+      "summary": "Manifest, scope, and path rules",
+      "scope": {
+        "type": "subsystem",
+        "rootSystemId": "runtime-model",
+        "rootSystemLabel": "Map Model",
+        "ancestorPath": [
+          "Skill Runtime"
+        ],
+        "filePathHint": "skill/lib/",
+        "fingerprint": "sha1:61f1802ef2bf3aa0039dc321a60b9e3b2374ed3f",
+        "stale": false,
+        "needsRebuild": false
+      },
+      "cachePath": "claudemap-cache.map-model.json",
+      "graphPath": "graph/claudemap-runtime.map-model.json",
+      "statePath": "graph/claudemap-runtime-state.map-model.json"
+    },
+    {
+      "id": "delivery-pipeline",
+      "label": "Delivery Pipeline",
+      "summary": "CLI install, packaging, and preview",
+      "scope": {
+        "type": "subsystem",
+        "rootSystemId": "delivery",
+        "rootSystemLabel": "Delivery Pipeline",
+        "ancestorPath": [],
+        "filePathHint": "scripts/",
+        "fingerprint": "sha1:47175bdea25170331da96c43e2cce6d34db922b1",
+        "stale": false,
+        "needsRebuild": false
+      },
+      "cachePath": "claudemap-cache.delivery-pipeline.json",
+      "graphPath": "graph/claudemap-runtime.delivery-pipeline.json",
+      "statePath": "graph/claudemap-runtime-state.delivery-pipeline.json"
+    }
+  ]
+}

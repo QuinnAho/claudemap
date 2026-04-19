@@ -1,0 +1,96 @@
+You will receive a JSON payload describing a single subsystem of a larger codebase. It includes:
+
+- `scope`: the subsystem being mapped (`label`, `filePathHint`, `ancestorPath`)
+- `files[]`: flat file list inside the scope, with `relativePath`, `lineCount`, `imports`, `exports`, `language`
+- `priorGraph` (optional): the previous scoped graph JSON if this is a refinement pass
+- `instructions` (optional): user-provided refinement instructions
+
+Return a single JSON object with `nodes` and `edges`. No prose, no markdown, no code fences. Your entire response must parse as valid JSON.
+
+# Output schema
+
+```
+{
+  "nodes": [
+    {
+      "id": "string",
+      "label": "string",
+      "type": "system" | "file" | "function",
+      "icon": "shield|database|globe|gear|puzzle|route|lock|envelope|clock|layers|code|file|server|zap",
+      "parentId": "string | null",
+      "filePath": "string",
+      "lineCount": number,
+      "health": "green" | "yellow" | "red",
+      "healthReason": "string (only when health is yellow or red)",
+      "summary": "string (optional, see budgets below)"
+    }
+  ],
+  "edges": [
+    { "id": "string", "source": "string", "target": "string", "type": "imports" }
+  ]
+}
+```
+
+# Required fields per node type
+
+Every node must have: `id`, `label`, `type`, `parentId`, `filePath`, `lineCount`, `health`.
+
+- **system**: `parentId` is `null` for top-level, or another system's id for nested. `filePath` is the primary directory or `""`. `lineCount` is the sum of descendant file lines.
+- **file**: `parentId` is a system id. `filePath` matches the payload's `relativePath`. `lineCount` matches the payload.
+- **function**: `parentId` is a file id. Icon is always `"code"`.
+
+# Scoped-map rules
+
+These are different from the root-map pass. Optimize for subsystem detail, not whole-repo abstraction.
+
+1. **Break the scope into 2–6 internal subsystems.** A scoped map with a single system box and a column of files is a failure. Group files by cohesive responsibility (transport, domain, persistence, config, etc.), not by folder name alone.
+2. **Emit more edges.** For scoped maps, emit edges between any two files in the scope that import each other OR belong to different subsystems. Do not suppress "internal" edges the way the root prompt does.
+3. **Nest when it clarifies.** If a subsystem has 6+ files and two clear sub-responsibilities, nest them.
+4. **Function nodes are welcome here.** Scoped maps are navigation tools, not overview dashboards. Emit function nodes for any exported symbol that represents a distinct entry point. Cap at 5 per file, prefer the exports the user is most likely to click.
+5. **Top-level system `parentId` is `null`.** Do not attach top-level nodes to the scope's own id — the UI treats the scope container implicitly.
+
+# Refinement passes
+
+If `priorGraph` is provided:
+
+- Read the prior graph to understand the current structure and the user's intent from `instructions`.
+- Decide whether to **edit in place** (small changes, keep ids, tweak labels/grouping/summaries) or **rebuild** (large structural change requested).
+- When editing in place, preserve node ids where possible so the user's highlights and navigation history carry over.
+- When rebuilding, you may invent new ids freely.
+
+If `instructions` is provided without `priorGraph`, treat it as guidance for the initial build.
+
+# Token-efficiency rules
+
+1. **Omit `healthReason` when health is `green`.**
+2. **Omit `summary` when uninformative** or when the label tells the full story (`button.jsx`, `index.ts`).
+3. **Summary caps:** system ≤ 60 chars, file ≤ 50 chars, function ≤ 40 chars.
+4. **`healthReason` cap:** ≤ 60 chars.
+5. **Edge `type` is always `"imports"`.**
+6. **Deduplicate edges** by `(source, target)`. No self-loops or duplicates.
+7. **Do not emit fields outside the schema.**
+
+# File coverage
+
+Every file in the payload's `files[]` must appear as exactly one `file` node. No file may be omitted or duplicated.
+
+# IDs
+
+Derive deterministically from labels and paths. Never random.
+
+- system: `system-<slug>`
+- file: `file-<slug-of-relativePath>`
+- function: `function-<slug-of-relativePath>-<slug-of-exportName>`
+- edge: `edge-<sourceId>-<targetId>`
+
+Slug = lowercase, alphanumeric, dashes for separators, no leading/trailing dashes.
+
+# Health grading
+
+- `green`: normal file sizes (< 300 lines), normal imports. Omit `healthReason`.
+- `yellow`: 300–500 line files, > 12 imports, or a subsystem containing > 10 files without nesting. Include `healthReason`.
+- `red`: 500+ line files, circular dependencies, or a single file spanning handler + service + persistence.
+
+# Output format
+
+Return a single JSON object. No wrapper text. No ```json fences. No "Here is the graph:" preamble. If the first character is not `{` or the last is not `}`, the output is wrong.
