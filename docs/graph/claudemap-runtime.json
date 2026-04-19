@@ -1,9 +1,9 @@
 {
   "meta": {
     "repoName": "claudemap",
-    "branch": "claudemap-v0.2.0",
+    "branch": "main",
     "creditLabel": "ClaudeMap self-map",
-    "generatedAt": "2026-04-19T04:16:32.886Z",
+    "generatedAt": "2026-04-19T18:41:53.535Z",
     "source": "manual"
   },
   "nodes": [
@@ -16,7 +16,7 @@
       "health": "yellow",
       "healthReason": "GraphCanvas and runtime hooks still concentrate a lot of scene logic",
       "summary": "Interactive map UI and walkthroughs",
-      "lineCount": 6446,
+      "lineCount": 6534,
       "filePath": "app/src/"
     },
     {
@@ -64,7 +64,7 @@
       "health": "yellow",
       "healthReason": "useGraphData and useLayout still carry most of the runtime coordination",
       "summary": "Runtime polling and layout math",
-      "lineCount": 3630,
+      "lineCount": 3718,
       "filePath": "app/src/hooks/"
     },
     {
@@ -208,7 +208,7 @@
       "health": "yellow",
       "healthReason": "Packaging and install behavior still depend on a few large operational scripts",
       "summary": "CLI install, packaging, and preview",
-      "lineCount": 5257,
+      "lineCount": 5283,
       "filePath": "scripts/"
     },
     {
@@ -232,7 +232,7 @@
       "health": "green",
       "healthReason": null,
       "summary": "Self-map generation and site build",
-      "lineCount": 1192,
+      "lineCount": 1200,
       "filePath": "scripts/"
     },
     {
@@ -244,7 +244,7 @@
       "health": "yellow",
       "healthReason": "Artifact creation and install flows are still driven by a few large scripts",
       "summary": "Artifact and install packaging",
-      "lineCount": 3913,
+      "lineCount": 3931,
       "filePath": "scripts/"
     },
     {
@@ -556,7 +556,7 @@
       "health": "green",
       "healthReason": null,
       "summary": "Exports useRuntimeGraph",
-      "lineCount": 148,
+      "lineCount": 164,
       "filePath": "app/src/hooks/useRuntimeGraph.js"
     },
     {
@@ -712,7 +712,7 @@
       "health": "green",
       "healthReason": null,
       "summary": "POSTs active-map switches to the dev server",
-      "lineCount": 41,
+      "lineCount": 113,
       "filePath": "app/src/lib/mapApi.js"
     },
     {
@@ -1648,7 +1648,7 @@
       "health": "green",
       "healthReason": null,
       "summary": "Builds the public preview from the seed map",
-      "lineCount": 211,
+      "lineCount": 219,
       "filePath": "scripts/build-site.js"
     },
     {
@@ -1730,9 +1730,9 @@
       "icon": "file",
       "parentId": "delivery-packaging",
       "health": "red",
-      "healthReason": "Large file at 833 lines",
+      "healthReason": "Large file at 835 lines",
       "summary": "Builds the packaged runtime artifact",
-      "lineCount": 833,
+      "lineCount": 835,
       "filePath": "scripts/package-claudemap-skill.js"
     },
     {
@@ -1754,9 +1754,9 @@
       "icon": "file",
       "parentId": "delivery-packaging",
       "health": "red",
-      "healthReason": "Large file at 1271 lines",
+      "healthReason": "Large file at 1287 lines",
       "summary": "Code in scripts",
-      "lineCount": 1271,
+      "lineCount": 1287,
       "filePath": "scripts/smoke-test-package.js"
     },
     {
@@ -2068,7 +2068,7 @@
       "health": "green",
       "healthReason": null,
       "summary": "Hook for runtime graph",
-      "lineCount": 148,
+      "lineCount": 164,
       "filePath": "app/src/hooks/useRuntimeGraph.js"
     },
     {
@@ -2262,6 +2262,30 @@
       "summary": "Runs ELK on the top-level system graph",
       "lineCount": 53,
       "filePath": "app/src/lib/layoutEngine.js"
+    },
+    {
+      "id": "function-app-src-lib-mapapi-js-getclientactivemapoverride",
+      "label": "getClientActiveMapOverride",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-app-src-lib-mapapi-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Reads client active map override",
+      "lineCount": 56,
+      "filePath": "app/src/lib/mapApi.js"
+    },
+    {
+      "id": "function-app-src-lib-mapapi-js-setactivemap",
+      "label": "setActiveMap",
+      "type": "function",
+      "icon": "code",
+      "parentId": "file-app-src-lib-mapapi-js",
+      "health": "green",
+      "healthReason": null,
+      "summary": "Switches the active map through the dev API",
+      "lineCount": 56,
+      "filePath": "app/src/lib/mapApi.js"
     },
     {
       "id": "function-app-src-lib-runtimeassets-js-createdefaultruntimeenvelope",
@@ -3914,9 +3938,9 @@
       "icon": "code",
       "parentId": "file-scripts-package-claudemap-skill-js",
       "health": "red",
-      "healthReason": "Large file at 833 lines",
+      "healthReason": "Large file at 835 lines",
       "summary": "Builds claude map artifact",
-      "lineCount": 277,
+      "lineCount": 278,
       "filePath": "scripts/package-claudemap-skill.js"
     },
     {
@@ -3926,9 +3950,9 @@
       "icon": "code",
       "parentId": "file-scripts-package-claudemap-skill-js",
       "health": "red",
-      "healthReason": "Large file at 833 lines",
+      "healthReason": "Large file at 835 lines",
       "summary": "Creates app exclusion rules",
-      "lineCount": 277,
+      "lineCount": 278,
       "filePath": "scripts/package-claudemap-skill.js"
     },
     {
@@ -3938,9 +3962,9 @@
       "icon": "code",
       "parentId": "file-scripts-package-claudemap-skill-js",
       "health": "red",
-      "healthReason": "Large file at 833 lines",
+      "healthReason": "Large file at 835 lines",
       "summary": "Artifact dir name for in package-claudemap-skill.js",
-      "lineCount": 277,
+      "lineCount": 278,
       "filePath": "scripts/package-claudemap-skill.js"
     }
   ],
@@ -4169,7 +4193,7 @@
         "App"
       ],
       "language": "javascript",
-      "mtimeMs": 1776408134766.5022
+      "mtimeMs": 1776580039248.1506
     },
     {
       "path": "app/src/components/graph/CustomEdge.jsx",
@@ -4185,7 +4209,7 @@
         "CustomEdge"
       ],
       "language": "javascript",
-      "mtimeMs": 1776391784415.1738
+      "mtimeMs": 1776580039256.6814
     },
     {
       "path": "app/src/components/graph/FileNode.jsx",
@@ -4204,7 +4228,7 @@
         "FileNode"
       ],
       "language": "javascript",
-      "mtimeMs": 1776563945309.6677
+      "mtimeMs": 1776580039263.1692
     },
     {
       "path": "app/src/components/graph/FloatingDescription.jsx",
@@ -4221,7 +4245,7 @@
         "FloatingDescription"
       ],
       "language": "javascript",
-      "mtimeMs": 1776391888780.688
+      "mtimeMs": 1776580039272.6755
     },
     {
       "path": "app/src/components/graph/FunctionNode.jsx",
@@ -4240,7 +4264,7 @@
         "FunctionNode"
       ],
       "language": "javascript",
-      "mtimeMs": 1776563945965.6006
+      "mtimeMs": 1776580039279.6855
     },
     {
       "path": "app/src/components/graph/GraphCanvas.jsx",
@@ -4272,7 +4296,7 @@
         "GraphCanvas"
       ],
       "language": "javascript",
-      "mtimeMs": 1776437283154.637
+      "mtimeMs": 1776580039289.198
     },
     {
       "path": "app/src/components/graph/GraphRuntime.jsx",
@@ -4293,7 +4317,7 @@
         "GraphRuntime"
       ],
       "language": "javascript",
-      "mtimeMs": 1776407246071.5173
+      "mtimeMs": 1776580039296.708
     },
     {
       "path": "app/src/components/graph/MapAffordance.jsx",
@@ -4312,7 +4336,7 @@
         "MapAffordance"
       ],
       "language": "javascript",
-      "mtimeMs": 1776549218531.886
+      "mtimeMs": 1776580039300.7085
     },
     {
       "path": "app/src/components/graph/NodeHandles.jsx",
@@ -4327,7 +4351,7 @@
         "NodeHandles"
       ],
       "language": "javascript",
-      "mtimeMs": 1776563944001.7258
+      "mtimeMs": 1776580039304.7444
     },
     {
       "path": "app/src/components/graph/nodeIcons.js",
@@ -4362,7 +4386,7 @@
         "PresentationOverlay"
       ],
       "language": "javascript",
-      "mtimeMs": 1776496022480.1921
+      "mtimeMs": 1776580039312.2495
     },
     {
       "path": "app/src/components/graph/SystemNode.jsx",
@@ -4384,7 +4408,7 @@
         "SystemNode"
       ],
       "language": "javascript",
-      "mtimeMs": 1776563944660.7166
+      "mtimeMs": 1776580039320.26
     },
     {
       "path": "app/src/components/graph/systemNodeSizing.js",
@@ -4441,7 +4465,7 @@
         "MapSelector"
       ],
       "language": "javascript",
-      "mtimeMs": 1776570056530.861
+      "mtimeMs": 1776580039323.7712
     },
     {
       "path": "app/src/components/layout/StatusBar.jsx",
@@ -4460,7 +4484,7 @@
         "StatusBar"
       ],
       "language": "javascript",
-      "mtimeMs": 1776406801977.4856
+      "mtimeMs": 1776580039330.778
     },
     {
       "path": "app/src/components/layout/TopBar.jsx",
@@ -4483,7 +4507,7 @@
         "TopBar"
       ],
       "language": "javascript",
-      "mtimeMs": 1776570055943.8901
+      "mtimeMs": 1776580039339.2927
     },
     {
       "path": "app/src/components/ui/ZoomControls.jsx",
@@ -4505,7 +4529,7 @@
         "ZoomControls"
       ],
       "language": "javascript",
-      "mtimeMs": 1776406880965.6238
+      "mtimeMs": 1776580039347.8254
     },
     {
       "path": "app/src/contracts/branding.js",
@@ -4522,7 +4546,7 @@
         "BRANDS"
       ],
       "language": "javascript",
-      "mtimeMs": 1776570054817.1465
+      "mtimeMs": 1776580039353.3425
     },
     {
       "path": "app/src/contracts/graph-sources.js",
@@ -4535,7 +4559,7 @@
         "GRAPH_SOURCES"
       ],
       "language": "javascript",
-      "mtimeMs": 1776377867044.6504
+      "mtimeMs": 1776580039357.3208
     },
     {
       "path": "app/src/contracts/index.js",
@@ -4546,7 +4570,7 @@
       "imports": [],
       "exports": [],
       "language": "javascript",
-      "mtimeMs": 1776495512020.7058
+      "mtimeMs": 1776580039361.3208
     },
     {
       "path": "app/src/contracts/motion.js",
@@ -4562,7 +4586,7 @@
         "EASING"
       ],
       "language": "javascript",
-      "mtimeMs": 1776377843421.0515
+      "mtimeMs": 1776580039366.3792
     },
     {
       "path": "app/src/contracts/paths.js",
@@ -4583,7 +4607,7 @@
         "API_ACTIVE_MAP_ENDPOINT"
       ],
       "language": "javascript",
-      "mtimeMs": 1776393664513.0493
+      "mtimeMs": 1776580039369.3784
     },
     {
       "path": "app/src/contracts/presentation.js",
@@ -4599,7 +4623,7 @@
         "PRESENTATION_MODE_LIST"
       ],
       "language": "javascript",
-      "mtimeMs": 1776377859304.3872
+      "mtimeMs": 1776580039373.893
     },
     {
       "path": "app/src/contracts/tokens.js",
@@ -4620,7 +4644,7 @@
         "RADIUS"
       ],
       "language": "javascript",
-      "mtimeMs": 1776570144625.072
+      "mtimeMs": 1776580039388.6875
     },
     {
       "path": "app/src/contracts/zoom.js",
@@ -4637,7 +4661,7 @@
         "NAVIGATE_DEFAULT_ZOOM"
       ],
       "language": "javascript",
-      "mtimeMs": 1776377851286.2693
+      "mtimeMs": 1776580039393.2036
     },
     {
       "path": "app/src/hooks/useClipboard.js",
@@ -4653,7 +4677,7 @@
         "copyNodeToClipboard"
       ],
       "language": "javascript",
-      "mtimeMs": 1776570055391.1814
+      "mtimeMs": 1776580039404.73
     },
     {
       "path": "app/src/hooks/useGraphFocusRuntime.js",
@@ -4676,7 +4700,7 @@
         "useGraphFocusRuntime"
       ],
       "language": "javascript",
-      "mtimeMs": 1776436646792.234
+      "mtimeMs": 1776580039409.731
     },
     {
       "path": "app/src/hooks/useGraphLoaded.js",
@@ -4692,7 +4716,7 @@
         "useGraphLoaded"
       ],
       "language": "javascript",
-      "mtimeMs": 1776408113449.5735
+      "mtimeMs": 1776580039414.2441
     },
     {
       "path": "app/src/hooks/useGraphPointerHandlers.js",
@@ -4713,7 +4737,7 @@
         "useGraphPointerHandlers"
       ],
       "language": "javascript",
-      "mtimeMs": 1776437049386.3818
+      "mtimeMs": 1776580039418.241
     },
     {
       "path": "app/src/hooks/useGraphViewModel.js",
@@ -4733,7 +4757,7 @@
         "useGraphViewModel"
       ],
       "language": "javascript",
-      "mtimeMs": 1776437253407.5935
+      "mtimeMs": 1776580039422.2427
     },
     {
       "path": "app/src/hooks/useHoverPathScheduler.js",
@@ -4752,7 +4776,7 @@
         "useHoverPathScheduler"
       ],
       "language": "javascript",
-      "mtimeMs": 1776408533648.9185
+      "mtimeMs": 1776580039427.3884
     },
     {
       "path": "app/src/hooks/useLayout.js",
@@ -4778,18 +4802,19 @@
         "useLayout"
       ],
       "language": "javascript",
-      "mtimeMs": 1776566390654.2703
+      "mtimeMs": 1776580039434.9023
     },
     {
       "path": "app/src/hooks/useRuntimeGraph.js",
       "relativePath": "app/src/hooks/useRuntimeGraph.js",
       "name": "useRuntimeGraph.js",
       "directory": "app/src/hooks",
-      "lineCount": 148,
+      "lineCount": 164,
       "imports": [
         "react",
         "../contracts/graph-sources",
         "../lib/brand",
+        "../lib/mapApi",
         "../lib/runtimeAssets",
         "../store/graphStore",
         "../store/selectors",
@@ -4799,7 +4824,7 @@
         "useRuntimeGraph"
       ],
       "language": "javascript",
-      "mtimeMs": 1776496444933.4507
+      "mtimeMs": 1776623035326.9895
     },
     {
       "path": "app/src/hooks/useRuntimePolling.js",
@@ -4814,7 +4839,7 @@
         "useRuntimePolling"
       ],
       "language": "javascript",
-      "mtimeMs": 1776407874999.2786
+      "mtimeMs": 1776580039442.4065
     },
     {
       "path": "app/src/hooks/useRuntimeSync.js",
@@ -4831,7 +4856,7 @@
         "useRuntimeSync"
       ],
       "language": "javascript",
-      "mtimeMs": 1776408099357.3645
+      "mtimeMs": 1776580039446.4175
     },
     {
       "path": "app/src/hooks/useScopedMapAffordance.js",
@@ -4851,7 +4876,7 @@
         "useScopedMapAffordance"
       ],
       "language": "javascript",
-      "mtimeMs": 1776570057039.8052
+      "mtimeMs": 1776580039449.4175
     },
     {
       "path": "app/src/hooks/useZoomLevel.js",
@@ -4868,7 +4893,7 @@
         "ZOOM_LEVELS"
       ],
       "language": "javascript",
-      "mtimeMs": 1776384256171.2122
+      "mtimeMs": 1776580039459.953
     },
     {
       "path": "app/src/lib/assistantPrompts.js",
@@ -4884,7 +4909,7 @@
         "buildCreateMapPrompt"
       ],
       "language": "javascript",
-      "mtimeMs": 1776568357006.6704
+      "mtimeMs": 1776580039463.4612
     },
     {
       "path": "app/src/lib/brand.js",
@@ -4899,7 +4924,7 @@
         "getBrand"
       ],
       "language": "javascript",
-      "mtimeMs": 1776496274823.8904
+      "mtimeMs": 1776580039472.4658
     },
     {
       "path": "app/src/lib/edgeHandles.js",
@@ -4912,7 +4937,7 @@
         "chooseEdgeHandles"
       ],
       "language": "javascript",
-      "mtimeMs": 1776566345227.8538
+      "mtimeMs": 1776580039475.996
     },
     {
       "path": "app/src/lib/graphNodeUtils.js",
@@ -4947,7 +4972,7 @@
         "transformToReactFlow"
       ],
       "language": "javascript",
-      "mtimeMs": 1776570145150.8904
+      "mtimeMs": 1776580039486.5073
     },
     {
       "path": "app/src/lib/graphView.js",
@@ -4973,7 +4998,7 @@
         "computeStyledEdges"
       ],
       "language": "javascript",
-      "mtimeMs": 1776566368629.6365
+      "mtimeMs": 1776580039494.0159
     },
     {
       "path": "app/src/lib/layoutEdges.js",
@@ -4989,7 +5014,7 @@
         "dedupeBidirectionalLayoutEdges"
       ],
       "language": "javascript",
-      "mtimeMs": 1776566380242.632
+      "mtimeMs": 1776580039501.0212
     },
     {
       "path": "app/src/lib/layoutEngine.js",
@@ -5012,15 +5037,16 @@
       "relativePath": "app/src/lib/mapApi.js",
       "name": "mapApi.js",
       "directory": "app/src/lib",
-      "lineCount": 41,
+      "lineCount": 113,
       "imports": [
         "../contracts/paths"
       ],
       "exports": [
+        "getClientActiveMapOverride",
         "setActiveMap"
       ],
       "language": "javascript",
-      "mtimeMs": 1776570057530.254
+      "mtimeMs": 1776622998315.7832
     },
     {
       "path": "app/src/lib/runtimeAssets.js",
@@ -5050,7 +5076,7 @@
         "isRuntimeEnvelope"
       ],
       "language": "javascript",
-      "mtimeMs": 1776496413084.245
+      "mtimeMs": 1776580039516.7595
     },
     {
       "path": "app/src/lib/semanticTopLevelLayout.js",
@@ -5064,7 +5090,7 @@
         "buildSemanticGroups"
       ],
       "language": "javascript",
-      "mtimeMs": 1776566786052.1807
+      "mtimeMs": 1776580039525.2776
     },
     {
       "path": "app/src/lib/systemTreeLayout.js",
@@ -5080,7 +5106,7 @@
         "getGraphLayoutSignature"
       ],
       "language": "javascript",
-      "mtimeMs": 1776331836658.169
+      "mtimeMs": 1776580039539.8213
     },
     {
       "path": "app/src/lib/topLevelLayout.js",
@@ -5094,7 +5120,7 @@
         "reflowTopLevelLayout"
       ],
       "language": "javascript",
-      "mtimeMs": 1776569162984.0774
+      "mtimeMs": 1776580039545.3308
     },
     {
       "path": "app/src/main.jsx",
@@ -5127,7 +5153,7 @@
         "toolDefinitions"
       ],
       "language": "javascript",
-      "mtimeMs": 1776570145688.9026
+      "mtimeMs": 1776580039556.8489
     },
     {
       "path": "app/src/mcp/server.js",
@@ -5142,7 +5168,7 @@
       ],
       "exports": [],
       "language": "javascript",
-      "mtimeMs": 1776570146309.2305
+      "mtimeMs": 1776580039564.3657
     },
     {
       "path": "app/src/store/graphSlice.js",
@@ -5159,7 +5185,7 @@
         "graphSliceInitialState"
       ],
       "language": "javascript",
-      "mtimeMs": 1776496462865.5945
+      "mtimeMs": 1776580039567.3652
     },
     {
       "path": "app/src/store/graphStore.js",
@@ -5177,7 +5203,7 @@
         "useGraphStore"
       ],
       "language": "javascript",
-      "mtimeMs": 1776406534824.73
+      "mtimeMs": 1776580039572.87
     },
     {
       "path": "app/src/store/runtimeSlice.js",
@@ -5193,7 +5219,7 @@
         "runtimeSliceInitialState"
       ],
       "language": "javascript",
-      "mtimeMs": 1776408035254.0476
+      "mtimeMs": 1776580039580.881
     },
     {
       "path": "app/src/store/selectors.js",
@@ -5235,7 +5261,7 @@
         "selectIsPresenting"
       ],
       "language": "javascript",
-      "mtimeMs": 1776408056797.552
+      "mtimeMs": 1776580039584.3967
     },
     {
       "path": "app/src/store/uiSlice.js",
@@ -5249,7 +5275,7 @@
         "uiSliceInitialState"
       ],
       "language": "javascript",
-      "mtimeMs": 1776406497972.4492
+      "mtimeMs": 1776580039591.3955
     },
     {
       "path": "app/tailwind.config.js",
@@ -5285,7 +5311,7 @@
         "defineConfig"
       ],
       "language": "javascript",
-      "mtimeMs": 1776396597750.623
+      "mtimeMs": 1776580039610.4314
     },
     {
       "path": "app/vite/tokens-plugin.js",
@@ -5304,7 +5330,7 @@
         "generatedCssPath"
       ],
       "language": "javascript",
-      "mtimeMs": 1776495661728.3098
+      "mtimeMs": 1776580039615.843
     },
     {
       "path": "app/vitest.config.js",
@@ -5319,7 +5345,7 @@
         "defineConfig"
       ],
       "language": "javascript",
-      "mtimeMs": 1776437819129.9539
+      "mtimeMs": 1776580039618.8423
     },
     {
       "path": "bin/claudemap.js",
@@ -5335,14 +5361,14 @@
       ],
       "exports": [],
       "language": "javascript",
-      "mtimeMs": 1776494122143.2834
+      "mtimeMs": 1776580039625.358
     },
     {
       "path": "scripts/build-site.js",
       "relativePath": "scripts/build-site.js",
       "name": "build-site.js",
       "directory": "scripts",
-      "lineCount": 211,
+      "lineCount": 219,
       "imports": [
         "fs",
         "path",
@@ -5354,7 +5380,7 @@
       ],
       "exports": [],
       "language": "javascript",
-      "mtimeMs": 1776447598996.4263
+      "mtimeMs": 1776624102731.1853
     },
     {
       "path": "scripts/check-contracts.js",
@@ -5368,7 +5394,7 @@
       ],
       "exports": [],
       "language": "javascript",
-      "mtimeMs": 1776497018930.1074
+      "mtimeMs": 1776580039863.6526
     },
     {
       "path": "scripts/generate-seed-map.js",
@@ -5387,7 +5413,7 @@
       ],
       "exports": [],
       "language": "javascript",
-      "mtimeMs": 1776396326941.4658
+      "mtimeMs": 1776580039868.6533
     },
     {
       "path": "scripts/install-claudemap.js",
@@ -5406,7 +5432,7 @@
         "installClaudeMap"
       ],
       "language": "javascript",
-      "mtimeMs": 1776570054295.0166
+      "mtimeMs": 1776580039877.172
     },
     {
       "path": "scripts/lib/agent-converter.js",
@@ -5424,7 +5450,7 @@
         "convertAgentFile"
       ],
       "language": "javascript",
-      "mtimeMs": 1776535638046.7512
+      "mtimeMs": 1776580039883.6946
     },
     {
       "path": "scripts/lib/codex-skill-generator.js",
@@ -5448,7 +5474,7 @@
         "applyCodexDeepRebrand"
       ],
       "language": "javascript",
-      "mtimeMs": 1776568406993.5312
+      "mtimeMs": 1776580039893.1943
     },
     {
       "path": "scripts/lib/seed-map-builder.js",
@@ -5465,14 +5491,14 @@
         "buildSeedMapGraph"
       ],
       "language": "javascript",
-      "mtimeMs": 1776572177088.2983
+      "mtimeMs": 1776580039898.2107
     },
     {
       "path": "scripts/package-claudemap-skill.js",
       "relativePath": "scripts/package-claudemap-skill.js",
       "name": "package-claudemap-skill.js",
       "directory": "scripts",
-      "lineCount": 833,
+      "lineCount": 835,
       "imports": [
         "fs",
         "path",
@@ -5498,7 +5524,7 @@
         "artifactDirNameFor"
       ],
       "language": "javascript",
-      "mtimeMs": 1776570053172.7734
+      "mtimeMs": 1776580039906.546
     },
     {
       "path": "scripts/prepare-npm-bundle.js",
@@ -5513,14 +5539,14 @@
       ],
       "exports": [],
       "language": "javascript",
-      "mtimeMs": 1776494122177.4048
+      "mtimeMs": 1776580039915.5884
     },
     {
       "path": "scripts/smoke-test-package.js",
       "relativePath": "scripts/smoke-test-package.js",
       "name": "smoke-test-package.js",
       "directory": "scripts",
-      "lineCount": 1271,
+      "lineCount": 1287,
       "imports": [
         "./services/session.js",
         "./ui/app.js",
@@ -5545,7 +5571,7 @@
       ],
       "exports": [],
       "language": "javascript",
-      "mtimeMs": 1776568389558.6445
+      "mtimeMs": 1776580039920.5952
     },
     {
       "path": "scripts/smoke-test-scope-resolution.mjs",
@@ -5558,7 +5584,7 @@
       ],
       "exports": [],
       "language": "javascript",
-      "mtimeMs": 1776439688312.7263
+      "mtimeMs": 1776580039926.1204
     },
     {
       "path": "skill/commands/create-map.js",
@@ -5585,7 +5611,7 @@
         "CREATE_MAP_COMMAND"
       ],
       "language": "javascript",
-      "mtimeMs": 1776439605768.4187
+      "mtimeMs": 1776580039940.6343
     },
     {
       "path": "skill/commands/open-claudemap.js",
@@ -5607,7 +5633,7 @@
         "OPEN_CLAUDEMAP_COMMAND"
       ],
       "language": "javascript",
-      "mtimeMs": 1776404377182.8691
+      "mtimeMs": 1776580039951.1848
     },
     {
       "path": "skill/commands/refresh.js",
@@ -5636,7 +5662,7 @@
         "UPDATE_COMMAND"
       ],
       "language": "javascript",
-      "mtimeMs": 1776453956313.4597
+      "mtimeMs": 1776580039956.6848
     },
     {
       "path": "skill/commands/setup-claudemap.js",
@@ -5664,7 +5690,7 @@
         "SETUP_CLAUDEMAP_COMMAND"
       ],
       "language": "javascript",
-      "mtimeMs": 1776453999313.217
+      "mtimeMs": 1776580039965.2168
     },
     {
       "path": "skill/commands/show.js",
@@ -5685,7 +5711,7 @@
         "SHOW_COMMAND"
       ],
       "language": "javascript",
-      "mtimeMs": 1776404450433.5454
+      "mtimeMs": 1776580039974.7188
     },
     {
       "path": "skill/commands/snapshot.js",
@@ -5706,7 +5732,7 @@
         "SNAPSHOT_COMMAND"
       ],
       "language": "javascript",
-      "mtimeMs": 1776405007075.2285
+      "mtimeMs": 1776580039983.2305
     },
     {
       "path": "skill/lib/active-map.js",
@@ -5727,7 +5753,7 @@
         "resolveActiveMap"
       ],
       "language": "javascript",
-      "mtimeMs": 1776394080919.019
+      "mtimeMs": 1776580039989.233
     },
     {
       "path": "skill/lib/cache.js",
@@ -5747,7 +5773,7 @@
         "isCacheStale"
       ],
       "language": "javascript",
-      "mtimeMs": 1776444060771.6646
+      "mtimeMs": 1776580039997.7476
     },
     {
       "path": "skill/lib/command-harness/enrichment-io.js",
@@ -5765,7 +5791,7 @@
         "readEnrichmentArg"
       ],
       "language": "javascript",
-      "mtimeMs": 1776401197509.779
+      "mtimeMs": 1776580040005.2742
     },
     {
       "path": "skill/lib/command-harness/log.js",
@@ -5778,7 +5804,7 @@
         "createLogger"
       ],
       "language": "javascript",
-      "mtimeMs": 1776400558603.285
+      "mtimeMs": 1776580040010.271
     },
     {
       "path": "skill/lib/command-harness/parse-args.js",
@@ -5793,7 +5819,7 @@
         "parseArgs"
       ],
       "language": "javascript",
-      "mtimeMs": 1776405652971.2498
+      "mtimeMs": 1776580040015.7969
     },
     {
       "path": "skill/lib/command-harness/project-root.js",
@@ -5808,7 +5834,7 @@
         "resolveProjectRoot"
       ],
       "language": "javascript",
-      "mtimeMs": 1776400635812.9834
+      "mtimeMs": 1776580040020.7942
     },
     {
       "path": "skill/lib/command-harness/render-slash-template.js",
@@ -5822,7 +5848,7 @@
         "renderSlashTemplate"
       ],
       "language": "javascript",
-      "mtimeMs": 1776405504909.5464
+      "mtimeMs": 1776580040026.3247
     },
     {
       "path": "skill/lib/command-harness/run-command.js",
@@ -5843,7 +5869,7 @@
         "exitOnError"
       ],
       "language": "javascript",
-      "mtimeMs": 1776401218381.1643
+      "mtimeMs": 1776580040041.5808
     },
     {
       "path": "skill/lib/command-harness/slash-only-descriptors.js",
@@ -5856,7 +5882,7 @@
         "EXPLAIN_SLASH_COMMAND"
       ],
       "language": "javascript",
-      "mtimeMs": 1776404488408.5422
+      "mtimeMs": 1776580040046.66
     },
     {
       "path": "skill/lib/command-harness/with-mcp.js",
@@ -5873,7 +5899,7 @@
         "withMcp"
       ],
       "language": "javascript",
-      "mtimeMs": 1776404875655.4019
+      "mtimeMs": 1776580040050.6619
     },
     {
       "path": "skill/lib/contracts/errors.js",
@@ -5892,7 +5918,7 @@
         "ERROR_CODES"
       ],
       "language": "javascript",
-      "mtimeMs": 1776443736304.743
+      "mtimeMs": 1776580040057.1763
     },
     {
       "path": "skill/lib/contracts/graph-sources.js",
@@ -5909,7 +5935,7 @@
         "DEFAULT_GRAPH_SOURCE_PRIORITY"
       ],
       "language": "javascript",
-      "mtimeMs": 1776377703242.2654
+      "mtimeMs": 1776580040062.173
     },
     {
       "path": "skill/lib/contracts/index.js",
@@ -5920,7 +5946,7 @@
       "imports": [],
       "exports": [],
       "language": "javascript",
-      "mtimeMs": 1776377735714.3489
+      "mtimeMs": 1776580040067.2292
     },
     {
       "path": "skill/lib/contracts/paths.js",
@@ -5976,7 +6002,7 @@
         "SCOPED_ENRICHMENT_PROMPT_FILENAME"
       ],
       "language": "javascript",
-      "mtimeMs": 1776570053728.9827
+      "mtimeMs": 1776580040072.2285
     },
     {
       "path": "skill/lib/contracts/presentation.js",
@@ -5992,7 +6018,7 @@
         "PRESENTATION_MODE_LIST"
       ],
       "language": "javascript",
-      "mtimeMs": 1776377691511.6074
+      "mtimeMs": 1776580040083.3354
     },
     {
       "path": "skill/lib/contracts/schemas/cache.js",
@@ -6007,7 +6033,7 @@
         "validateCache"
       ],
       "language": "javascript",
-      "mtimeMs": 1776443874320.09
+      "mtimeMs": 1776580040090.3325
     },
     {
       "path": "skill/lib/contracts/schemas/graph.js",
@@ -6022,7 +6048,7 @@
         "validateGraph"
       ],
       "language": "javascript",
-      "mtimeMs": 1776443818503.3096
+      "mtimeMs": 1776580040096.6123
     },
     {
       "path": "skill/lib/contracts/schemas/index.js",
@@ -6055,7 +6081,7 @@
         "validateRuntimeEnvelope"
       ],
       "language": "javascript",
-      "mtimeMs": 1776447380966.3865
+      "mtimeMs": 1776580040100.607
     },
     {
       "path": "skill/lib/contracts/schemas/install-record.js",
@@ -6071,7 +6097,7 @@
         "validateInstallRecord"
       ],
       "language": "javascript",
-      "mtimeMs": 1776494122206.305
+      "mtimeMs": 1776580040105.1482
     },
     {
       "path": "skill/lib/contracts/schemas/manifest.js",
@@ -6086,7 +6112,7 @@
         "validateManifest"
       ],
       "language": "javascript",
-      "mtimeMs": 1776443832328.493
+      "mtimeMs": 1776580040110.1448
     },
     {
       "path": "skill/lib/contracts/schemas/runtime-envelope.js",
@@ -6101,7 +6127,7 @@
         "validateRuntimeEnvelope"
       ],
       "language": "javascript",
-      "mtimeMs": 1776443846625.0303
+      "mtimeMs": 1776580040115.6626
     },
     {
       "path": "skill/lib/contracts/schemas/shared.js",
@@ -6121,7 +6147,7 @@
         "validateShape"
       ],
       "language": "javascript",
-      "mtimeMs": 1776443797706.6504
+      "mtimeMs": 1776580040125.1873
     },
     {
       "path": "skill/lib/contracts/versions.js",
@@ -6144,7 +6170,7 @@
         "CURRENT_VERSIONS"
       ],
       "language": "javascript",
-      "mtimeMs": 1776494122213.3716
+      "mtimeMs": 1776580040132.1865
     },
     {
       "path": "skill/lib/differ.js",
@@ -6171,7 +6197,7 @@
       ],
       "exports": [],
       "language": "javascript",
-      "mtimeMs": 1776438913394.6406
+      "mtimeMs": 1776580040150.9836
     },
     {
       "path": "skill/lib/enrichment/graph-validation.js",
@@ -6185,7 +6211,7 @@
         "parseGraphResponse"
       ],
       "language": "javascript",
-      "mtimeMs": 1776438753263.9507
+      "mtimeMs": 1776580040163.008
     },
     {
       "path": "skill/lib/enrichment/health.js",
@@ -6199,7 +6225,7 @@
         "assessSystemHealth"
       ],
       "language": "javascript",
-      "mtimeMs": 1776438787633.458
+      "mtimeMs": 1776580040168.014
     },
     {
       "path": "skill/lib/enrichment/icons.js",
@@ -6212,7 +6238,7 @@
         "iconForSystem"
       ],
       "language": "javascript",
-      "mtimeMs": 1776438770690.062
+      "mtimeMs": 1776580040172.522
     },
     {
       "path": "skill/lib/enrichment/index.js",
@@ -6243,7 +6269,7 @@
         "shouldPreserveExistingGraph"
       ],
       "language": "javascript",
-      "mtimeMs": 1776438897021.4138
+      "mtimeMs": 1776580040177.5315
     },
     {
       "path": "skill/lib/enrichment/prompts.js",
@@ -6264,7 +6290,7 @@
         "getRootEnrichmentPrompt"
       ],
       "language": "javascript",
-      "mtimeMs": 1776438734604.2563
+      "mtimeMs": 1776580040182.528
     },
     {
       "path": "skill/lib/enrichment/source-priority.js",
@@ -6281,7 +6307,7 @@
         "selectPreferredGraph"
       ],
       "language": "javascript",
-      "mtimeMs": 1776438835370.5522
+      "mtimeMs": 1776580040187.5933
     },
     {
       "path": "skill/lib/file-walker.js",
@@ -6299,7 +6325,7 @@
         "collectProjectSnapshot"
       ],
       "language": "javascript",
-      "mtimeMs": 1776394057586.8196
+      "mtimeMs": 1776580040195.1118
     },
     {
       "path": "skill/lib/import-resolution.js",
@@ -6315,7 +6341,7 @@
         "createSystemImportEdges"
       ],
       "language": "javascript",
-      "mtimeMs": 1776333329897.5588
+      "mtimeMs": 1776580040199.1108
     },
     {
       "path": "skill/lib/launcher.js",
@@ -6355,7 +6381,7 @@
         "createScopeDescriptor"
       ],
       "language": "javascript",
-      "mtimeMs": 1776439152579.0361
+      "mtimeMs": 1776580040208.17
     },
     {
       "path": "skill/lib/manifest/index.js",
@@ -6380,7 +6406,7 @@
         "resolveScopeAgainstGraph"
       ],
       "language": "javascript",
-      "mtimeMs": 1776439267563.7646
+      "mtimeMs": 1776580040212.17
     },
     {
       "path": "skill/lib/manifest/io.js",
@@ -6400,7 +6426,7 @@
         "ensureManifestForSetup"
       ],
       "language": "javascript",
-      "mtimeMs": 1776444034832.0154
+      "mtimeMs": 1776580040217.6313
     },
     {
       "path": "skill/lib/manifest/migrations.js",
@@ -6416,7 +6442,7 @@
         "migrateLegacyMapEntryPaths"
       ],
       "language": "javascript",
-      "mtimeMs": 1776439320703.1672
+      "mtimeMs": 1776580040220.632
     },
     {
       "path": "skill/lib/manifest/normalize.js",
@@ -6437,7 +6463,7 @@
         "MANIFEST_VERSION"
       ],
       "language": "javascript",
-      "mtimeMs": 1776439203714.114
+      "mtimeMs": 1776580040226.147
     },
     {
       "path": "skill/lib/manifest/scope-resolution.js",
@@ -6452,7 +6478,7 @@
         "resolveScopeAgainstGraph"
       ],
       "language": "javascript",
-      "mtimeMs": 1776439529750.771
+      "mtimeMs": 1776580040232.1453
     },
     {
       "path": "skill/lib/map-manifest.js",
@@ -6465,7 +6491,7 @@
       ],
       "exports": [],
       "language": "javascript",
-      "mtimeMs": 1776439287789.8977
+      "mtimeMs": 1776580040244.27
     },
     {
       "path": "skill/lib/mcp-client.js",
@@ -6511,7 +6537,7 @@
         "applyGraphPatch"
       ],
       "language": "javascript",
-      "mtimeMs": 1776444107787.4658
+      "mtimeMs": 1776580040264.3076
     },
     {
       "path": "skill/lib/runtime-location.js",
@@ -6529,7 +6555,7 @@
         "isCodexEnvironment"
       ],
       "language": "javascript",
-      "mtimeMs": 1776547686340.0554
+      "mtimeMs": 1776580040270.315
     },
     {
       "path": "skill/lib/runtime-paths.js",
@@ -6557,7 +6583,7 @@
         "writeJsonFileAtomic"
       ],
       "language": "javascript",
-      "mtimeMs": 1776443982277.6975
+      "mtimeMs": 1776580040279.6794
     },
     {
       "path": "skill/lib/scoped-map.js",
@@ -6579,7 +6605,7 @@
         "createScopedMapFileSet"
       ],
       "language": "javascript",
-      "mtimeMs": 1776394490083.8462
+      "mtimeMs": 1776580040285.193
     },
     {
       "path": "skill/vitest.config.js",
@@ -6594,7 +6620,7 @@
         "defineConfig"
       ],
       "language": "javascript",
-      "mtimeMs": 1776445409097.0098
+      "mtimeMs": 1776580040325.291
     }
   ]
 }

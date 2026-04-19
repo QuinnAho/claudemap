@@ -106,24 +106,6 @@
       "cachePath": "claudemap-cache.map-model.json",
       "graphPath": "graph/claudemap-runtime.map-model.json",
       "statePath": "graph/claudemap-runtime-state.map-model.json"
-    },
-    {
-      "id": "delivery-pipeline",
-      "label": "Delivery Pipeline",
-      "summary": "CLI install, packaging, and preview",
-      "scope": {
-        "type": "subsystem",
-        "rootSystemId": "delivery",
-        "rootSystemLabel": "Delivery Pipeline",
-        "ancestorPath": [],
-        "filePathHint": "scripts/",
-        "fingerprint": "sha1:47175bdea25170331da96c43e2cce6d34db922b1",
-        "stale": false,
-        "needsRebuild": false
-      },
-      "cachePath": "claudemap-cache.delivery-pipeline.json",
-      "graphPath": "graph/claudemap-runtime.delivery-pipeline.json",
-      "statePath": "graph/claudemap-runtime-state.delivery-pipeline.json"
     }
   ]
 }

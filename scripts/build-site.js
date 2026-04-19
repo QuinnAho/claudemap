@@ -137,6 +137,7 @@ async function main() {
   const runtimeGraphPath = path.join(APP_ROOT, 'public', paths.RUNTIME_GRAPH_REL)
   const runtimeStatePath = path.join(APP_ROOT, 'public', paths.RUNTIME_STATE_REL)
   const runtimeManifestPath = path.join(APP_ROOT, 'public', paths.MAPS_MANIFEST_FILENAME)
+  const repoManifestPath = path.join(REPO_ROOT, paths.MAPS_MANIFEST_FILENAME)
   const seededSelfMapPath = path.join(REPO_ROOT, paths.SEED_MAP_REL)
   const pagesConfig = getGitHubPagesConfig()
   const seededSelfMap = schemas.validateWithWarning(
@@ -144,6 +145,13 @@ async function main() {
     readJsonFile(seededSelfMapPath),
     { path: seededSelfMapPath },
   )
+  // Prefer the repo-root manifest (populated by CLI commands like
+  // /create-map) so the deployed site advertises every scoped submap. Fall
+  // back to the root-only default for first-time builds where no submaps
+  // exist yet.
+  const siteManifest = fs.existsSync(repoManifestPath)
+    ? readJsonFile(repoManifestPath)
+    : createDefaultMapsManifest(paths)
   const originalGraph = fs.existsSync(runtimeGraphPath)
     ? fs.readFileSync(runtimeGraphPath, 'utf8')
     : null
@@ -162,7 +170,7 @@ async function main() {
     })
     writeJsonFile(runtimeGraphPath, seededSelfMap)
     writeJsonFile(runtimeStatePath, createRuntimeStateFromGraph(seededSelfMap, contracts))
-    writeJsonFile(runtimeManifestPath, createDefaultMapsManifest(paths))
+    writeJsonFile(runtimeManifestPath, siteManifest)
 
     const result = buildApp()
 

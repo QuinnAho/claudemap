@@ -1,13 +1,13 @@
 {
-  "graphRevision": 1,
-  "updatedAt": "2026-04-19T05:22:14.054Z",
+  "graphRevision": 2,
+  "updatedAt": "2026-04-15T05:55:01.322Z",
   "graphMeta": {
     "repoName": "claudemap",
-    "generatedAt": "2026-04-19T05:22:14.006Z",
+    "generatedAt": "2026-04-15T05:55:01.289Z",
     "source": "scoped-map",
-    "nodeCount": 28,
-    "edgeCount": 0,
-    "fileCount": 12
+    "nodeCount": 59,
+    "edgeCount": 6,
+    "fileCount": 16
   },
   "runtime": {
     "healthOverlay": false,
