@@ -1,6 +1,6 @@
 {
   "name": "@quinnaho/claudemap",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "ClaudeMap installer CLI for bootstrapping the bundled .claude runtime into any repository",
   "license": "MIT",
   "author": "Quinn Aho",
