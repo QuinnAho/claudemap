@@ -32,6 +32,8 @@ const DUAL_ARTIFACT_OUTPUT_ROOT = path.join(SMOKE_ROOT, 'artifact-dual')
 const FIXTURE_ROOT = path.join(SMOKE_ROOT, 'package-fixture')
 const CODEX_FIXTURE_ROOT = path.join(SMOKE_ROOT, 'package-fixture-codex')
 const CROSS_ASSISTANT_FIXTURE_ROOT = path.join(SMOKE_ROOT, 'package-fixture-cross-assistant')
+const PUBLISHED_PACKAGE_ROOT = path.join(SMOKE_ROOT, 'published-package')
+const PUBLISHED_CLI_TARGET_ROOT = path.join(SMOKE_ROOT, 'published-cli-target')
 const CLAUDE_RUNTIME_SKILL_NAME = 'claudemap-runtime'
 const CODEX_RUNTIME_SKILL_NAME = 'codexmap-runtime'
 const LEGACY_CODEX_RUNTIME_SKILL_NAME = 'claudemap-runtime'
@@ -44,6 +46,38 @@ const GRAPH_DIR = path.join(
   'public',
   'graph',
 )
+const REQUIRED_NPM_FILE_ENTRIES = Object.freeze([
+  'bin/',
+  'scripts/install-claudemap.js',
+  '.npm-bundle/claudemap/',
+  '.npm-bundle/claudemap-codex/',
+  'skill/package.json',
+  'skill/lib/contracts/errors.js',
+  'skill/lib/contracts/paths.js',
+  'skill/lib/contracts/schemas/cache.js',
+  'skill/lib/contracts/schemas/graph.js',
+  'skill/lib/contracts/schemas/index.js',
+  'skill/lib/contracts/schemas/install-record.js',
+  'skill/lib/contracts/schemas/manifest.js',
+  'skill/lib/contracts/schemas/runtime-envelope.js',
+  'skill/lib/contracts/schemas/shared.js',
+])
+const PUBLISHED_PACKAGE_SUPPORT_FILES = Object.freeze([
+  'package.json',
+  'README.md',
+  'PUBLISHING.md',
+  'scripts/install-claudemap.js',
+  'skill/package.json',
+  'skill/lib/contracts/errors.js',
+  'skill/lib/contracts/paths.js',
+  'skill/lib/contracts/schemas/cache.js',
+  'skill/lib/contracts/schemas/graph.js',
+  'skill/lib/contracts/schemas/index.js',
+  'skill/lib/contracts/schemas/install-record.js',
+  'skill/lib/contracts/schemas/manifest.js',
+  'skill/lib/contracts/schemas/runtime-envelope.js',
+  'skill/lib/contracts/schemas/shared.js',
+])
 
 function assert(condition, message) {
   if (!condition) {
@@ -63,6 +97,21 @@ function writeJson(filePath, data) {
 function writeText(filePath, content) {
   fs.mkdirSync(path.dirname(filePath), { recursive: true })
   fs.writeFileSync(filePath, content)
+}
+
+function copyFileFromRepo(relativePath, targetRoot) {
+  const sourcePath = path.join(REPO_ROOT, relativePath)
+  const targetPath = path.join(targetRoot, relativePath)
+
+  assert(fs.existsSync(sourcePath), `Source file missing: ${sourcePath}`)
+  fs.mkdirSync(path.dirname(targetPath), { recursive: true })
+  fs.copyFileSync(sourcePath, targetPath)
+}
+
+function copyDirectory(sourcePath, targetPath) {
+  assert(fs.existsSync(sourcePath), `Source directory missing: ${sourcePath}`)
+  fs.mkdirSync(path.dirname(targetPath), { recursive: true })
+  fs.cpSync(sourcePath, targetPath, { recursive: true })
 }
 
 function removeAndRecreate(directoryPath) {
@@ -655,27 +704,79 @@ async function assertTransactionalInstall(artifactRoot) {
   )
 }
 
-// Exercise bin/claudemap.js end-to-end against the fixture with --dry-run
-// so we verify the published CLI entry delegates correctly to the
-// installer without mutating the fixture or needing npm to run.
-function assertBinCliDryRun() {
-  const cliPath = path.join(REPO_ROOT, 'bin', 'claudemap.js')
+function assertNpmFilesWhitelist() {
+  const packageJson = readJson(path.join(REPO_ROOT, 'package.json'))
+  const npmFiles = packageJson.files || []
+
+  for (const entry of REQUIRED_NPM_FILE_ENTRIES) {
+    assert(
+      npmFiles.includes(entry),
+      `package.json files whitelist is missing required published CLI dependency: ${entry}`,
+    )
+  }
+}
+
+function stagePublishedPackageFixture({ claudeArtifactRoot, codexArtifactRoot = null }) {
+  assertNpmFilesWhitelist()
+  removeAndRecreate(PUBLISHED_PACKAGE_ROOT)
+
+  for (const relativePath of PUBLISHED_PACKAGE_SUPPORT_FILES) {
+    copyFileFromRepo(relativePath, PUBLISHED_PACKAGE_ROOT)
+  }
+
+  copyDirectory(path.join(REPO_ROOT, 'bin'), path.join(PUBLISHED_PACKAGE_ROOT, 'bin'))
+  copyDirectory(
+    claudeArtifactRoot,
+    path.join(PUBLISHED_PACKAGE_ROOT, '.npm-bundle', 'claudemap'),
+  )
+
+  if (codexArtifactRoot) {
+    copyDirectory(
+      codexArtifactRoot,
+      path.join(PUBLISHED_PACKAGE_ROOT, '.npm-bundle', 'claudemap-codex'),
+    )
+  }
+}
+
+// Exercise bin/claudemap.js from a package-shaped fixture with no root
+// source tree around it. This catches missing npm files whitelist entries
+// that a source-tree CLI invocation would mask.
+function assertPublishedBinCliDryRun({ claudeArtifactRoot, codexArtifactRoot = null, assistant = 'claude' }) {
+  stagePublishedPackageFixture({ claudeArtifactRoot, codexArtifactRoot })
+
+  const cliPath = path.join(PUBLISHED_PACKAGE_ROOT, 'bin', 'claudemap.js')
   assert(fs.existsSync(cliPath), `CLI entry missing: ${cliPath}`)
+
+  removeAndRecreate(PUBLISHED_CLI_TARGET_ROOT)
+  writeJson(path.join(PUBLISHED_CLI_TARGET_ROOT, 'package.json'), {
+    name: `claudemap-published-cli-${assistant}`,
+    private: true,
+  })
 
   const result = require('child_process').spawnSync(
     process.execPath,
-    [cliPath, 'install', FIXTURE_ROOT, '--dry-run', '--skip-install'],
+    [
+      cliPath,
+      'install',
+      PUBLISHED_CLI_TARGET_ROOT,
+      '--dry-run',
+      '--skip-install',
+      '--assistant',
+      assistant,
+    ],
     { stdio: ['ignore', 'pipe', 'pipe'] },
   )
 
   assert(
     result.status === 0,
-    `bin/claudemap.js dry-run failed (exit ${result.status}): ${result.stderr?.toString() || ''}`,
+    `published bin/claudemap.js dry-run failed for ${assistant} (exit ${result.status}): ${
+      result.stderr?.toString() || ''
+    }`,
   )
   const stdout = result.stdout?.toString() || ''
   assert(
     stdout.includes('Dry run only'),
-    `bin/claudemap.js dry-run did not print the dry-run marker. stdout:\n${stdout}`,
+    `published bin/claudemap.js dry-run did not print the dry-run marker. stdout:\n${stdout}`,
   )
 }
 
@@ -1229,7 +1330,7 @@ async function main() {
   assertInstalledLayout()
   assertPromptTemplates()
   await assertRenderedSlashTemplates()
-  assertBinCliDryRun()
+  assertPublishedBinCliDryRun({ claudeArtifactRoot: artifactRoot, assistant: 'claude' })
   await assertTransactionalInstall(artifactRoot)
 
   const { main: setupMain } = await loadInstalledCommand('setup-claudemap.js')
@@ -1270,6 +1371,7 @@ async function main() {
 
   const codexArtifactRoot = await buildCodexArtifact()
   assertCodexArtifact(codexArtifactRoot)
+  assertPublishedBinCliDryRun({ claudeArtifactRoot: artifactRoot, codexArtifactRoot, assistant: 'codex' })
   await assertDualArtifact()
   await assertCodexInstall(codexArtifactRoot)
   await assertCrossAssistantGuard(artifactRoot, codexArtifactRoot)
