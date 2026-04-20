@@ -3,7 +3,7 @@
     "repoName": "claudemap",
     "branch": "main",
     "creditLabel": "ClaudeMap self-map",
-    "generatedAt": "2026-04-19T18:41:53.535Z",
+    "generatedAt": "2026-04-19T19:09:05.593Z",
     "source": "manual"
   },
   "nodes": [
@@ -5380,7 +5380,7 @@
       ],
       "exports": [],
       "language": "javascript",
-      "mtimeMs": 1776624102731.1853
+      "mtimeMs": 1776624467671.64
     },
     {
       "path": "scripts/check-contracts.js",
